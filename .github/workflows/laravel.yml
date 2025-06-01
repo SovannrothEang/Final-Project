@@ -47,7 +47,7 @@ jobs:
         working-directory: app/backend
         run: php artisan key:generate
 
-      - name: Configure DB connection for PostgreSQL
+      - name: Run database migrations (fresh with seed)
         working-directory: app/backend
         run: |
           sed -i 's/DB_CONNECTION=.*/DB_CONNECTION=pgsql/' .env
@@ -56,10 +56,7 @@ jobs:
           sed -i 's/DB_DATABASE=.*/DB_DATABASE=laravel_test/' .env
           sed -i 's/DB_USERNAME=.*/DB_USERNAME=laravel/' .env
           sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=secret123/' .env
-
-      - name: Run database migrations (fresh with seed)
-        working-directory: app/backend
-        run: php artisan migrate:fresh --seed --force
+          php artisan migrate:fresh --seed --force
 
       - name: Run tests
         working-directory: app/backend
