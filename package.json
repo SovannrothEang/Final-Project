@@ -6,7 +6,8 @@
 		"start:frontend": "npm run dev -w app/frontend",
 		"start:backend": "cd app/backend && php artisan serve",
 		"test:backend": "cd app/backend && php artisan test",
-		"test:frontend": "npm run test -w app/frontend"
+		"test:frontend": "npm run test -w app/frontend",
+		"install": "cd app/backend && composer install --prefer-dist --no-progress --no-suggest && cp .env.example && php artisan key:generate $$ php artisan migrate"
 	},
 	"workspaces": [
 		"app/*"
