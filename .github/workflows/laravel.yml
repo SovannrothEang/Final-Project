@@ -56,6 +56,7 @@ jobs:
           sed -i 's/DB_DATABASE=.*/DB_DATABASE=laravel_test/' .env
           sed -i 's/DB_USERNAME=.*/DB_USERNAME=laravel/' .env
           sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=secret123/' .env
+          cat .env
           php artisan migrate:fresh --seed --force
 
       - name: Run tests
