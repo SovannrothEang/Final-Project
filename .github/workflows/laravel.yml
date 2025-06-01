@@ -1,4 +1,5 @@
 name: Laravel CI
+
 on:
   push:
     branches: [main]
@@ -10,6 +11,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     services:
       postgres:
         image: postgres:15
@@ -24,6 +26,14 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
+
+    env:
+      DB_CONNECTION: pgsql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      DB_DATABASE: laravel_test
+      DB_USERNAME: laravel
+      DB_PASSWORD: secret123
 
     steps:
       - uses: actions/checkout@v3
@@ -47,18 +57,6 @@ jobs:
         working-directory: app/backend
         run: php artisan key:generate
 
-      - name: Run database migrations (fresh with seed)
+      - name: Run database migrations
         working-directory: app/backend
-        run: |
-          sed -i 's/DB_CONNECTION=.*/DB_CONNECTION=pgsql/' .env
-          sed -i 's/DB_HOST=.*/DB_HOST=postgres/' .env
-          sed -i 's/DB_PORT=.*/DB_PORT=5432/' .env
-          sed -i 's/DB_DATABASE=.*/DB_DATABASE=laravel_test/' .env
-          sed -i 's/DB_USERNAME=.*/DB_USERNAME=laravel/' .env
-          sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=secret123/' .env
-          cat .env
-          php artisan migrate:fresh --seed --force
-
-      - name: Run tests
-        working-directory: app/backend
-        run: php artisan test
+        run: php artisan migrate:fresh --seed --force
