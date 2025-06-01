@@ -20,7 +20,7 @@ To run this project locally, you will need:
 **Note:** If you are using Docker, you can run a PostgreSQL container with the following command:
 
 ```bash
-docker run --name=finalprojectdb -p 5432:5432 -e POSTGRES_USER=user_id -e POSTGRES_PASSWORD=your_password -d postgres:15
+docker run --name=finalprojectdb -p 5432:5432 -e POSTGRES_USER=laravel -e POSTGRES_PASSWORD=secret123 -d postgres:15
 ```
 
 ## Running Locally
