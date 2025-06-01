@@ -27,33 +27,60 @@ docker run --name=finalprojectdb -p 5432:5432 -e POSTGRES_USER=laravel -e POSTGR
 
 Follow these steps to set up and run the project on your local machine:
 
-### Backend Setup (Laravel)
+### We can run these commands from the root directory
 
-1.  Navigate to the backend directory:
-    ```bash
-    cd app/backend
-    ```
-2.  Install PHP dependencies:
-    ```bash
-    composer install
-    ```
-3.  Copy the example environment file and configure your database connection:
-    ```bash
-    cp .env.example .env
-    ```
-    Edit the `.env` file with your database credentials and other configurations.
-4.  Generate the application key:
-    ```bash
-    php artisan key:generate
-    ```
-5.  Run database migrations:
-    ```bash
-    php artisan migrate
-    ```
-6.  Start the Laravel development server:
-    ```bash
-    php artisan serve
-    ```
+1. Install dependencies
+
+   ```bash
+   # for frontend
+   npm install
+
+   # for backend
+   npm run install:backend
+
+   # noted: to run docker, or configure the database service before running the migration
+   npm run migrate:backend
+   ```
+
+   1.1. Installation for frontend
+
+   1. Navigate to the backend directory:
+      ```bash
+      cd app/backend
+      ```
+   2. Install PHP dependencies:
+      ```bash
+      composer install
+      ```
+   3. Copy the example environment file and configure your database connection:
+      ```bash
+      cp .env.example .env
+      ```
+      Edit the `.env` file with your database credentials and other configurations.
+   4. Generate the application key:
+      ```bash
+      php artisan key:generate
+      ```
+   5. Run database migrations:
+      ```bash
+      php artisan migrate
+      ```
+   6. Start the Laravel development server:
+      ```bash
+      php artisan serve
+      ```
+
+2. Run the development server
+
+   ```bash
+   # for Frontend
+   npm run start:frontend
+
+   # for Backend
+   npm run start:backend
+   ```
+
+### Backend Setup (Laravel)
 
 ### Frontend Setup (Next.js)
 
@@ -69,27 +96,5 @@ Follow these steps to set up and run the project on your local machine:
     ```bash
     npm run dev # or yarn dev
     ```
-
-### We can run from the root directory with commands
-
-1. Install dependencies
-
-   ```bash
-   # for frontend
-   npm install
-
-   # for backend
-   npm run install
-   ```
-
-2. Run the development server
-
-   ```bash
-   # for Frontend
-   npm run start:frontend
-
-   # for Backend
-   npm run start:backend
-   ```
 
 The frontend application should now be running and communicating with the locally running backend.
