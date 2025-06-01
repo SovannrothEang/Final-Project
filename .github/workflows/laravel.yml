@@ -51,11 +51,11 @@ jobs:
         working-directory: app/backend
         run: |
           sed -i 's/DB_CONNECTION=.*/DB_CONNECTION=pgsql/' .env
-          sed -i 's/DB_HOST=.*/DB_HOST=127.0.0.1/' .env
+          sed -i 's/DB_HOST=.*/DB_HOST=postgres/' .env
           sed -i 's/DB_PORT=.*/DB_PORT=5432/' .env
           sed -i 's/DB_DATABASE=.*/DB_DATABASE=laravel_test/' .env
           sed -i 's/DB_USERNAME=.*/DB_USERNAME=laravel/' .env
-          sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=secret/' .env
+          sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=secret123/' .env
 
       - name: Run database migrations (fresh with seed)
         working-directory: app/backend
