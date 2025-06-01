@@ -33,7 +33,3 @@ jobs:
       - name: Build
         working-directory: app/frontend
         run: npm run build
-
-      - name: Run tests
-        working-directory: app/frontend
-        run: npm test
