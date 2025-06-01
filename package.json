@@ -1,0 +1,14 @@
+{
+	"name": "finalproject",
+	"version": "1.0.0",
+	"private": "true",
+	"scripts": {
+		"start:frontend": "npm run dev -w app/frontend",
+		"start:backend": "cd app/backend && php artisan serve",
+		"test:backend": "cd app/backend && php artisan test",
+		"test:frontend": "npm run test -w app/frontend"
+	},
+	"workspaces": [
+		"app/*"
+	]
+}
