@@ -65,7 +65,7 @@ npm run start:frontend
 # command for install dependencies
 npm run install:backend
 
-# commd for doing migration
+# command for doing migration
 npm run migrate:backend
 
 # command for running Backend development
