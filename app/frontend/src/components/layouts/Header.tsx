@@ -1,12 +1,20 @@
 "use client";
 
-import { ChevronDown, Search } from "lucide-react";
+import { ChevronDown, Moon, Search, ShoppingCart, User } from "lucide-react";
 import { Input } from "../ui/input";
 import Link from "next/link";
 import { useState } from "react";
+import { Button } from "../ui/button";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function Header() {
-	const [isDiscount] = useState(true);
+	const [isDiscount] = useState(false);
 	return (
 		<>
 			{isDiscount && (
@@ -26,16 +34,13 @@ export function Header() {
 						<Link href="/" className="hover:underline">
 							Home
 						</Link>
-						<Link href="#" className="hover:underline">
+						<Link href="/contact" className="hover:underline">
 							Contact
 						</Link>
 						<Link href="/about" className="hover:underline">
 							About
 						</Link>
 						<Link href="/login" className="hover:underline">
-							Log in
-						</Link>
-						<Link href="#" className="hover:underline">
 							Sign Up
 						</Link>
 					</nav>
@@ -48,6 +53,38 @@ export function Header() {
 							/>
 							<Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
 						</div>
+						{/* Cart Icon */}
+						<Button variant="ghost" size="sm" className="p-2" asChild>
+							<Link href="/cart">
+								<ShoppingCart className="w-5 h-5" />
+							</Link>
+						</Button>
+
+						{/* User Account Dropdown */}
+						<DropdownMenu>
+							<DropdownMenuTrigger asChild>
+								<Button variant="ghost" size="sm" className="p-2">
+									<User className="w-5 h-5" />
+								</Button>
+							</DropdownMenuTrigger>
+							<DropdownMenuContent align="end" className="w-56">
+								<DropdownMenuItem asChild>
+									<Link href="/profile">Manage My Account</Link>
+								</DropdownMenuItem>
+								<DropdownMenuItem>My Order</DropdownMenuItem>
+								<DropdownMenuItem>My Reviews</DropdownMenuItem>
+								<DropdownMenuSeparator />
+								<DropdownMenuItem>
+									Logout
+									{/* <Link href="/logout">Logout</Link> */}
+								</DropdownMenuItem>
+							</DropdownMenuContent>
+						</DropdownMenu>
+
+						{/* Theme Toggle */}
+						<Button variant="ghost" size="sm" className="p-2">
+							<Moon className="w-5 h-5" />
+						</Button>
 					</div>
 				</div>
 			</header>

@@ -1,11 +1,78 @@
+"use client";
+
+import type React from "react";
+
+import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
-export default function SignUpPage() {
+export default function LoginPage() {
+	const [formData, setFormData] = useState({
+		email: "",
+		password: "",
+	});
+	const [errors, setErrors] = useState<{ [key: string]: string }>({});
+	const [isLoading, setIsLoading] = useState(false);
+
+	const handleInputChange = (field: string, value: string) => {
+		setFormData((prev) => ({ ...prev, [field]: value }));
+		// Clear error when user starts typing
+		if (errors[field]) {
+			setErrors((prev) => ({ ...prev, [field]: "" }));
+		}
+	};
+
+	const validateForm = () => {
+		const newErrors: { [key: string]: string } = {};
+
+		if (!formData.email) {
+			newErrors.email = "Email or phone number is required";
+		} else if (
+			formData.email.includes("@") &&
+			!/\S+@\S+\.\S+/.test(formData.email)
+		) {
+			newErrors.email = "Please enter a valid email address";
+		}
+
+		if (!formData.password) {
+			newErrors.password = "Password is required";
+		} else if (formData.password.length < 6) {
+			newErrors.password = "Password must be at least 6 characters";
+		}
+
+		setErrors(newErrors);
+		return Object.keys(newErrors).length === 0;
+	};
+
+	const handleSubmit = async (e: React.FormEvent) => {
+		e.preventDefault();
+
+		if (!validateForm()) return;
+
+		setIsLoading(true);
+
+		try {
+			// Simulate API call
+			await new Promise((resolve) => setTimeout(resolve, 1000));
+
+			// Handle successful login here
+			console.log("Login successful:", formData);
+
+			// Redirect to dashboard or home page
+			// router.push('/profile')
+		} catch (error) {
+			console.error("Login failed:", error);
+			setErrors({ general: "Login failed. Please check your credentials." });
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
 	return (
 		<div className="min-h-screen bg-white">
-			{/* Main Content */}
 			<div className="container mx-auto px-4 py-16">
 				<div className="grid lg:grid-cols-2 gap-16 items-center">
 					{/* Left Side - Illustration */}
@@ -44,50 +111,96 @@ export default function SignUpPage() {
 						</div>
 					</div>
 
-					{/* Right Side - Sign Up Form */}
-					<div className="max-w-md">
-						<h1 className="text-3xl font-semibold mb-2">Create an account</h1>
-						<p className="text-gray-600 mb-8">Enter your details below</p>
+					{/* Right Side - Login Form */}
+					<div className="max-w-md lg:w-1/2 flex items-center justify-center p-8">
+						<div className="w-full max-w-md space-y-8">
+							<div className="text-center lg:text-left">
+								<h1 className="text-3xl font-semibold text-gray-900 mb-2">
+									Log in to Exclusive
+								</h1>
+								<p className="text-gray-600">Enter your details below</p>
+							</div>
 
-						<form className="space-y-6">
-							<Input
-								placeholder="Name"
-								className="border-0 border-b border-gray-300 rounded-none px-0 focus:border-gray-500"
-							/>
+							<form onSubmit={handleSubmit} className="space-y-6">
+								{errors.general && (
+									<div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm">
+										{errors.general}
+									</div>
+								)}
 
-							<Input
-								placeholder="Email or Phone Number"
-								className="border-0 border-b border-gray-300 rounded-none px-0 focus:border-gray-500"
-							/>
+								<div className="space-y-1">
+									<Label htmlFor="email" className="sr-only">
+										Email or Phone Number
+									</Label>
+									<Input
+										id="email"
+										type="text"
+										placeholder="Email or Phone Number"
+										value={formData.email}
+										onChange={(e) => handleInputChange("email", e.target.value)}
+										className={`border-0 border-b-2 rounded-none px-0 py-3 focus:ring-0 ${
+											errors.email
+												? "border-red-500"
+												: "border-gray-300 focus:border-black"
+										}`}
+										disabled={isLoading}
+									/>
+									{errors.email && (
+										<p className="text-red-500 text-sm mt-1">{errors.email}</p>
+									)}
+								</div>
 
-							<Input
-								type="password"
-								placeholder="Password"
-								className="border-0 border-b border-gray-300 rounded-none px-0 focus:border-gray-500"
-							/>
+								<div className="space-y-1">
+									<Label htmlFor="password" className="sr-only">
+										Password
+									</Label>
+									<Input
+										id="password"
+										type="password"
+										placeholder="Password"
+										value={formData.password}
+										onChange={(e) =>
+											handleInputChange("password", e.target.value)
+										}
+										className={`border-0 border-b-2 rounded-none px-0 py-3 focus:ring-0 ${
+											errors.password
+												? "border-red-500"
+												: "border-gray-300 focus:border-black"
+										}`}
+										disabled={isLoading}
+									/>
+									{errors.password && (
+										<p className="text-red-500 text-sm mt-1">
+											{errors.password}
+										</p>
+									)}
+								</div>
 
-							<Button className="w-full bg-red-500 hover:bg-red-600 text-white py-3 rounded-md">
-								Create Account
-							</Button>
+								<div className="flex items-center justify-between">
+									<Button
+										type="submit"
+										className="bg-black text-white hover:bg-gray-800 px-8 py-2 rounded-md"
+										disabled={isLoading}
+									>
+										{isLoading ? "Logging in..." : "Log In"}
+									</Button>
 
-							<Button variant="outline" className="w-full py-3 rounded-md">
-								<Image
-									src="/placeholder.svg?height=20&width=20"
-									alt="Google"
-									width={20}
-									height={20}
-									className="mr-2"
-								/>
-								Sign up with Google
-							</Button>
+									<Link
+										href="/forgot-password"
+										className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+									>
+										Forgot Password?
+									</Link>
+								</div>
+							</form>
 
 							<div className="text-center text-sm text-gray-600">
-								Already have account?{" "}
-								<a href="#" className="underline hover:text-gray-800">
-									Log in
-								</a>
+								Don't have an account?{" "}
+								<Link href="/signup" className="underline hover:text-gray-800">
+									Sign Up
+								</Link>
 							</div>
-						</form>
+						</div>
 					</div>
 				</div>
 			</div>
