@@ -1,6 +1,5 @@
 import { HeroSection } from "@/components/layouts/HeroSection";
 import { BrandStrip } from "@/components/layouts/BrandStrip";
-import { CountdownTimer } from "@/components/products/CountdownTimer";
 import { ProductShowcase } from "@/components/products/ProductShowcase";
 import { TestimonialSection } from "@/components/products/TestimonialSection";
 import { ServiceHighlights } from "@/components/products/ServiceHighlights";
@@ -162,14 +161,12 @@ export default function HomePage() {
 			<HeroSection />
 			<BrandStrip />
 
-			<div className="container mx-auto px-4">
-				<CountdownTimer />
-
-				<ProductShowcase
+			<div className="container mx-auto px-8">
+				{/* <ProductShowcase
 					title="New Arrivals"
 					products={newArrivals}
 					showNavigation={true}
-				/>
+				/> */}
 
 				<ProductShowcase
 					title="Top Selling"
@@ -215,7 +212,7 @@ export default function HomePage() {
 					</div>
 				</section>
 
-				<ProductShowcase title="" products={allProducts} showViewAll={true} />
+				{/* <ProductShowcase title="" products={allProducts} showViewAll={true} /> */}
 
 				<TestimonialSection testimonials={testimonials} />
 

@@ -26,26 +26,23 @@ export function Header() {
 					</div>
 				</div>
 			)}
-			<header className="border-b">
-				<div className="container mx-auto px-4 py-4 flex items-center justify-between">
+			<header className="border-b sticky z-50 top-0 bg-gray-50/75 backdrop-blur-sm">
+				<div className="container mx-auto px-4 py-4 grid grid-cols-3">
 					<div className="text-2xl font-bold">Exclusive</div>
-
-					<nav className="hidden md:flex items-center space-x-8">
-						<Link href="/" className="hover:underline">
-							Home
-						</Link>
-						<Link href="/contact" className="hover:underline">
-							Contact
-						</Link>
-						<Link href="/about" className="hover:underline">
-							About
-						</Link>
-						<Link href="/login" className="hover:underline">
-							Sign Up
-						</Link>
+					<nav className="hidden md:flex justify-center">
+						<div className="w-[75%] hidden md:flex items-center justify-around md:[&>*]:px-2">
+							<Link href="/" className="hover:underline">
+								Home
+							</Link>
+							<Link href="/contact" className="hover:underline">
+								Contact
+							</Link>
+							<Link href="/about" className="hover:underline">
+								About
+							</Link>
+						</div>
 					</nav>
-
-					<div className="flex items-center gap-4">
+					<div className="flex items-center justify-end gap-4">
 						<div className="relative">
 							<Input
 								placeholder="What are you looking for?"
@@ -53,13 +50,6 @@ export function Header() {
 							/>
 							<Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
 						</div>
-						{/* Cart Icon */}
-						<Button variant="ghost" size="sm" className="p-2" asChild>
-							<Link href="/cart">
-								<ShoppingCart className="w-5 h-5" />
-							</Link>
-						</Button>
-
 						{/* User Account Dropdown */}
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
@@ -80,11 +70,10 @@ export function Header() {
 								</DropdownMenuItem>
 							</DropdownMenuContent>
 						</DropdownMenu>
-
-						{/* Theme Toggle */}
+						{/* Theme Toggle
 						<Button variant="ghost" size="sm" className="p-2">
 							<Moon className="w-5 h-5" />
-						</Button>
+						</Button> */}
 					</div>
 				</div>
 			</header>
