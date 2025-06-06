@@ -21,11 +21,16 @@ class Product extends Model
     protected function casts(): array
     {
         return [
-            'options' => 'string[]',
+            'options' => 'array<string>[]',
         ];
     }
 
     public function user(){
         return $this->belongsTo(User::class);
+    }
+
+    public static function inStock(): bool
+    {
+        return auth()->user()->products()->quantity >= 0;
     }
 }

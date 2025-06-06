@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('description')->nullable();
             $table->decimal('price');
-            $table->bool('in_stock')->default(true);
+            $table->integer('quantity')->default(0);
             $table->json('options')->nullable();
             $table->foreignId('user_id')
                 ->constrained()

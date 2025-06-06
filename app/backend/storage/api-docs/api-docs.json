@@ -1,0 +1,107 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Laravel API with Swagger",
+        "description": "API documentation for Laravel using Swagger",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://my-default-host.com",
+            "description": "Local API Server"
+        },
+        {
+            "url": "D:\\sources\\FinalProject\\app\\backend\\app"
+        }
+    ],
+    "paths": {
+        "/api/login": {
+            "post": {
+                "summary": "Authenticate user and generate token",
+                "operationId": "a3b306d14572d1f4bd6c064b3233e7b8",
+                "responses": {
+                    "200": {
+                        "description": "Successful login"
+                    },
+                    "422": {
+                        "description": "Validation errors"
+                    }
+                }
+            }
+        },
+        "/api/logout": {
+            "post": {
+                "summary": "Logout authenticated user",
+                "operationId": "fe8f3429cd6979b3b4517e186505f9f9",
+                "responses": {
+                    "200": {
+                        "description": "Logged out successfully"
+                    },
+                    "401": {
+                        "description": "No active session to log out"
+                    }
+                }
+            }
+        },
+        "/api/user": {
+            "get": {
+                "summary": "Get authenticated user details",
+                "operationId": "7c1cf647d76fad4b3eb1549fa4fe2f4c",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                }
+            }
+        },
+        "/api/products": {
+            "get": {
+                "summary": "Display a listing of products",
+                "operationId": "1bfaa78d1c2c3848ab8165c5dadcad3e",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                }
+            },
+            "post": {
+                "summary": "Store a newly created product",
+                "operationId": "e8185e307706e2cd84bbcf5171e2f09d",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                }
+            }
+        },
+        "/api/products/{id}": {
+            "get": {
+                "summary": "Display the specified product",
+                "operationId": "7ab21ddb713501f3d4c2914892c02a21",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                }
+            },
+            "put": {
+                "summary": "Update the specified product",
+                "operationId": "6a7e11900844cd85cff66e662b82bd4c",
+                "responses": {
+                    "201": {
+                        "description": "Successful operation"
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Remove the specified product",
+                "operationId": "e80a6ca46716acee6b47ea1ac91663c0",
+                "responses": {
+                    "201": {
+                        "description": "Successful operation"
+                    }
+                }
+            }
+        }
+    }
+}
