@@ -19,7 +19,15 @@ class ProductController extends Controller
      * @OA\Get(
      *     path="/api/products",
      *     summary="Display a listing of products",
-     *     @OA\Response(response="200", description="Successful operation")
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *       response=200,
+     *       description="Successful operation",
+     *     ),
+     *     @OA\Response(
+     *       response=404,
+     *       description="No Product was found!",
+     *     )
      * )
      */
     public function index()
@@ -36,15 +44,28 @@ class ProductController extends Controller
      * @OA\Post(
      *     path="/api/products",
      *     summary="Store a newly created product",
-     *     @OA\Response(response="200", description="Successful operation")
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/storeProduct")
+     *     ),
+     *     @OA\Response(
+     *       response="200",
+     *       description="Successful operation"
+     *     ),
+     *     @OA\Response(
+     *       response=400,
+     *       description="Invalid request!"
+     *     )
      * )
      */
-    public function store(StoreProductRequest $request)
+    public function store(StoreProductRequest $request) : JsonResponse
     {
-//        $decodedData = json_decode($request->getContent(), true);
         $validated = $request->validated();
-        $product = Product::create([$validated]);
-        return new ProductResource($product);
+        $product = Product::create($validated);
+        return response()->json([
+            'success' => true,
+            'data'=> new ProductResource($product)
+        ], 200);
     }
 
     /**

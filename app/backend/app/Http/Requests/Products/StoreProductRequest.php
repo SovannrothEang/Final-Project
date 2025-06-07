@@ -4,6 +4,52 @@ namespace App\Http\Requests\Products;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * @OA\Schema(
+ *      schema="storeProduct",
+ *      required={"name", "descriptions", "price"},
+ *     @OA\Property(
+ *         property="name",
+ *         type="string"
+ *     ),
+ *     @OA\Property(
+ *         property="descriptions",
+ *         type="string",
+ *     ),
+ *     @OA\Property(
+ *         property="price",
+ *         type="number",
+ *         format="float",
+ *     ),
+ *     @OA\Property(
+ *         property="quantity",
+ *         type="integer"
+ *     ),
+ *     @OA\Property(
+ *         property="options",
+ *         type="array",
+ *         description="Available product options",
+ *         @OA\Items(
+ *             type="object",
+ *             @OA\Property(
+ *                  property="color",
+ *                  type="array",
+ *                  @OA\Items(
+ *                    type="string"
+ *                  )
+ *              ),
+ *             @OA\Property(
+ *                  property="size",
+ *                  type="array",
+ *                  @OA\Items(
+ *                    type="string"
+ *                  )
+ *              )
+ *         )
+ *     )
+ * )
+ */
+
 class StoreProductRequest extends FormRequest
 {
     /**

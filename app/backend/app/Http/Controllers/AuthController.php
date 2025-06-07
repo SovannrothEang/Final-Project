@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Validator;
 
 
 /**
@@ -31,70 +34,62 @@ class AuthController extends Controller
      * @OA\Post(
      *     path="/api/login",
      *     summary="Authenticate user and generate token",
+     *     @OA\RequestBody(
+     *       required=true,
+     *       @OA\JsonContent(
+     *         required={"email", "password"},
+     *         ref="#/components/schemas/loginRequest"
+     *       )
+     *     ),
      *     @OA\Response(response="200", description="Successful login"),
      *     @OA\Response(response="422", description="Validation errors")
      * )
      */
-    public function login(Request $request){
-        $validated = $request->validate([
-            'email' => 'required|string|email',
-            'password' => 'required|string|min:8',
-        ]);
+    public function login(LoginRequest $request) : JsonResponse
+    {
+        $validated = $request->validated();
         $user = User::where('email', $validated['email'])->first();
         if(!$user || !Hash::check($validated['password'], $user->password)){
-            throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
-            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'The provided credential is incorrect!',
+            ], 404);
         }
         return response()->json([
+            'success' => true,
             'token' => $user->createToken('api-token')->plainTextToken
         ]);
     }
+
+    /**
+     * Handle new user register
+     */
     /**
      * @OA\Post(
      *     path="/api/register",
      *     summary="Register a new user",
-     *     @OA\Parameter(
-     *         name="name",
-     *         in="query",
-     *         description="User's name",
-     *         required=true,
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         name="email",
-     *         in="query",
-     *         description="User's email",
-     *         required=true,
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         name="password",
-     *         in="query",
-     *         description="User's password",
-     *         required=true,
-     *         @OA\Schema(type="string")
+     *     @OA\RequestBody(
+     *       required=true,
+     *       @OA\JsonContent(
+     *         ref="#/components/schemas/registerRequest"
+     *       )
      *     ),
      *     @OA\Response(response="201", description="User registered successfully"),
      *     @OA\Response(response="422", description="Validation errors")
      * )
      */
-    /**
-     * Handle new user register
-     */
-    public function register(Request $request): JsonResponse
+
+    public function register(RegisterRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
-        ]);
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-        ]);
+        $validated = $request->validated();
+        $user = User::create($validated);
+        if (!$user)
+            return response()->json([
+                'success' => false,
+                'message' => 'Something occured while trying to create user!'
+            ], 500);
         return response()->json([
+            'success' => true,
             'token' => $user->createToken('api-token')->plainTextToken
         ], 201);
     }
@@ -131,7 +126,15 @@ class AuthController extends Controller
      */
     public function user()
     {
-        $id = $this->user()->id;
+        $user = auth()->user;
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthenticated.'
+            ], 401);
+        }
+
+        $id = $user->id;
         $data = User::where('id', $id)->firstOrFail();
         if($data === null)
         {

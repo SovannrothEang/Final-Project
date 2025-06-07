@@ -4,6 +4,69 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @OA\Schema(
+ *      schema="product",
+ *      required={"name", "descriptions", "price", "quantity"},
+ *     @OA\Property(
+ *         property="id",
+ *         type="integer",
+ *         format="int64",
+ *     ),
+ *     @OA\Property(
+ *         property="name",
+ *         type="string"
+ *     ),
+ *     @OA\Property(
+ *         property="descriptions",
+ *         type="string",
+ *     ),
+ *     @OA\Property(
+ *         property="price",
+ *         type="number",
+ *         format="float",
+ *     ),
+ *     @OA\Property(
+ *         property="quantity",
+ *         type="integer"
+ *     ),
+ *     @OA\Property(
+ *         property="options",
+ *         type="array",
+ *         description="Available product options",
+ *         @OA\Items(
+ *             type="object",
+ *             @OA\Property(
+ *                  property="color",
+ *                  type="array",
+ *                  @OA\Items(
+ *                    type="string"
+ *                  )
+ *              ),
+ *             @OA\Property(
+ *                  property="size",
+ *                  type="array",
+ *                  @OA\Items(
+ *                    type="string"
+ *                  )
+ *              )
+ *         )
+ *     ),
+ *     @OA\Property(
+ *         property="created_at",
+ *         type="string",
+ *         format="date-time",
+ *         description="Creation timestamp"
+ *     ),
+ *     @OA\Property(
+ *         property="updated_at",
+ *         type="string",
+ *         format="date-time",
+ *         description="Last update timestamp"
+ *     )
+ * )
+ */
+
 class Product extends Model
 {
     /**
@@ -12,16 +75,16 @@ class Product extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'name',
-        'descriptions',
-        'price',
-        'options',
+        "name",
+        "descriptions",
+        "price",
+        "options",
     ];
 
     protected function casts(): array
     {
         return [
-            'options' => 'array<string>[]',
+            "options" => "array<string>[]",
         ];
     }
 
