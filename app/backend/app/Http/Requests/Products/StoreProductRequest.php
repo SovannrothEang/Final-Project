@@ -7,13 +7,13 @@ use Illuminate\Foundation\Http\FormRequest;
 /**
  * @OA\Schema(
  *      schema="storeProduct",
- *      required={"name", "descriptions", "price"},
+ *      required={"name", "description", "price", "quantity", "options"},
  *     @OA\Property(
  *         property="name",
  *         type="string"
  *     ),
  *     @OA\Property(
- *         property="descriptions",
+ *         property="description",
  *         type="string",
  *     ),
  *     @OA\Property(

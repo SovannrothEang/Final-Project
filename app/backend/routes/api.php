@@ -1,15 +1,15 @@
 <?php
 
+use App\Http\Controllers\v1\AuthController;
+use App\Http\Controllers\v1\ProductController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\ProductController;
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/users', [AuthController::class, 'user']);
+    Route::get('/user', [AuthController::class, 'user']);
 
     Route::apiResource('products', ProductController::class);
     // Route::apiResource('orders', OrderController::class);
@@ -20,9 +20,3 @@ Route::middleware('auth:sanctum')->group(function () {
 
 });
 
-// Route::middleware(['web', 'auth:sanctum'])
-//     ->group(function () {
-//         Route::get('/docs', function () {
-//             return view('l5-swagger.index');
-//         });
-//     });

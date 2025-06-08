@@ -3,12 +3,15 @@
     "info": {
         "title": "Laravel API with Swagger",
         "description": "API documentation for Laravel using Swagger",
+        "license": {
+            "name": "MIT"
+        },
         "version": "1.0.0"
     },
     "servers": [
         {
             "url": "http://localhost:8000",
-            "description": "Local API Server"
+            "description": "Local"
         },
         {
             "url": "http://localhost:8000"
@@ -17,8 +20,8 @@
     "paths": {
         "/api/login": {
             "post": {
-                "summary": "Authenticate user and generate token",
-                "operationId": "a3b306d14572d1f4bd6c064b3233e7b8",
+                "summary": "Authenticate the user and generate token",
+                "operationId": "dccac2a5094d04cf5cc9c1582abc2e7b",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -33,8 +36,14 @@
                     "200": {
                         "description": "Successful login"
                     },
+                    "404": {
+                        "description": "User not found"
+                    },
                     "422": {
                         "description": "Validation errors"
+                    },
+                    "500": {
+                        "description": "Internal error"
                     }
                 }
             }
@@ -42,7 +51,7 @@
         "/api/register": {
             "post": {
                 "summary": "Register a new user",
-                "operationId": "8a56853624e025573120a09a4c75d468",
+                "operationId": "f167f186a486a0f8e06ffb1336624738",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -59,6 +68,9 @@
                     },
                     "422": {
                         "description": "Validation errors"
+                    },
+                    "500": {
+                        "description": "Internal error"
                     }
                 }
             }
@@ -66,7 +78,7 @@
         "/api/logout": {
             "post": {
                 "summary": "Logout authenticated user",
-                "operationId": "fe8f3429cd6979b3b4517e186505f9f9",
+                "operationId": "00d3150b2027492394868c44c5f59d67",
                 "responses": {
                     "200": {
                         "description": "Logged out successfully"
@@ -80,7 +92,7 @@
         "/api/user": {
             "get": {
                 "summary": "Get authenticated user details",
-                "operationId": "7c1cf647d76fad4b3eb1549fa4fe2f4c",
+                "operationId": "60d38658484dc1931140abc31ad7b146",
                 "responses": {
                     "200": {
                         "description": "Successful operation"
@@ -91,7 +103,7 @@
         "/api/products": {
             "get": {
                 "summary": "Display a listing of products",
-                "operationId": "1bfaa78d1c2c3848ab8165c5dadcad3e",
+                "operationId": "f53089f4fc0a517f40c0cdc2628a0ee0",
                 "responses": {
                     "200": {
                         "description": "Successful operation"
@@ -99,16 +111,11 @@
                     "404": {
                         "description": "No Product was found!"
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             },
             "post": {
                 "summary": "Store a newly created product",
-                "operationId": "e8185e307706e2cd84bbcf5171e2f09d",
+                "operationId": "c2401354142b3a4ae63f7656ca402ee7",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -120,11 +127,14 @@
                     }
                 },
                 "responses": {
-                    "200": {
+                    "201": {
                         "description": "Successful operation"
                     },
-                    "400": {
+                    "422": {
                         "description": "Invalid request!"
+                    },
+                    "500": {
+                        "description": "Internal Error!"
                     }
                 }
             }
@@ -132,28 +142,83 @@
         "/api/products/{id}": {
             "get": {
                 "summary": "Display the specified product",
-                "operationId": "7ab21ddb713501f3d4c2914892c02a21",
+                "operationId": "1502abea5463e596733f38d93f860a53",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Product not found!"
                     }
                 }
             },
             "put": {
                 "summary": "Update the specified product",
-                "operationId": "6a7e11900844cd85cff66e662b82bd4c",
+                "operationId": "af19c0e93c35fb16a1cb32a370ce59c0",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/updateProduct"
+                            }
+                        }
+                    }
+                },
                 "responses": {
-                    "201": {
+                    "200": {
                         "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Product not found!"
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity!"
+                    },
+                    "500": {
+                        "description": "Internal Error!"
                     }
                 }
             },
             "delete": {
                 "summary": "Remove the specified product",
-                "operationId": "e80a6ca46716acee6b47ea1ac91663c0",
+                "operationId": "12cd2aab2b42245b4a57c4131cf094f6",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
-                    "201": {
+                    "204": {
                         "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Product not found!"
                     }
                 }
             }
@@ -204,14 +269,62 @@
             "storeProduct": {
                 "required": [
                     "name",
-                    "descriptions",
-                    "price"
+                    "description",
+                    "price",
+                    "quantity",
+                    "options"
                 ],
                 "properties": {
                     "name": {
                         "type": "string"
                     },
-                    "descriptions": {
+                    "description": {
+                        "type": "string"
+                    },
+                    "price": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "quantity": {
+                        "type": "integer"
+                    },
+                    "options": {
+                        "description": "Available product options",
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "color": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                                "size": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "updateProduct": {
+                "required": [
+                    "name",
+                    "description",
+                    "price",
+                    "quantity",
+                    "options"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
                         "type": "string"
                     },
                     "price": {
@@ -330,6 +443,11 @@
             }
         },
         "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            },
             "sanctum": {
                 "type": "apiKey",
                 "description": "Enter token in format (Bearer <token>)",
