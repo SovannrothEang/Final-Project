@@ -94,8 +94,8 @@ class Product extends Model
         return $this->belongsTo(User::class);
     }
 
-    public static function inStock(): bool
+    public function inStock(): bool
     {
-        return auth()->user()->products()->quantity >= 0;
+        return $this->quantity > 0;
     }
 }

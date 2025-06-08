@@ -41,7 +41,7 @@ class LoginRequest extends FormRequest
     {
         return [
             'email' => 'required|email',
-            'password' => 'required|string|min:8'
+            'password' => 'required|string|min:8|confirmed'
         ];
     }
     /**
@@ -52,6 +52,7 @@ class LoginRequest extends FormRequest
         return [
             'email.required' => 'Email is required',
             'password.required' => 'Password is required',
+            'password_confirmation.required' => 'Password confirmation is required',
         ];
     }
 }

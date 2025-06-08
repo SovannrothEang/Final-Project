@@ -47,7 +47,7 @@ class RegisterRequest extends FormRequest
         return [
             'name' => 'required|string|min:4',
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')],
-            'password' => 'required|string|min:8',
+            'password' => 'required|string|min:8|confirmed',
         ];
     }
     public function messages(): array
@@ -55,7 +55,8 @@ class RegisterRequest extends FormRequest
         return [
             'name.required' => 'Name is required',
             'email.required' => 'Email is required',
-            'password.required' => 'Password is required'
+            'password.required' => 'Password is required',
+            'password_confirmation.required' => 'Password confirmation is required',
         ];
     }
 }

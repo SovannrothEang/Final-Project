@@ -11,12 +11,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
 
-    Route::apiResource('products', ProductController::class);
-    // Route::apiResource('orders', OrderController::class);
-    // Route::get('/orders', [OrderController::class, 'index']);
-    // Route::get('/orders/{id}', [OrderController::class, 'show']);
-    // Route::post('/orders', [OrderController::class, 'store']);
-    // Route::post('/orders/{id}/checkout', [OrderController::class, 'checkout']);
-
+    Route::prefix('v1')->group(function () {    
+        Route::apiResource('products', ProductController::class);
+        // Route::apiResource('orders', OrderController::class);
+        // Route::get('/orders', [OrderController::class, 'index']);
+        // Route::get('/orders/{id}', [OrderController::class, 'show']);
+        // Route::post('/orders', [OrderController::class, 'store']);
+        // Route::post('/orders/{id}/checkout', [OrderController::class, 'checkout']);
+    });
 });
+
 
