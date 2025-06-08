@@ -1,6 +1,8 @@
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Separator } from "../ui/separator";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faXTwitter, faFacebookF, faLinkedinIn, faInstagram} from '@fortawesome/free-brands-svg-icons';
 
 export function Footer() {
 	return (
@@ -106,17 +108,17 @@ export function Footer() {
 								Save $3 with App New User Only
 							</p>
 							<div className="flex gap-2 mb-4">
-								<div className="w-20 h-20 bg-white rounded"></div>
+								<div className="w-20 h-20 bg-yellow-500 rounded"></div>
 								<div className="space-y-1">
-									<div className="w-24 h-8 bg-white rounded"></div>
-									<div className="w-24 h-8 bg-white rounded"></div>
+									<div className="w-24 h-8 bg-orange-500 rounded"></div>
+									<div className="w-24 h-8 bg-red-500 rounded"></div>
 								</div>
 							</div>
 							<div className="flex gap-4 text-xl">
-								<span>f</span>
-								<span>t</span>
-								<span>ig</span>
-								<span>in</span>
+								<FontAwesomeIcon icon={faFacebookF}  className="w-6 h-6"/>
+								<FontAwesomeIcon icon={faXTwitter}  className="w-6 h-6"/>
+								<FontAwesomeIcon icon={faInstagram}  className="w-6 h-6"/>
+								<FontAwesomeIcon icon={faLinkedinIn}  className="w-6 h-6"/>
 							</div>
 						</div>
 					</div>

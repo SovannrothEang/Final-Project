@@ -30,9 +30,16 @@ export function TestimonialSection({ testimonials }: TestimonialSectionProps) {
 			</h2>
 
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-				{testimonials.map((testimonial) => (
-					<div key={testimonial.id} className="text-center">
-						<p className="text-sm text-gray-600 mb-4 line-clamp-4">
+				{testimonials.map((testimonial, index) => (
+					<div
+						key={testimonial.id}
+						className="text-center shadow-md rounded-xl p-4 bg-white"
+					>
+						<p
+							className={`text-sm text-gray-600 mb-4 ${
+								index === 2 ? "" : "line-clamp-4"
+							}`}
+						>
 							{testimonial.review}
 						</p>
 						<div className="flex justify-center mb-2">
@@ -57,3 +64,4 @@ export function TestimonialSection({ testimonials }: TestimonialSectionProps) {
 		</section>
 	);
 }
+
