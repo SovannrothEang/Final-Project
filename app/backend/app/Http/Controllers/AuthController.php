@@ -126,7 +126,7 @@ class AuthController extends Controller
      */
     public function user()
     {
-        $user = auth()->user;
+        $user = auth()->user();
         if (!$user) {
             return response()->json([
                 'success' => false,

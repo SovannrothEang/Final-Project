@@ -17,8 +17,8 @@ class UpdateProductRequest extends FormRequest
             'price' => 'sometimes|numeric|min:0.01',
             'quantity' => 'sometimes|integer|min:1',
             'options' => 'sometimes|array',
-            'options.*' => ['sometimes|array'],
-            'options.*.*' => ['sometimes|string'],
+            'options.*' => ['sometimes'],
+            'options.*.*' => ['sometimes'],
         ];
     }
     /**

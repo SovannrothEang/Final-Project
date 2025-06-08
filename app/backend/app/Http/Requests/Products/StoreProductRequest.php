@@ -74,7 +74,8 @@ class StoreProductRequest extends FormRequest
             'quantity' => 'required|integer|min:1',
             'options' => 'nullable|array',
             'options.*' => ['array'],
-            'options.*.*' => ['string|max:255'],
+            'options.*.*' => ['string'],
+            'user_id' => 'required|integer',
         ];
     }
     /**

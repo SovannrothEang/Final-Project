@@ -65,7 +65,8 @@ class ProductController extends Controller
         $product = Product::create($validated);
         return response()->json([
             'success' => true,
-            'data'=> new ProductResource($product)
+            'message' => 'Create product successfully!',
+            'location' => env('APP_URL').'/api/products/'.$product->id,
         ], 201);
     }
 
