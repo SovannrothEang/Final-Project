@@ -1,17 +1,11 @@
 # Project Documentation
 
----
-
 This project consists of a Laravel backend and a Next.js frontend.
 
 ## Project Details
 
 - **Backend:** Developed using the Laravel framework.
 - **Frontend:** Developed using the Next.js framework.
-
-### for backend api documents, navigate to:
-
-- local: http://localhost:8000/api/documentations
 
 ## Getting Started
 
