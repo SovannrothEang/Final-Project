@@ -3,10 +3,10 @@ name: Laravel CI
 on:
   push:
     branches: [main]
-    paths: "app/backend/**"
+    paths: ["app/backend/**"]
   pull_request:
     branches: [main]
-    paths: "app/backend/**"
+    paths: ["app/backend/**"]
 
 jobs:
   build:
@@ -27,6 +27,14 @@ jobs:
           --health-timeout=5s
           --health-retries=5
 
+    env:
+      DB_CONNECTION: pgsql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      DB_DATABASE: laravel_test
+      DB_USERNAME: laravel
+      DB_PASSWORD: secret123
+
     steps:
       - uses: actions/checkout@v3
 
@@ -34,7 +42,8 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: 8.2
-          extensions: sqlite, mbstring, bcmath
+          extensions: pdo_pgsql, mbstring, bcmath
+          coverage: none
 
       - name: Install Composer dependencies
         working-directory: app/backend
@@ -43,17 +52,6 @@ jobs:
       - name: Copy .env
         working-directory: app/backend
         run: cp .env.example .env
-
-      - name: Set SQLite config
-        working-directory: app/backend
-        run: |
-          sed -i 's/DB_CONNECTION=.*/DB_CONNECTION=sqlite/' .env
-          sed -i '/DB_HOST/d' .env
-          sed -i '/DB_PORT/d' .env
-          sed -i '/DB_DATABASE/d' .env
-          sed -i '/DB_USERNAME/d' .env
-          sed -i '/DB_PASSWORD/d' .env
-          touch database/database.sqlite
 
       - name: Generate app key
         working-directory: app/backend

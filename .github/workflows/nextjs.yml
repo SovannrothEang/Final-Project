@@ -2,12 +2,10 @@ name: Next.Js CI
 on:
   push:
     branches: [main]
-    paths:
-      - "app/frontend/**"
+    paths: ["app/frontend/**"]
   pull_request:
     branches: [main]
-    paths:
-      - "app/frontend/**"
+    paths: ["app/frontend/**"]
 
 jobs:
   build:
