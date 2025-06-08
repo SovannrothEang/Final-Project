@@ -75,16 +75,18 @@ class Product extends Model
      * @var list<string>
      */
     protected $fillable = [
-        "name",
-        "descriptions",
-        "price",
-        "options",
+        'name',
+        'description',
+        'price',
+        'quantity',
+        'options',
+        'user_id'
     ];
 
     protected function casts(): array
     {
         return [
-            "options" => "array<string>[]",
+            "options" => "array",
         ];
     }
 

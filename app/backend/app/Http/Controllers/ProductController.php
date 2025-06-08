@@ -30,11 +30,12 @@ class ProductController extends Controller
      *     )
      * )
      */
-    public function index()
+    public function index(): JsonResponse
     {
-        return ProductResource::collection(
-            Product::latest()->paginate(15)
-        );
+        return response()->json([
+            'success' => true,
+            'data' => ProductResource::collection(Product::all())
+        ]);
     }
 
     /**
@@ -49,7 +50,7 @@ class ProductController extends Controller
      *         @OA\JsonContent(ref="#/components/schemas/storeProduct")
      *     ),
      *     @OA\Response(
-     *       response="200",
+     *       response="201",
      *       description="Successful operation"
      *     ),
      *     @OA\Response(
@@ -65,7 +66,7 @@ class ProductController extends Controller
         return response()->json([
             'success' => true,
             'data'=> new ProductResource($product)
-        ], 200);
+        ], 201);
     }
 
     /**
@@ -76,12 +77,13 @@ class ProductController extends Controller
      *     path="/api/products/{id}",
      *     summary="Display the specified product",
      *     @OA\Response(response="200", description="Successful operation")
+     *     @OA\Response(response="404", description="Product not found!")
      * )
      */
     public function show(string $id) : JsonResponse
     {
         $product = Product::where('id', $id)->firstOrFail();
-        return $product !== null 
+        return $product !== null
             ? response()->json([
                 'success' => true,
                 'message' => 'Get product by ID successfully!',
@@ -90,7 +92,7 @@ class ProductController extends Controller
             : response()->json([
                 'success' => false,
                 'message' => 'Product Not Found!',
-            ]);
+            ],404);
     }
 
     /**

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('description')->nullable();
-            $table->decimal('price');
+            $table->decimal('price', 10, 2);
             $table->integer('quantity')->default(0);
             $table->json('options')->nullable();
             $table->foreignId('user_id')
