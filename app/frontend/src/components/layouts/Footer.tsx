@@ -3,6 +3,7 @@ import { Input } from "../ui/input";
 import { Separator } from "../ui/separator";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXTwitter, faFacebookF, faLinkedinIn, faInstagram} from '@fortawesome/free-brands-svg-icons';
+import Image from "next/image";
 
 export function Footer() {
 	return (
@@ -108,12 +109,19 @@ export function Footer() {
 								Save $3 with App New User Only
 							</p>
 							<div className="flex gap-2 mb-4">
-								<div className="w-20 h-20 bg-yellow-500 rounded"></div>
-								<div className="space-y-1">
-									<div className="w-24 h-8 bg-orange-500 rounded"></div>
-									<div className="w-24 h-8 bg-red-500 rounded"></div>
-								</div>
+  								<div className="w-20 h-20 rounded relative overflow-hidden">
+  								  <Image src="/Qrcode.png" alt="QR Code" fill className="object-cover" priority />
+  								</div>
+  								<div className="space-y-4">
+  								  <div className="w-24 h-8 rounded relative overflow-hidden border-white border-2">
+  								    <Image src="/Google.png" alt="Google Play" fill className="object-cover" priority />
+  								  </div>
+  								  <div className="w-24 h-8 rounded relative overflow-hidden border-white border-2">
+  								    <Image src="/AppStore.png" alt="App Store" fill className="object-cover" priority />
+  								  </div>
+  								</div>
 							</div>
+
 							<div className="flex gap-4 text-xl">
 								<FontAwesomeIcon icon={faFacebookF}  className="w-6 h-6"/>
 								<FontAwesomeIcon icon={faXTwitter}  className="w-6 h-6"/>

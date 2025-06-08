@@ -91,7 +91,7 @@ export default function ContactPage() {
 			<div className="bg-white">
 				<div className="container mx-auto px-4 py-8">
 					{/* Breadcrumb */}
-					<div className="text-sm text-gray-500 mb-8">
+					<div className="text-sm text-gray-500 mb-8 ">
 						<Link href="/" className="hover:text-gray-800">
 							Home
 						</Link>
@@ -108,7 +108,7 @@ export default function ContactPage() {
 								Message Sent Successfully!
 							</h2>
 							<p className="text-gray-600 mb-8">
-								Thank you for contacting us. We'll get back to you within 24
+								Thank you for contacting us. We will get back to you within 24
 								hours.
 							</p>
 							<Button
@@ -125,8 +125,8 @@ export default function ContactPage() {
 	}
 
 	return (
-		<div className="bg-white">
-			<div className="container mx-auto px-4 py-8">
+		<div className="h-[730px] w-screen">
+			<div className="container px-25 pt-10">
 				{/* Breadcrumb */}
 				<div className="text-sm text-gray-500 mb-8">
 					<Link href="/" className="hover:text-gray-800">
@@ -140,7 +140,7 @@ export default function ContactPage() {
 					{/* Contact Information */}
 					<div className="lg:col-span-1 space-y-8">
 						{/* Call To Us */}
-						<div className="bg-white p-6 rounded-lg shadow-sm border">
+						<div className="w-[414px] h-[220px] flex flex-col justify-center pl-5 rounded-lg shadow-sm border">
 							<div className="flex items-center gap-3 mb-4">
 								<div className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center">
 									<Phone className="w-5 h-5 text-white" />
@@ -150,11 +150,13 @@ export default function ContactPage() {
 							<p className="text-gray-600 mb-4">
 								We are available 24/7, 7 days a week.
 							</p>
-							<p className="text-gray-800 font-medium">Phone: +8801611112222</p>
+							<p className="text-gray-800 font-medium">Phone: +8558512345678</p>
+							<p className="text-gray-800 font-medium">Phone: +8558633332222</p>
+							<p className="text-gray-800 font-medium">Phone: +8559899887766</p>
 						</div>
 
 						{/* Write To Us */}
-						<div className="bg-white p-6 rounded-lg shadow-sm border">
+						<div className="w-[414px] h-[260px] flex flex-col justify-center pl-5 rounded-lg shadow-sm border">
 							<div className="flex items-center gap-3 mb-4">
 								<div className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center">
 									<Mail className="w-5 h-5 text-white" />
@@ -173,7 +175,7 @@ export default function ContactPage() {
 
 					{/* Contact Form */}
 					<div className="lg:col-span-2">
-						<div className="bg-white p-8 rounded-lg shadow-sm border">
+						<div className="bg-white w-[865px] h-[513px] flex justify-center items-center rounded-lg shadow-sm border">
 							<form onSubmit={handleSubmit} className="space-y-6">
 								{errors.general && (
 									<div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm">
@@ -194,7 +196,7 @@ export default function ContactPage() {
 											onChange={(e) =>
 												handleInputChange("name", e.target.value)
 											}
-											className={`bg-gray-50 ${
+											className={`bg-gray-100 ${
 												errors.name ? "border-red-500" : ""
 											}`}
 											disabled={isLoading}
@@ -216,7 +218,7 @@ export default function ContactPage() {
 											onChange={(e) =>
 												handleInputChange("email", e.target.value)
 											}
-											className={`bg-gray-50 ${
+											className={`bg-gray-100 ${
 												errors.email ? "border-red-500" : ""
 											}`}
 											disabled={isLoading}
@@ -238,7 +240,7 @@ export default function ContactPage() {
 											onChange={(e) =>
 												handleInputChange("phone", e.target.value)
 											}
-											className={`bg-gray-50 ${
+											className={`bg-gray-100 ${
 												errors.phone ? "border-red-500" : ""
 											}`}
 											disabled={isLoading}
@@ -250,7 +252,7 @@ export default function ContactPage() {
 								</div>
 
 								{/* Message */}
-								<div className="space-y-1">
+								<div className="w-[680px] h-[300px]">
 									<Label htmlFor="message" className="sr-only">
 										Your Message
 									</Label>
@@ -262,7 +264,7 @@ export default function ContactPage() {
 										onChange={(e) =>
 											handleInputChange("message", e.target.value)
 										}
-										className={`bg-gray-50 resize-none ${
+										className={`bg-gray-100 w-full h-full resize-none ${
 											errors.message ? "border-red-500" : ""
 										}`}
 										disabled={isLoading}
