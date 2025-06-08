@@ -27,69 +27,88 @@ docker run --name=finalprojectdb -p 5432:5432 -e POSTGRES_USER=laravel -e POSTGR
 
 Follow these steps to set up and run the project on your local machine:
 
-### Backend Setup (Laravel)
+### 1. Installation for frontend
 
-1.  Navigate to the backend directory:
-    ```bash
-    cd app/backend
-    ```
-2.  Install PHP dependencies:
-    ```bash
-    composer install
-    ```
-3.  Copy the example environment file and configure your database connection:
-    ```bash
-    cp .env.example .env
-    ```
-    Edit the `.env` file with your database credentials and other configurations.
-4.  Generate the application key:
-    ```bash
-    php artisan key:generate
-    ```
-5.  Run database migrations:
-    ```bash
-    php artisan migrate
-    ```
-6.  Start the Laravel development server:
-    ```bash
-    php artisan serve
-    ```
+#### From root directory
 
-### Frontend Setup (Next.js)
+```bash
+# command for install dependencies
+npm install
+
+# and run for running Frontend deveopment (local)
+npm run start:frontend
+```
+
+#### From Frontend directory
 
 1.  Navigate to the frontend directory:
+
     ```bash
     cd app/frontend
     ```
+
 2.  Install Node.js dependencies:
     ```bash
     npm install # or yarn install
     ```
 3.  Run the Next.js development server:
+
     ```bash
     npm run dev # or yarn dev
     ```
 
-### We can run from the root directory with commands
+### 2. Installation for backend
 
-1. Install dependencies
+#### From root directory
 
-   ```bash
-   # for frontend
-   npm install
+```bash
+# command for install dependencies
+npm run install:backend
 
-   # for backend
-   npm run install
-   ```
+# command for doing migration
+npm run migrate:backend
 
-2. Run the development server
+# command for running Backend development
+npm run start:backend
+```
 
-   ```bash
-   # for Frontend
-   npm run start:frontend
+#### From Backend directory
 
-   # for Backend
-   npm run start:backend
-   ```
+1.  Navigate to the backend directory:
+
+```bash
+cd app/backend
+```
+
+2.  Install PHP dependencies:
+
+```bash
+composer install
+```
+
+3.  Copy the example environment file and configure your database connection:
+
+```bash
+copy .env.example .env
+```
+
+4. Generate the application key:
+
+```bash
+php artisan key:generate
+```
+
+5.  Run database migrations:
+
+```bash
+# noted that if you have configure the database to your preference (default: Sqlite)
+php artisan migrate
+```
+
+6.  Start the Laravel development server:
+
+```bash
+php artisan serve
+```
 
 The frontend application should now be running and communicating with the locally running backend.

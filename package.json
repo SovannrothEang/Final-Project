@@ -1,15 +1,16 @@
 {
-	"name": "finalproject",
-	"version": "1.0.0",
-	"private": "true",
-	"scripts": {
-		"start:frontend": "npm run dev -w app/frontend",
-		"start:backend": "cd app/backend && php artisan serve",
-		"test:backend": "cd app/backend && php artisan test",
-		"test:frontend": "npm run test -w app/frontend",
-		"install": "cd app/backend && composer install --prefer-dist --no-progress --no-suggest && cp .env.example && php artisan key:generate $$ php artisan migrate"
-	},
-	"workspaces": [
-		"app/*"
-	]
+  "name": "finalproject",
+  "version": "1.0.0",
+  "private": "true",
+  "scripts": {
+    "start:frontend": "npm run dev -w app/frontend",
+    "start:backend": "cd app/backend && php artisan serve",
+    "test:backend": "cd app/backend && php artisan test",
+    "test:frontend": "npm run test -w app/frontend",
+    "install:backend": "cd app/backend && composer install --prefer-dist --no-progress --no-suggest && copy .env.example .env && php artisan key:generate",
+    "migrate:backend": "cd app/backend && php artisan migrate"
+  },
+  "workspaces": [
+    "app/*"
+  ]
 }
