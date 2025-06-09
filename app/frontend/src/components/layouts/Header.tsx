@@ -4,9 +4,20 @@ import { ChevronDown, Search } from "lucide-react";
 import { Input } from "../ui/input";
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export function Header() {
 	const [isDiscount] = useState(true);
+	const router = useRouter();
+	const [searchQuery, setSearchQuery] = useState("");
+
+	const handleSearch = (e: React.FormEvent) => {
+		e.preventDefault();
+		if (searchQuery.trim()) {
+			router.push(`/products?q=${encodeURIComponent(searchQuery.trim())}`);
+		}
+	};
+
 	return (
 		<>
 			{isDiscount && (
@@ -20,16 +31,25 @@ export function Header() {
 			)}
 			<header className="border-b sticky z-50 top-0 bg-gray-50/75 backdrop-blur-sm">
 				<div className="container mx-auto px-4 py-4 grid grid-cols-3">
-					<div className="text-2xl font-bold pl-6 flex items-center">
-						Exclusive
+					<div className="text-2xl font-bold flex items-center">
+						<Link href="/">Exclusive</Link>
 					</div>
 					<div className="flex items-center justify-center px-4">
 						<div className="relative w-full rounded-full border border-gray-400">
-							<Input
-								placeholder="What are you looking for?"
-								className="w-full rounded-full border border-gray-400"
-							/>
-							<Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+							<form onSubmit={handleSearch} className="relative">
+								<Input
+									placeholder="What are you looking for?"
+									className="w-full rounded-full border border-gray-400"
+									value={searchQuery}
+									onChange={(e) => setSearchQuery(e.target.value)}
+								/>
+								<button
+									type="submit"
+									className="absolute right-3 top-1/2 transform -translate-y-1/2"
+								>
+									<Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+								</button>
+							</form>
 						</div>
 						{/* Theme Toggle
 						<Button variant="ghost" size="sm" className="p-2">
