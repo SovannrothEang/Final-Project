@@ -13,14 +13,20 @@ const scrollbarStyles = `
 
 export function ProductGallery({ images }: { images: string }) {
 	return (
-		<div className="flex gap-4">
-			{/* Thumbnails on the left */}
-			<div
-				className={
-					`flex flex-col gap-4 h-full overflow-y-hidden` + scrollbarStyles
-				}
-			>
-				{/* {images.map((image, index) => (
+		<div className="grid gap-4 gap-x-10">
+			{/* Main Image */}
+			<div className="aspect-square overflow-hidden rounded-lg bg-gray-100 relative">
+				<Image
+					src={images[selectedImage].src || "/placeholder.svg"}
+					alt={images[selectedImage].alt}
+					fill
+					className="object-contain"
+				/>
+			</div>
+
+			{/* Thumbnails */}
+			<div className="flex gap-4">
+				{images.map((image, index) => (
 					<div
 						key={index}
 						className={cn(
