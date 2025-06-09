@@ -3,10 +3,9 @@ import { BrandStrip } from "@/components/layouts/BrandStrip";
 import { AllProduct } from "@/components/products/AllProduct";
 import { TestimonialSection } from "@/components/products/TestimonialSection";
 import { FutureProduct } from "@/components/products/FutureProduct";
-import { NewArrival } from '@/components/products/NewArrival';
+import { NewArrival } from "@/components/products/NewArrival";
 import TopSellingSection from "@/components/products/TopSelling";
 import { ClawBanner } from "@/components/products/ClawBanner";
-
 
 // Sample data
 const allProducts = [
@@ -102,7 +101,8 @@ const testimonials = [
 	{
 		id: "3",
 		name: "Alex Rodriguez",
-		review: "The support team was super helpful. They guided me through the options and helped me pick the best build for my budget.",
+		review:
+			"The support team was super helpful. They guided me through the options and helped me pick the best build for my budget.",
 		rating: 5,
 	},
 	{
@@ -123,7 +123,7 @@ const testimonials = [
 
 export default function HomePage() {
 	return (
-		<div className="">
+		<>
 			<HeroSection />
 			<BrandStrip />
 
@@ -134,28 +134,20 @@ export default function HomePage() {
 					showNavigation={true}
 				/> */}
 				<NewArrival title="New Arrivals" />
-				<TopSellingSection/>
-				<AllProduct
-			
-					title="All Products"
-					products={allProducts}
-					
-				/>
-					
-				
+				<TopSellingSection />
+				<AllProduct title="All Products" products={allProducts} />
 
 				{/* Gaming Banner */}
-				<ClawBanner/>
-				
+				<ClawBanner />
 
 				{/* <ProductShowcase title="" products={allProducts} showViewAll={true} /> */}
 
 				<TestimonialSection testimonials={testimonials} />
 
 				{/* Devices of The Future */}
-				
+
 				<FutureProduct />
 			</div>
-		</div>
+		</>
 	);
 }

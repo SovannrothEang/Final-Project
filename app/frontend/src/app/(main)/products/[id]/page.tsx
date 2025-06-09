@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ProductGallery } from "@/components/products/ProductGallery";
 import { QuantitySelector } from "@/components/products/QuantitySelector";
@@ -39,50 +38,6 @@ const product = {
 	],
 };
 
-// Sample related products
-const relatedProducts = [
-	{
-		id: "9",
-		name: "Gaming Headset Pro",
-		price: 756.65,
-		originalPrice: 1156.65,
-		rating: 5,
-		reviews: 65,
-		image: "/placeholder.svg?height=300&width=300",
-		discount: 35,
-	},
-	{
-		id: "10",
-		name: "Gaming Headset Pro",
-		price: 756.65,
-		originalPrice: 1156.65,
-		rating: 5,
-		reviews: 65,
-		image: "/placeholder.svg?height=300&width=300",
-		discount: 35,
-	},
-	{
-		id: "11",
-		name: "Gaming Headset Pro",
-		price: 756.65,
-		originalPrice: 1156.65,
-		rating: 5,
-		reviews: 65,
-		image: "/placeholder.svg?height=300&width=300",
-		discount: 35,
-	},
-	{
-		id: "12",
-		name: "Gaming Headset Pro",
-		price: 756.65,
-		originalPrice: 1156.65,
-		rating: 5,
-		reviews: 65,
-		image: "/placeholder.svg?height=300&width=300",
-		discount: 35,
-	},
-];
-
 export default function ProductPage({ params }: { params: { id: string } }) {
 	const [selectedColor, setSelectedColor] = useState("red");
 	const [selectedSize, setSelectedSize] = useState("M");
@@ -112,14 +67,14 @@ export default function ProductPage({ params }: { params: { id: string } }) {
 				{/* Breadcrumb */}
 				<div className="text-sm text-gray-500 mb-8">
 					<Link href="/" className="hover:text-gray-800">
-						Account
+						Home
 					</Link>
 					<span className="mx-2">/</span>
-					<Link href="/gaming" className="hover:text-gray-800">
-						Gaming
+					<Link href="/products" className="hover:text-gray-800">
+						Products
 					</Link>
 					<span className="mx-2">/</span>
-					<span>{product.name}</span>
+					<Link href={`/products/` + params.id}>{product.name}</Link>
 				</div>
 
 				{/* Product Details */}
@@ -222,52 +177,6 @@ export default function ProductPage({ params }: { params: { id: string } }) {
 								</div>
 							</div>
 						</div>
-					</div>
-				</div>
-
-				{/* Related Products */}
-				<div className="mb-16">
-					<h2 className="text-xl font-semibold mb-6">Related Item</h2>
-					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-						{relatedProducts.map((product) => (
-							<div
-								key={product.id}
-								className="border rounded-md overflow-hidden group"
-							>
-								<div className="relative aspect-square bg-gray-100">
-									{product.discount && (
-										<div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 text-xs rounded z-10">
-											-{product.discount}% OFF
-										</div>
-									)}
-									<Image
-										src={product.image || "/placeholder.svg"}
-										alt={product.name}
-										fill
-										className="object-cover group-hover:scale-105 transition-transform duration-300"
-									/>
-								</div>
-								<div className="p-4">
-									<h3 className="font-medium mb-2">{product.name}</h3>
-									<div className="flex items-center gap-2 mb-2">
-										<span className="text-red-500 font-semibold">
-											${product.price}
-										</span>
-										{product.originalPrice && (
-											<span className="text-gray-500 line-through text-sm">
-												${product.originalPrice}
-											</span>
-										)}
-									</div>
-									<div className="flex items-center gap-2">
-										<div className="flex">{renderStars(product.rating)}</div>
-										<span className="text-gray-500 text-sm">
-											({product.reviews})
-										</span>
-									</div>
-								</div>
-							</div>
-						))}
 					</div>
 				</div>
 			</div>

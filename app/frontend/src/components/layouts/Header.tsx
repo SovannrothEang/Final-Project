@@ -1,17 +1,9 @@
 "use client";
 
-import { ChevronDown, Moon, Search, ShoppingCart, User } from "lucide-react";
+import { ChevronDown, Search } from "lucide-react";
 import { Input } from "../ui/input";
 import Link from "next/link";
 import { useState } from "react";
-import { Button } from "../ui/button";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 export function Header() {
 	const [isDiscount] = useState(true);
@@ -28,7 +20,9 @@ export function Header() {
 			)}
 			<header className="border-b sticky z-50 top-0 bg-gray-50/75 backdrop-blur-sm">
 				<div className="container mx-auto px-4 py-4 grid grid-cols-3">
-					<div className="text-2xl font-bold pl-6 flex items-center">Exclusive</div>
+					<div className="text-2xl font-bold pl-6 flex items-center">
+						Exclusive
+					</div>
 					<nav className="hidden md:flex justify-center">
 						<div className="w-[75%] hidden md:flex items-center justify-around md:[&>*]:px-2">
 							<Link href="/" className="hover:underline">
@@ -40,9 +34,6 @@ export function Header() {
 							<Link href="/about" className="hover:underline">
 								About
 							</Link>
-							<Link href="/about" className="hover:underline">
-								Sign Up
-							</Link>
 						</div>
 					</nav>
 					<div className="flex items-center justify-end gap-4 pr-6">
@@ -53,26 +44,6 @@ export function Header() {
 							/>
 							<Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
 						</div>
-						{/* User Account Dropdown */}
-						<DropdownMenu>
-							<DropdownMenuTrigger asChild>
-								<Button variant="ghost" size="sm" className="w-9 h-9 bg-gray-100 rounded-full hover:bg-gray-200">
-									<User className="w-2 h-2 " />
-								</Button>
-							</DropdownMenuTrigger>
-							<DropdownMenuContent align="end" className="w-56">
-								<DropdownMenuItem asChild>
-									<Link href="/profile">Manage My Account</Link>
-								</DropdownMenuItem>
-								<DropdownMenuItem>My Order</DropdownMenuItem>
-								<DropdownMenuItem>My Reviews</DropdownMenuItem>
-								<DropdownMenuSeparator />
-								<DropdownMenuItem>
-									Logout
-									{/* <Link href="/logout">Logout</Link> */}
-								</DropdownMenuItem>
-							</DropdownMenuContent>
-						</DropdownMenu>
 						{/* Theme Toggle
 						<Button variant="ghost" size="sm" className="p-2">
 							<Moon className="w-5 h-5" />
