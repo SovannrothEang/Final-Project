@@ -33,6 +33,7 @@ export function ProductGallery({ images }: ProductGalleryProps) {
 							src={image.src || "/placeholder.svg"}
 							alt={image.alt}
 							fill
+							sizes=""
 							className="object-cover"
 						/>
 					</div>
