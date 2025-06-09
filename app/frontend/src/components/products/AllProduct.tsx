@@ -26,7 +26,7 @@ export function AllProduct({
 	showViewAll = true,
 }: AllProductProps) {
 	return (
-		<section className="w-[1450px] h-[1230px]">
+		<section className="w-full">
 			<div className="mb-8">
 				<div className="flex items-center gap-2 mb-2">
 					<div className="w-4 h-10 bg-black rounded"></div>
@@ -35,7 +35,7 @@ export function AllProduct({
 			</div>
 
 			{/* Category Buttons */}
-			<div className="flex justify-between mb-10">
+			<div className="flex gap-3 justify-start mb-10 w-full overflow-hidden overflow-x-scroll">
 				{[
 					"Laptops",
 					"Desktops",

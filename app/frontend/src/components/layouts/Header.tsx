@@ -23,8 +23,21 @@ export function Header() {
 					<div className="text-2xl font-bold pl-6 flex items-center">
 						Exclusive
 					</div>
-					<nav className="hidden md:flex justify-center">
-						<div className="w-[75%] hidden md:flex items-center justify-around md:[&>*]:px-2">
+					<div className="flex items-center justify-center px-4">
+						<div className="relative w-full rounded-full border border-gray-400">
+							<Input
+								placeholder="What are you looking for?"
+								className="w-full rounded-full border border-gray-400"
+							/>
+							<Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+						</div>
+						{/* Theme Toggle
+						<Button variant="ghost" size="sm" className="p-2">
+							<Moon className="w-5 h-5" />
+						</Button> */}
+					</div>
+					<nav className="hidden md:flex justify-end">
+						<div className="w-[75%] hidden md:flex items-center justify-end gap-3 md:[&>*]:px-2">
 							<Link href="/" className="hover:underline">
 								Home
 							</Link>
@@ -36,19 +49,6 @@ export function Header() {
 							</Link>
 						</div>
 					</nav>
-					<div className="flex items-center justify-end gap-4 pr-6">
-						<div className="relative rounded-full border border-gray-400">
-							<Input
-								placeholder="What are you looking for?"
-								className="w-64 pr-10 rounded-full border border-gray-400"
-							/>
-							<Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-						</div>
-						{/* Theme Toggle
-						<Button variant="ghost" size="sm" className="p-2">
-							<Moon className="w-5 h-5" />
-						</Button> */}
-					</div>
 				</div>
 			</header>
 		</>
