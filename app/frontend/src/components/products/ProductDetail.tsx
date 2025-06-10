@@ -5,20 +5,9 @@ import { Button } from "@/components/ui/button";
 import { ProductGallery } from "@/components/products/ProductGallery";
 import { QuantitySelector } from "@/components/products/QuantitySelector";
 import { Heart, Truck, RotateCcw, Star } from "lucide-react";
+import { Product } from "@/types/product";
 
-interface productProp {
-	id: string;
-	name: string;
-	price: number;
-	rating: number;
-	reviews: number;
-	description: string;
-	colors: string[];
-	sizes: string[];
-	images: { src: string; alt: string }[];
-}
-
-export default function ProductDetail({ product }: { product: productProp }) {
+export default function ProductDetail({ product }: { product: Product }) {
 	const [selectedColor, setSelectedColor] = useState("red");
 	const [selectedSize, setSelectedSize] = useState("M");
 	const [quantity, setQuantity] = useState(1);
@@ -67,7 +56,7 @@ export default function ProductDetail({ product }: { product: productProp }) {
 					<div className="mb-6">
 						<h3 className="font-medium mb-2">Colours:</h3>
 						<div className="flex gap-3">
-							{product.colors.map((color) => (
+							{product.options.colors.map((color) => (
 								<button
 									key={color}
 									className={`w-6 h-6 rounded-full ${
@@ -87,7 +76,7 @@ export default function ProductDetail({ product }: { product: productProp }) {
 					<div className="mb-6">
 						<h3 className="font-medium mb-2">Size:</h3>
 						<div className="flex gap-3">
-							{product.sizes.map((size) => (
+							{product.options.sizes.map((size) => (
 								<button
 									key={size}
 									className={`w-10 h-10 flex items-center justify-center border rounded-md ${

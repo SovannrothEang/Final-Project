@@ -3,25 +3,11 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import {
-	LayoutDashboard,
-	Package,
-	ShoppingCart,
-	Users,
-	BarChart3,
-	Settings,
-	Tag,
-	Truck,
-} from "lucide-react";
+import { LayoutDashboard, Package, Settings } from "lucide-react";
 
 const navigation = [
 	{ name: "Dashboard", href: "/admin", icon: LayoutDashboard },
 	{ name: "Products", href: "/admin/products", icon: Package },
-	{ name: "Orders", href: "/admin/orders", icon: ShoppingCart },
-	{ name: "Customers", href: "/admin/customers", icon: Users },
-	{ name: "Categories", href: "/admin/categories", icon: Tag },
-	{ name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
-	{ name: "Shipping", href: "/admin/shipping", icon: Truck },
 	{ name: "Settings", href: "/admin/settings", icon: Settings },
 ];
 
@@ -29,7 +15,7 @@ export function AdminSidebar() {
 	const pathname = usePathname();
 
 	return (
-		<aside className="w-64 bg-white border-r border-gray-200 min-h-screen">
+		<aside className="w-48 bg-white border-r border-gray-200 min-h-screen">
 			<nav className="p-4 space-y-2">
 				{navigation.map((item) => {
 					const isActive = pathname === item.href;

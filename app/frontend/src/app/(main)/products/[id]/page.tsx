@@ -1,51 +1,20 @@
 import ProductDetail from "@/components/products/ProductDetail";
 import Link from "next/link";
-
-// Sample product data
-const product = {
-	id: "g92",
-	name: "Havic HV G-92 Gamepad",
-	price: 192.0,
-	rating: 4,
-	reviews: 150,
-	description:
-		"PlayStation 5 Controller Skin High-quality vinyl skin with air-channel adhesive for easy bubble-free install & mess-free removal. Pressure-sensitive.",
-	colors: ["red", "white"],
-	sizes: ["XS", "S", "M", "L", "XL"],
-	images: [
-		{
-			src: "/placeholder.svg?height=400&width=400",
-			alt: "Havic HV G-92 Gamepad - Front View",
-		},
-		{
-			src: "/placeholder.svg?height=400&width=400",
-			alt: "Havic HV G-92 Gamepad - Side View",
-		},
-		{
-			src: "/placeholder.svg?height=400&width=400",
-			alt: "Havic HV G-92 Gamepad - Back View",
-		},
-		{
-			src: "/placeholder.svg?height=400&width=400",
-			alt: "Havic HV G-92 Gamepad - Top View",
-		},
-		{
-			src: "/placeholder.svg?height=400&width=400",
-			alt: "Havic HV G-92 Gamepad - Top View",
-		},
-		{
-			src: "/placeholder.svg?height=400&width=400",
-			alt: "Havic HV G-92 Gamepad - Top View",
-		},
-	],
-};
+import products from "@/data/products"; // Import the products data
+import { notFound } from "next/navigation"; // Import notFound for 404 handling
 
 export default async function ProductPage({
 	params,
 }: {
-	params: Promise<{ id: string }>;
+	params: { id: string }; // Change params type to access id directly
 }) {
-	const { id } = await params;
+	// Find the product in the products array based on the id from the URL
+	const product = products.find((p) => p.id === params.id);
+
+	// If the product is not found, return a 404 page
+	if (!product) {
+		notFound();
+	}
 
 	return (
 		<div className="bg-white">
@@ -60,8 +29,10 @@ export default async function ProductPage({
 						Products
 					</Link>
 					<span className="mx-2">/</span>
-					<Link href={`/products/${id}`}>{product.name}</Link>
+					{/* Use the fetched product's id and name for the breadcrumb link */}
+					<Link href={`/products/${product.id}`}>{product.name}</Link>
 				</div>
+				{/* Pass the fetched product to the ProductDetail component */}
 				<ProductDetail product={product} />
 			</div>
 		</div>

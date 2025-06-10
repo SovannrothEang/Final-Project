@@ -1,136 +1,213 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-	Package,
-	ShoppingCart,
-	Users,
-	DollarSign,
-	TrendingUp,
-	TrendingDown,
-} from "lucide-react";
+"use client";
 
-const stats = [
-	{
-		title: "Total Products",
-		value: "1,234",
-		change: "+12%",
-		trend: "up",
-		icon: Package,
-	},
-	{
-		title: "Total Orders",
-		value: "856",
-		change: "+8%",
-		trend: "up",
-		icon: ShoppingCart,
-	},
-	{
-		title: "Total Customers",
-		value: "2,341",
-		change: "+15%",
-		trend: "up",
-		icon: Users,
-	},
-	{
-		title: "Revenue",
-		value: "$45,231",
-		change: "-3%",
-		trend: "down",
-		icon: DollarSign,
-	},
-];
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Link from "next/link";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Search, MoreHorizontal, Edit, Trash2, Eye } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { useState } from "react";
+import products from "@/data/products";
 
 export default function AdminDashboard() {
+	const [searchTerm, setSearchTerm] = useState("");
+	const [filteredProducts, setFilteredProducts] = useState(products);
+
+	const handleSearch = (term: string) => {
+		setSearchTerm(term);
+		const filtered = products.filter(
+			(product) =>
+				product.name.toLowerCase().includes(term.toLowerCase()) ||
+				product.sku.toLowerCase().includes(term.toLowerCase()) ||
+				product.category.toLowerCase().includes(term.toLowerCase())
+		);
+		setFilteredProducts(filtered);
+	};
+
+	const getStatusBadge = (status: string, stock: number) => {
+		if (stock === 0) {
+			return <Badge variant="destructive">Out of Stock</Badge>;
+		}
+		if (stock < 10) {
+			return <Badge variant="secondary">Low Stock</Badge>;
+		}
+		return (
+			<Badge variant="default" className="bg-green-500">
+				In Stock
+			</Badge>
+		);
+	};
+
+	const handleDelete = (id: string) => {
+		if (confirm("Are you sure you want to delete this product?")) {
+			// Implement delete logic here
+			console.log("Deleting product:", id);
+		}
+	};
+
 	return (
 		<div className="space-y-4">
 			<div>
 				<h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-				<p className="text-gray-600">
-					Welcome back! Here&apos;s what&apos;s happening with your store.
-				</p>
 			</div>
-
-			{/* Stats Grid */}
-			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-				{stats.map((stat) => (
-					<Card key={stat.title}>
-						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-							<CardTitle className="text-sm font-medium text-gray-600">
-								{stat.title}
-							</CardTitle>
-							<stat.icon className="w-4 h-4 text-gray-400" />
-						</CardHeader>
-						<CardContent>
-							<div className="text-2xl font-bold">{stat.value}</div>
-							<div className="flex items-center text-xs text-gray-600">
-								{stat.trend === "up" ? (
-									<TrendingUp className="w-3 h-3 text-green-500 mr-1" />
-								) : (
-									<TrendingDown className="w-3 h-3 text-red-500 mr-1" />
-								)}
-								<span
-									className={
-										stat.trend === "up" ? "text-green-500" : "text-red-500"
-									}
-								>
-									{stat.change}
-								</span>
-								<span className="ml-1">from last month</span>
-							</div>
-						</CardContent>
-					</Card>
-				))}
-			</div>
-
-			{/* Recent Activity */}
-			<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+			{/* Stats Cards */}
+			<div className="grid grid-cols-1 md:grid-cols-4 gap-4">
 				<Card>
-					<CardHeader>
-						<CardTitle>Recent Orders</CardTitle>
+					<CardHeader className="pb-2">
+						<CardTitle className="text-sm font-medium text-gray-600">
+							Total Products
+						</CardTitle>
 					</CardHeader>
 					<CardContent>
-						<div className="space-y-4">
-							{[1, 2, 3, 4, 5].map((i) => (
-								<div key={i} className="flex items-center justify-between">
-									<div>
-										<p className="font-medium">Order #100{i}</p>
-										<p className="text-sm text-gray-600">Customer Name</p>
-									</div>
-									<div className="text-right">
-										<p className="font-medium">
-											${(Math.random() * 500 + 50).toFixed(2)}
-										</p>
-										<p className="text-sm text-gray-600">2 hours ago</p>
-									</div>
-								</div>
-							))}
+						<div className="text-2xl font-bold">{products.length}</div>
+					</CardContent>
+				</Card>
+				<Card>
+					<CardHeader className="pb-2">
+						<CardTitle className="text-sm font-medium text-gray-600">
+							Active Products
+						</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<div className="text-2xl font-bold">
+							{products.filter((p) => p.status === "active").length}
 						</div>
 					</CardContent>
 				</Card>
-
 				<Card>
-					<CardHeader>
-						<CardTitle>Low Stock Products</CardTitle>
+					<CardHeader className="pb-2">
+						<CardTitle className="text-sm font-medium text-gray-600">
+							Out of Stock
+						</CardTitle>
 					</CardHeader>
 					<CardContent>
-						<div className="space-y-4">
-							{[1, 2, 3, 4, 5].map((i) => (
-								<div key={i} className="flex items-center justify-between">
-									<div>
-										<p className="font-medium">Product Name {i}</p>
-										<p className="text-sm text-gray-600">SKU: PRD00{i}</p>
-									</div>
-									<div className="text-right">
-										<p className="font-medium text-red-600">
-											{Math.floor(Math.random() * 5 + 1)} left
-										</p>
-										<p className="text-sm text-gray-600">Reorder needed</p>
-									</div>
-								</div>
-							))}
+						<div className="text-2xl font-bold">
+							{products.filter((p) => p.stock === 0).length}
+						</div>
+					</CardContent>
+				</Card>
+				<Card>
+					<CardHeader className="pb-2">
+						<CardTitle className="text-sm font-medium text-gray-600">
+							Low Stock
+						</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<div className="text-2xl font-bold">
+							{products.filter((p) => p.stock > 0 && p.stock < 10).length}
 						</div>
 					</CardContent>
 				</Card>
 			</div>
+
+			{/* Search and Filters */}
+			<Card>
+				<CardHeader>
+					<div className="flex items-center gap-4">
+						<div className="relative flex-1 max-w-sm">
+							<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+							<Input
+								placeholder="Search products..."
+								value={searchTerm}
+								onChange={(e) => handleSearch(e.target.value)}
+								className="pl-10"
+							/>
+						</div>
+					</div>
+				</CardHeader>
+				<CardContent>
+					{/* Products Table */}
+					<Table>
+						<TableHeader>
+							<TableRow>
+								<TableHead>Product</TableHead>
+								<TableHead>SKU</TableHead>
+								<TableHead>Category</TableHead>
+								<TableHead>Price</TableHead>
+								<TableHead>Stock</TableHead>
+								<TableHead>Status</TableHead>
+								<TableHead>Created</TableHead>
+								<TableHead className="text-right">Actions</TableHead>
+							</TableRow>
+						</TableHeader>
+						<TableBody>
+							{filteredProducts.map((product) => (
+								<TableRow key={product.id}>
+									<TableCell>
+										<div className="flex items-center gap-3">
+											<Image
+												src={product.images || "/placeholder.svg"}
+												alt={product.name}
+												width={40}
+												height={40}
+												className="rounded-md"
+											/>
+											<div>
+												<div className="font-medium">{product.name}</div>
+											</div>
+										</div>
+									</TableCell>
+									<TableCell className="font-mono text-sm">
+										{product.sku}
+									</TableCell>
+									<TableCell>{product.category}</TableCell>
+									<TableCell>${product.price}</TableCell>
+									<TableCell>{product.stock}</TableCell>
+									<TableCell>
+										{getStatusBadge(product.status, product.stock)}
+									</TableCell>
+									<TableCell>{product.createdAt}</TableCell>
+									<TableCell className="text-right">
+										<DropdownMenu>
+											<DropdownMenuTrigger asChild>
+												<Button variant="ghost" size="icon">
+													<MoreHorizontal className="w-4 h-4" />
+												</Button>
+											</DropdownMenuTrigger>
+											<DropdownMenuContent align="end">
+												<DropdownMenuItem asChild>
+													<Link href={`/products/${product.id}`}>
+														<Eye className="w-4 h-4 mr-2" />
+														View
+													</Link>
+												</DropdownMenuItem>
+												<DropdownMenuItem asChild>
+													<Link href={`/admin/products/${product.id}/edit`}>
+														<Edit className="w-4 h-4 mr-2" />
+														Edit
+													</Link>
+												</DropdownMenuItem>
+												<DropdownMenuItem
+													onClick={() => handleDelete(product.id)}
+													className="text-red-600"
+												>
+													<Trash2 className="w-4 h-4 mr-2" />
+													Delete
+												</DropdownMenuItem>
+											</DropdownMenuContent>
+										</DropdownMenu>
+									</TableCell>
+								</TableRow>
+							))}
+						</TableBody>
+					</Table>
+				</CardContent>
+			</Card>
 		</div>
 	);
 }

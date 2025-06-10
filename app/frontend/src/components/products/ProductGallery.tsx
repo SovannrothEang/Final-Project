@@ -1,15 +1,4 @@
-"use client";
-
-import { useState } from "react";
 import Image from "next/image";
-import { cn } from "@/lib/utils";
-
-interface ProductGalleryProps {
-	images: {
-		src: string;
-		alt: string;
-	}[];
-}
 
 const scrollbarStyles = `
   .hide-scrollbar::-webkit-scrollbar {
@@ -22,9 +11,7 @@ const scrollbarStyles = `
   }
 `;
 
-export function ProductGallery({ images }: ProductGalleryProps) {
-	const [selectedImage, setSelectedImage] = useState(0);
-
+export function ProductGallery({ images }: { images: string }) {
 	return (
 		<div className="flex gap-4">
 			{/* Thumbnails on the left */}
@@ -33,7 +20,7 @@ export function ProductGallery({ images }: ProductGalleryProps) {
 					`flex flex-col gap-4 h-full overflow-y-hidden` + scrollbarStyles
 				}
 			>
-				{images.map((image, index) => (
+				{/* {images.map((image, index) => (
 					<div
 						key={index}
 						className={cn(
@@ -51,14 +38,14 @@ export function ProductGallery({ images }: ProductGalleryProps) {
 							className="object-cover"
 						/>
 					</div>
-				))}
+				))} */}
 			</div>
 
 			{/* Main Image takes remaining space */}
 			<div className="flex-1 aspect-[4/3] overflow-hidden rounded-lg bg-gray-100 relative">
 				<Image
-					src={images[selectedImage].src || "/placeholder.svg"}
-					alt={images[selectedImage].alt}
+					src={images || "/placeholder.svg"}
+					alt={"laptop photo"}
 					fill
 					className="object-contain"
 				/>

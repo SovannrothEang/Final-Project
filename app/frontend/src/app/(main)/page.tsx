@@ -6,82 +6,10 @@ import { FutureProduct } from "@/components/products/FutureProduct";
 import { NewArrival } from "@/components/products/NewArrival";
 import TopSellingSection from "@/components/products/TopSelling";
 import { ClawBanner } from "@/components/products/ClawBanner";
+import products from "@/data/products";
 
 // Sample data
-const allProducts = [
-	{
-		id: "9",
-		name: "Gaming Headset Pro",
-		price: 756.65,
-		rating: 5,
-		reviews: 65,
-		image: "/pcDemo.jpg",
-		discount: 35,
-	},
-	{
-		id: "10",
-		name: "Gaming Headset Pro",
-		price: 756.65,
-		rating: 5,
-		reviews: 65,
-		image: "/pcDemo.jpg",
-		discount: 35,
-	},
-	{
-		id: "11",
-		name: "Gaming Headset Pro",
-		price: 756.65,
-		rating: 5,
-		reviews: 65,
-		image: "/pcDemo.jpg",
-		discount: 35,
-	},
-	{
-		id: "12",
-		name: "Gaming Headset Pro",
-		price: 756.65,
-		rating: 5,
-		reviews: 65,
-		image: "/pcDemo.jpg",
-		discount: 35,
-	},
-	{
-		id: "13",
-		name: "Gaming Headset Pro",
-		price: 756.65,
-		rating: 5,
-		reviews: 65,
-		image: "/pcDemo.jpg",
-		discount: 35,
-	},
-	{
-		id: "14",
-		name: "Gaming Headset Pro",
-		price: 756.65,
-		rating: 5,
-		reviews: 65,
-		image: "/pcDemo.jpg",
-		discount: 35,
-	},
-	{
-		id: "15",
-		name: "Gaming Headset Pro",
-		price: 756.65,
-		rating: 5,
-		reviews: 65,
-		image: "/pcDemo.jpg",
-		discount: 35,
-	},
-	{
-		id: "16",
-		name: "Gaming Headset Pro",
-		price: 756.65,
-		rating: 5,
-		reviews: 65,
-		image: "/pcDemo.jpg",
-		discount: 35,
-	},
-];
+const allProducts = products;
 
 const testimonials = [
 	{

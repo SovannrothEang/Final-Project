@@ -20,11 +20,11 @@ export default function AdminLayout({
 	return (
 		<html lang="en">
 			<body className={inter.className}>
-				<div className="min-h-screen bg-gray-50">
+				<div className="max-h-screen bg-gray-50">
 					<AdminHeader />
 					<div className="flex">
 						<AdminSidebar />
-						<main className="flex-1 p-6">{children}</main>
+						<main className="flex-1 p-4">{children}</main>
 					</div>
 				</div>
 			</body>

@@ -11,7 +11,7 @@ interface ProductCardProps {
 	originalPrice?: number;
 	rating: number;
 	reviews: number;
-	image: string;
+	images: string;
 	discount?: number;
 	isNew?: boolean;
 	size?: "small" | "medium" | "large";
@@ -24,7 +24,7 @@ export function ProductCard({
 	originalPrice,
 	rating,
 	reviews,
-	image,
+	images,
 	discount,
 	isNew,
 	size = "medium",
@@ -58,7 +58,7 @@ export function ProductCard({
 						)}
 
 						<Image
-							src={image || "/placeholder.svg"}
+							src={images || "/placeholder.svg"}
 							alt={name}
 							fill
 							className="object-cover group-hover:scale-105 transition-transform duration-300"
