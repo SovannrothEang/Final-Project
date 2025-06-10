@@ -29,6 +29,14 @@ const product = {
 			src: "/placeholder.svg?height=400&width=400",
 			alt: "Havic HV G-92 Gamepad - Top View",
 		},
+		{
+			src: "/placeholder.svg?height=400&width=400",
+			alt: "Havic HV G-92 Gamepad - Top View",
+		},
+		{
+			src: "/placeholder.svg?height=400&width=400",
+			alt: "Havic HV G-92 Gamepad - Top View",
+		},
 	],
 };
 
