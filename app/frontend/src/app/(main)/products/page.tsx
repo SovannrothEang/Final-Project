@@ -12,9 +12,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Slider } from "@/components/ui/slider";
-import { Search, Filter, Grid, List } from "lucide-react";
+import { Search } from "lucide-react";
 
 // Sample products data
 const allProducts = [
@@ -157,30 +155,6 @@ const allProducts = [
 	},
 ];
 
-const categories = [
-	"All",
-	"Laptops",
-	"Desktops",
-	"Gaming",
-	"Monitors",
-	"Accessories",
-	"Furniture",
-];
-const brands = [
-	"All",
-	"Razer",
-	"MSI",
-	"Dell",
-	"Asus",
-	"Lenovo",
-	"Sony",
-	"Samsung",
-	"Corsair",
-	"SteelSeries",
-	"Logitech",
-	"DXRacer",
-	"Custom",
-];
 const sortOptions = [
 	{ value: "relevance", label: "Relevance" },
 	{ value: "price-low", label: "Price: Low to High" },
@@ -195,13 +169,11 @@ export default function ProductsPage() {
 
 	const [filteredProducts, setFilteredProducts] = useState(allProducts);
 	const [searchTerm, setSearchTerm] = useState(searchQuery);
-	const [selectedCategory, setSelectedCategory] = useState("All");
-	const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
-	const [priceRange, setPriceRange] = useState([0, 3000]);
+	const [selectedCategory] = useState("All");
+	const [selectedBrands] = useState<string[]>([]);
+	const [priceRange] = useState([0, 3000]);
 	const [sortBy, setSortBy] = useState("relevance");
-	const [showInStockOnly, setShowInStockOnly] = useState(false);
-	const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-	const [showFilters, setShowFilters] = useState(false);
+	const [showInStockOnly] = useState(false);
 
 	useEffect(() => {
 		setSearchTerm(searchQuery); // Update searchTerm state when searchQuery changes
@@ -216,32 +188,27 @@ export default function ProductsPage() {
 					product.brand.toLowerCase().includes(searchTerm.toLowerCase())
 			);
 		}
-
 		// Category filter
 		if (selectedCategory !== "All") {
 			filtered = filtered.filter(
 				(product) => product.category === selectedCategory
 			);
 		}
-
 		// Brand filter
 		if (selectedBrands.length > 0 && !selectedBrands.includes("All")) {
 			filtered = filtered.filter((product) =>
 				selectedBrands.includes(product.brand)
 			);
 		}
-
 		// Price range filter
 		filtered = filtered.filter(
 			(product) =>
 				product.price >= priceRange[0] && product.price <= priceRange[1]
 		);
-
 		// Stock filter
 		if (showInStockOnly) {
 			filtered = filtered.filter((product) => product.inStock);
 		}
-
 		// Sorting
 		switch (sortBy) {
 			case "price-low":
@@ -269,29 +236,8 @@ export default function ProductsPage() {
 		priceRange,
 		sortBy,
 		showInStockOnly,
-		searchQuery, // Add searchQuery to the dependency array
+		searchQuery,
 	]);
-
-	const handleBrandChange = (brand: string, checked: boolean) => {
-		if (brand === "All") {
-			setSelectedBrands(checked ? ["All"] : []);
-		} else {
-			setSelectedBrands((prev) => {
-				const newBrands = checked
-					? [...prev.filter((b) => b !== "All"), brand]
-					: prev.filter((b) => b !== brand);
-				return newBrands.length === 0 ? ["All"] : newBrands;
-			});
-		}
-	};
-
-	const clearFilters = () => {
-		setSelectedCategory("All");
-		setSelectedBrands([]);
-		setPriceRange([0, 3000]);
-		setShowInStockOnly(false);
-		setSortBy("relevance");
-	};
 
 	return (
 		<div className="bg-white">
@@ -311,100 +257,60 @@ export default function ProductsPage() {
 					)}
 				</div>
 
-				<div className="grid lg:grid-cols-4 gap-8">
-					{/* Products Grid */}
-					<div className="lg:col-span-3">
-						{/* Toolbar */}
-						<div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
-							<div className="flex items-center gap-4">
-								<Button
-									variant="outline"
-									size="sm"
-									onClick={() => setShowFilters(!showFilters)}
-									className="lg:hidden"
-								>
-									<Filter className="w-4 h-4 mr-2" />
-									Filters
-								</Button>
-								<span className="text-sm text-gray-600">
-									{filteredProducts.length} products found
-									{searchTerm && ` for "${searchTerm}"`}
-								</span>
-							</div>
-
-							<div className="flex items-center gap-4">
-								{/* View Mode Toggle */}
-								<div className="flex border rounded-md">
-									<Button
-										variant={viewMode === "grid" ? "default" : "ghost"}
-										size="sm"
-										onClick={() => setViewMode("grid")}
-										className="rounded-r-none"
-									>
-										<Grid className="w-4 h-4" />
-									</Button>
-									<Button
-										variant={viewMode === "list" ? "default" : "ghost"}
-										size="sm"
-										onClick={() => setViewMode("list")}
-										className="rounded-l-none"
-									>
-										<List className="w-4 h-4" />
-									</Button>
-								</div>
-
-								{/* Sort Dropdown */}
-								<Select value={sortBy} onValueChange={setSortBy}>
-									<SelectTrigger className="w-48">
-										<SelectValue placeholder="Sort by" />
-									</SelectTrigger>
-									<SelectContent>
-										{sortOptions.map((option) => (
-											<SelectItem key={option.value} value={option.value}>
-												{option.label}
-											</SelectItem>
-										))}
-									</SelectContent>
-								</Select>
-							</div>
+				<div className="grid lg:grid-cols-5 gap-8">
+					{/* Toolbar */}
+					<div className="flex flex-col col-span-full sm:flex-row sm:items-center justify-between mb-6 gap-4">
+						<div className="flex items-center gap-4">
+							<span className="text-sm text-gray-600">
+								{filteredProducts.length} products found
+								{searchTerm && ` for "${searchTerm}"`}
+							</span>
 						</div>
 
-						{/* Products Display */}
-						{filteredProducts.length === 0 ? (
-							<div className="text-center py-16">
-								<div className="text-gray-400 mb-4">
-									<Search className="w-16 h-16 mx-auto" />
-								</div>
-								<h3 className="text-xl font-semibold mb-2">
-									No products found
-								</h3>
-								<p className="text-gray-600 mb-6">
-									Try adjusting your search or filter criteria
-								</p>
-							</div>
-						) : (
-							<div
-								className={
-									viewMode === "grid"
-										? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-										: "space-y-4"
-								}
-							>
-								{filteredProducts.map((product) => (
-									<ProductCard key={product.id} {...product} />
-								))}
-							</div>
-						)}
-
-						{/* Load More Button */}
-						{filteredProducts.length > 0 && (
-							<div className="text-center mt-12">
-								<Button variant="outline" className="px-8">
-									Load More Products
-								</Button>
-							</div>
-						)}
+						<div className="flex items-center gap-4">
+							{/* Sort Dropdown */}
+							<Select value={sortBy} onValueChange={setSortBy}>
+								<SelectTrigger className="w-48">
+									<SelectValue placeholder="Sort by" />
+								</SelectTrigger>
+								<SelectContent>
+									{sortOptions.map((option) => (
+										<SelectItem key={option.value} value={option.value}>
+											{option.label}
+										</SelectItem>
+									))}
+								</SelectContent>
+							</Select>
+						</div>
 					</div>
+
+					{/* Products Display */}
+					{filteredProducts.length === 0 ? (
+						<div className="text-center py-16 mx-auto col-span-5">
+							<div className="text-gray-400 mb-4">
+								<Search className="w-16 h-16 mx-auto" />
+							</div>
+							<h3 className="text-xl font-semibold mb-2">No products found</h3>
+							<p className="text-gray-600 mb-6">
+								Try adjusting your search or filter criteria
+							</p>
+						</div>
+					) : (
+						<div className="col-span-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+							{filteredProducts.map((product) => (
+								<ProductCard key={product.id} {...product} />
+							))}
+						</div>
+					)}
+
+					{/* Load More Button */}
+					{filteredProducts.length > 0 && (
+						<div className="text-center mt-12 col-span-full">
+							<Button variant="outline" className="px-8">
+								Load More Products
+							</Button>
+						</div>
+					)}
 				</div>
 			</div>
 		</div>
