@@ -3,7 +3,7 @@ import { Button } from "../ui/button";
 
 export function ClawBanner() {
 	return (
-		<section className="relative w-full sm:h-[250px] lg:h-[300px] rounded-xl overflow-hidden mb-12">
+		<section className="relative w-full sm:h-[250px] lg:h-[300px] rounded-xl overflow-hidden my-5">
 			{/* Background image */}
 			<div className="w-full">
 				<Image

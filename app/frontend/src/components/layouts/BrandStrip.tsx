@@ -2,7 +2,7 @@ import Image from "next/image";
 
 const brands = [
 	{ name: "ASUS", logo: "/AsusLogo.png" },
-	{ name: "MSI", logo: "/AsusLogo.png" },
+	{ name: "MSI", logo: "/MsiLogo.png" },
 	{ name: "Razer", logo: "/RazerLogo.png" },
 	{ name: "Apple", logo: "/MacLogos.png" },
 	{ name: "Samsung", logo: "/SamsungLogo.png" },
