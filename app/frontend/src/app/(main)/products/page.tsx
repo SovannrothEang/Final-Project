@@ -169,7 +169,10 @@ export default function ProductsPage() {
 					{/* Load More Button */}
 					{filteredProducts.length > 0 && (
 						<div className="text-center mt-12 col-span-full">
-							<Button variant="outline" className="px-8">
+							<Button
+								variant="outline"
+								className="px-8 py-6 rounded-4xl cursor-pointer"
+							>
 								Load More Products
 							</Button>
 						</div>

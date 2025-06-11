@@ -7,7 +7,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export function Header() {
-	const [isDiscount] = useState(true);
+	const [isDiscount] = useState(false);
 	const router = useRouter();
 	const [searchQuery, setSearchQuery] = useState("");
 
@@ -20,13 +20,13 @@ export function Header() {
 
 	return (
 		<>
+			{isDiscount && (
+				<div className="bg-black text-white text-center py-3 text-sm">
+					Sign Up and get 15% off for your first order.{" "}
+					<span className="underline cursor-pointer">Sign Up Now</span>
+				</div>
+			)}
 			<header className="border-b sticky z-50 top-0 bg-gray-50/75 backdrop-blur-sm">
-				{isDiscount && (
-					<div className="bg-black text-white text-center py-3 text-sm">
-						Sign Up and get 15% off for your first order.{" "}
-						<span className="underline cursor-pointer">Sign Up Now</span>
-					</div>
-				)}
 				<div className="container mx-auto px-4 py-4 grid grid-cols-2 md:grid-cols-3">
 					<div className="text-2xl font-bold flex items-center">
 						<Link href="/">Exclusive</Link>

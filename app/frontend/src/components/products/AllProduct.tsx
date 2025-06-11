@@ -1,6 +1,7 @@
 import { Product } from "@/types/product";
 import { ProductCard } from "./ProductCard";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 interface AllProductProps {
 	title: string;
@@ -55,8 +56,10 @@ export function AllProduct({
 
 			{showViewAll && (
 				<div className="text-center">
-					<Button variant="outline" className="px-8 py-6 rounded-4xl">
-						View All Products
+					<Button variant="outline" className="rounded-4xl">
+						<Link href="/products" className="px-8 py-6 ">
+							View All Products
+						</Link>
 					</Button>
 				</div>
 			)}

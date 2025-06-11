@@ -38,23 +38,25 @@ export function HeroSection() {
 							<p className="text-xl text-black mb-10 mt-1 max-w-lg font-semibold">
 								Design and Precision Engineering - Computer
 							</p>
-							<Button
-								className="bg-white font-bold text-xl border-black ring-2
-							shadow-2xl text-black rounded-4xl py-7 hover:ring-green-400 hover:shadow-green-600  hover:bg-black px-10 hover:text-white"
-							>
-								Shop Now
-							</Button>
+							<div className="mb-4 max-h-12">
+								<Button
+									className="bg-white font-bold text-lg px-8 py-6 hover:shadow-xl shadow-neutral-100 cursor-pointer 
+								text-black rounded-2xl border-b-6 border-r-6 -translate-1 hover:border-0 hover:translate-0 hover:bg-neutral-700 hover:text-white"
+								>
+									Shop Now
+								</Button>
+							</div>
 
 							{/* Social Links */}
-							<div className="flex gap-4 p-3">
-								<div className="w-12 h-12 ring-2 rounded-full flex items-center justify-center cursor-pointer hover:text-black transition-colors">
-									<FontAwesomeIcon icon={faFacebookF} className="w-6 h-6" />
+							<div className="flex gap-4 mb-4">
+								<div className="w-8 h-8 ring-2 rounded-full flex items-center justify-center cursor-pointer hover:text-black transition-colors">
+									<FontAwesomeIcon icon={faFacebookF} className="w-4 h-4" />
 								</div>
-								<div className="w-12 h-12 ring-2 rounded-full flex items-center justify-center cursor-pointer hover:text-black transition-colors">
-									<FontAwesomeIcon icon={faXTwitter} className="w-6 h-6" />
+								<div className="w-8 h-8 ring-2 rounded-full flex items-center justify-center cursor-pointer hover:text-black transition-colors">
+									<FontAwesomeIcon icon={faXTwitter} className="w-4 h-4" />
 								</div>
-								<div className="w-12 h-12 ring-2 rounded-full flex items-center justify-center cursor-pointer hover:text-black transition-colors">
-									<FontAwesomeIcon icon={faYoutube} className="w-6 h-6" />
+								<div className="w-8 h-8 ring-2 rounded-full flex items-center justify-center cursor-pointer hover:text-black transition-colors">
+									<FontAwesomeIcon icon={faYoutube} className="w-4 h-4" />
 								</div>
 							</div>
 						</div>

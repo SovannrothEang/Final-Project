@@ -66,16 +66,6 @@ export function ProductCard({
 							fill
 							className="object-contain group-hover:scale-105 transition-transform duration-300"
 						/>
-
-						{/* Hover Actions */}
-						<div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-							<Button size="sm" variant="secondary" className="w-8 h-8 p-0">
-								<Heart className="w-4 h-4" />
-							</Button>
-							<Button size="sm" variant="secondary" className="w-8 h-8 p-0">
-								<Eye className="w-4 h-4" />
-							</Button>
-						</div>
 					</div>
 
 					{/* Product Info */}
