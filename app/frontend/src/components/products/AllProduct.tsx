@@ -15,7 +15,7 @@ export function AllProduct({
 	showViewAll = true,
 }: AllProductProps) {
 	return (
-		<section className="w-full">
+		<section className="w-full mb-12">
 			<div className="mb-8">
 				<div className="flex items-center gap-2 mb-2">
 					<div className="w-4 h-10 bg-black rounded"></div>
@@ -46,8 +46,8 @@ export function AllProduct({
 				))}
 			</div>
 
-			{/* Product Grid: 2 Rows x 4 Columns */}
-			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+			{/* Product Grid */}
+			<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 mb-8">
 				{products.slice(0, 8).map((product) => (
 					<ProductCard key={product.id} {...product} />
 				))}

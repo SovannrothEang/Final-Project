@@ -45,23 +45,26 @@ export function ProductCard({
 			<Link href={`/products/${id}`}>
 				<CardContent className="p-0">
 					{/* Product Image */}
-					<div className="relative bg-gray-100 aspect-square overflow-hidden">
-						{discount && (
+					<div className="relative bg-gray-100 aspect-[4/3] overflow-hidden">
+						{/* Discount */}
+						{/* {discount && (
 							<div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 text-xs rounded z-10">
 								-{discount}%
 							</div>
-						)}
-						{isNew && (
+						)} */}
+
+						{/* New Item */}
+						{/* {isNew && (
 							<div className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 text-xs rounded z-10">
 								NEW
 							</div>
-						)}
+						)} */}
 
 						<Image
 							src={images || "/placeholder.svg"}
 							alt={name}
 							fill
-							className="object-cover group-hover:scale-105 transition-transform duration-300"
+							className="object-contain group-hover:scale-105 transition-transform duration-300"
 						/>
 
 						{/* Hover Actions */}
@@ -72,11 +75,6 @@ export function ProductCard({
 							<Button size="sm" variant="secondary" className="w-8 h-8 p-0">
 								<Eye className="w-4 h-4" />
 							</Button>
-						</div>
-
-						{/* Add to Cart Button */}
-						<div className="absolute bottom-0 left-0 right-0 bg-black text-white text-center py-2 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-							Add To Cart
 						</div>
 					</div>
 

@@ -26,7 +26,7 @@ const products = [
 
 export default function TopSellingSection() {
 	return (
-		<section className="space-y-4 py-4">
+		<section className="space-y-4 mb-12">
 			<h2 className="text-2xl font-bold mb-8 flex items-center">
 				<div className="w-4 h-10 bg-black rounded mr-2"></div>
 				Top Selling

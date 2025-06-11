@@ -91,43 +91,6 @@ export default function ProductDetail({ product }: { product: Product }) {
 							))}
 						</div>
 					</div>
-
-					{/* Quantity and Add to Cart */}
-					<div className="flex gap-4 mb-8">
-						<QuantitySelector initialValue={quantity} onChange={setQuantity} />
-						<Button
-							className="bg-red-500 hover:bg-red-600 flex-1"
-							onClick={handleAddToCart}
-						>
-							Buy Now
-						</Button>
-						<Button variant="outline" size="icon" className="rounded-full">
-							<Heart className="h-5 w-5" />
-							<span className="sr-only">Add to wishlist</span>
-						</Button>
-					</div>
-
-					{/* Delivery Info */}
-					<div className="space-y-4 border rounded-md p-4">
-						<div className="flex gap-4">
-							<Truck className="h-6 w-6 text-gray-500" />
-							<div>
-								<h4 className="font-medium">Free Delivery</h4>
-								<p className="text-sm text-gray-500">
-									Enter your postal code for Delivery Availability
-								</p>
-							</div>
-						</div>
-						<div className="flex gap-4">
-							<RotateCcw className="h-6 w-6 text-gray-500" />
-							<div>
-								<h4 className="font-medium">Return Delivery</h4>
-								<p className="text-sm text-gray-500">
-									Free 30 Days Delivery Returns. Details
-								</p>
-							</div>
-						</div>
-					</div>
 				</div>
 			</div>
 		</>
