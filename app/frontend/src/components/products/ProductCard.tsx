@@ -1,8 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Star, Heart, Eye } from "lucide-react";
+import { Star } from "lucide-react";
 
 interface ProductCardProps {
 	id: string;
@@ -25,10 +24,10 @@ export function ProductCard({
 	rating,
 	reviews,
 	images,
-	discount,
-	isNew,
-	size = "medium",
-}: ProductCardProps) {
+}: // discount,
+// isNew,
+// size = "medium",
+ProductCardProps) {
 	const renderStars = (rating: number) => {
 		return Array.from({ length: 5 }, (_, i) => (
 			<Star
