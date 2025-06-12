@@ -1,24 +1,13 @@
 import Image from "next/image";
 
-const scrollbarStyles = `
-  .hide-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-
-  .hide-scrollbar {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
-  }
-`;
-
 export function ProductGallery({ images }: { images: string }) {
 	return (
 		<div className="grid gap-4 gap-x-10">
 			{/* Main Image */}
 			<div className="aspect-square overflow-hidden rounded-lg bg-gray-100 relative">
 				<Image
-					src={images[selectedImage].src || "/placeholder.svg"}
-					alt={images[selectedImage].alt}
+					src={images || "/placeholder.svg"}
+					alt="product image"
 					fill
 					className="object-contain"
 				/>
@@ -26,7 +15,7 @@ export function ProductGallery({ images }: { images: string }) {
 
 			{/* Thumbnails */}
 			<div className="flex gap-4">
-				{images.map((image, index) => (
+				{/* {images.map((image, index) => (
 					<div
 						key={index}
 						className={cn(

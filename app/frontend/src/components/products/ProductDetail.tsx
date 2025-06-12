@@ -1,16 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { ProductGallery } from "@/components/products/ProductGallery";
-import { QuantitySelector } from "@/components/products/QuantitySelector";
-import { Heart, Truck, RotateCcw, Star } from "lucide-react";
+import { Star } from "lucide-react";
 import { Product } from "@/types/product";
 
 export default function ProductDetail({ product }: { product: Product }) {
 	const [selectedColor, setSelectedColor] = useState("red");
 	const [selectedSize, setSelectedSize] = useState("M");
-	const [quantity, setQuantity] = useState(1);
 	const renderStars = (rating: number) => {
 		return Array.from({ length: 5 }, (_, i) => (
 			<Star
@@ -22,12 +19,12 @@ export default function ProductDetail({ product }: { product: Product }) {
 		));
 	};
 
-	const handleAddToCart = () => {
-		// Implement add to cart logic
-		alert(
-			`Added ${quantity} ${product.name} to cart (Color: ${selectedColor}, Size: ${selectedSize})`
-		);
-	};
+	// const handleAddToCart = () => {
+	// 	// Implement add to cart logic
+	// 	alert(
+	// 		`Added ${quantity} ${product.name} to cart (Color: ${selectedColor}, Size: ${selectedSize})`
+	// 	);
+	// };
 
 	return (
 		<>
