@@ -6,10 +6,11 @@ import { notFound } from "next/navigation"; // Import notFound for 404 handling
 export default async function ProductPage({
 	params,
 }: {
-	params: { id: string }; // Change params type to access id directly
+	params: Promise<{ id: string }>; // Change params type to access id directly
 }) {
 	// Find the product in the products array based on the id from the URL
-	const product = products.find((p) => p.id === params.id);
+	const { id } = await params;
+	const product = products.find((p) => p.id === id);
 
 	// If the product is not found, return a 404 page
 	if (!product) {
