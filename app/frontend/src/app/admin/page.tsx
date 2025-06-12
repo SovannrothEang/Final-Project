@@ -19,7 +19,7 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Search, MoreHorizontal, Edit, Trash2, Eye } from "lucide-react";
+import { Search, MoreHorizontal, Edit, Trash2, Eye, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
 import products from "@/data/products";
@@ -118,7 +118,7 @@ export default function AdminDashboard() {
 			{/* Search and Filters */}
 			<Card>
 				<CardHeader>
-					<div className="flex items-center gap-4">
+					<div className="flex justify-between py-2">
 						<div className="relative flex-1 max-w-sm">
 							<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
 							<Input
@@ -128,6 +128,14 @@ export default function AdminDashboard() {
 								className="pl-10"
 							/>
 						</div>
+						<Button className="bg-red-500 hover:bg-red-600">
+							<Link href="/admin/products/new">
+								<div className="flex justify-between items-center">
+									<Plus className="w-4 h-4 mr-2" />
+									Add Product
+								</div>
+							</Link>
+						</Button>
 					</div>
 				</CardHeader>
 				<CardContent>

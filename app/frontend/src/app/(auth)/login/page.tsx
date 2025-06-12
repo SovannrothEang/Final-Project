@@ -55,22 +55,23 @@ export default function LoginPage() {
 		}
 
 		try {
+			const email = formData.email;
+			const password = formData.password;
 			const response = await fetch("/api/auth/login", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
 				},
-				body: JSON.stringify(formData),
+				body: JSON.stringify({ email, password }),
 			});
 			if (!response.ok) {
 				const errorData = await response.json();
-				throw new Error(errorData.message || "Login failed");
+				setErrors({ general: errorData.message });
 			}
 
-			// Redirect to dashboard or home page
+			setFormData({ email: "", password: "" });
 			router.push("/admin");
 		} catch (error) {
-			console.error("Login failed:", error instanceof Error);
 			setErrors({
 				general:
 					error instanceof Error

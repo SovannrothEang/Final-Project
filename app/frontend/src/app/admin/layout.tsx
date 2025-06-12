@@ -1,11 +1,8 @@
 import type React from "react";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "@/styles/globals.css";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { AdminHeader } from "@/components/admin/AdminHeader";
-
-const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
 	title: "Exclusive Admin - Dashboard",
@@ -18,16 +15,12 @@ export default function AdminLayout({
 	children: React.ReactNode;
 }) {
 	return (
-		<html lang="en">
-			<body className={inter.className}>
-				<div className="max-h-screen bg-gray-50">
-					<AdminHeader />
-					<div className="flex">
-						<AdminSidebar />
-						<main className="flex-1 p-4">{children}</main>
-					</div>
-				</div>
-			</body>
-		</html>
+		<>
+			<AdminHeader />
+			<div className="flex">
+				<AdminSidebar />
+				<main className="flex-1 p-4">{children}</main>
+			</div>
+		</>
 	);
 }
