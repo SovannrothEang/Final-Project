@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import "font-awesome/css/font-awesome.min.css";
 import Asuspic from "../../assets/Asus.png";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
