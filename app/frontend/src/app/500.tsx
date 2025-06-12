@@ -1,10 +1,8 @@
-"use client";
-
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Server, Home, RefreshCw } from "lucide-react";
+import Link from "next/link";
 
-export default function ServerErrorPage() {
+export default function Custom500() {
 	return (
 		<div className="bg-white">
 			<div className="container mx-auto px-4 py-8">
