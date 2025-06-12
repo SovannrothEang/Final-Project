@@ -154,4 +154,21 @@ class AuthController extends ApiController
             'data' => new UserResource($data)
         ]);
     }
+    /**
+     * Checking if the token is valid
+     */
+    /**
+     * @OA\Get(
+     *     path="/api/verify-token",
+     *     summary="Get authenticated user details",
+     *     @OA\Response(response="200", description="Successful operation"),
+     *     @OA\Response(response="401", description="Unauthenticated")
+     * )
+     */
+    public function verifyToken() {
+        return response()->json([
+            'success' => true,
+            'message' => 'Token is valid'
+        ],200);
+    }
 }

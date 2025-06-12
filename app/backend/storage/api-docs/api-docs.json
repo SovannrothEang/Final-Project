@@ -100,6 +100,20 @@
                 }
             }
         },
+        "/api/verify-token": {
+            "get": {
+                "summary": "Get authenticated user details",
+                "operationId": "4fe7221687a66a816bc6b2916c39b770",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                }
+            }
+        },
         "/api/products": {
             "get": {
                 "summary": "Display a listing of products",

@@ -10,6 +10,7 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
+    Route::get('/verify-token', [AuthController::class, 'verifyToken']);
 
     Route::apiResource('products', ProductController::class);
     // Route::apiResource('orders', OrderController::class);
