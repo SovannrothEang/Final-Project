@@ -19,6 +19,7 @@ class ProductController extends ApiController
      * @OA\Get(
      *     path="/api/products",
      *     summary="Display a listing of products",
+     *     tags={"Products"},
      *     @OA\Response(
      *       response=200,
      *       description="Successful operation",
@@ -46,6 +47,7 @@ class ProductController extends ApiController
      * @OA\Post(
      *     path="/api/products",
      *     summary="Store a newly created product",
+     *     tags={"Products"},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(ref="#/components/schemas/storeProduct")
@@ -90,6 +92,7 @@ class ProductController extends ApiController
      * @OA\Get(
      *     path="/api/products/{id}",
      *     summary="Display the specified product",
+     *     tags={"Products"},
      *     @OA\Parameter(
      *       name="id",
      *       in="path",
@@ -128,6 +131,7 @@ class ProductController extends ApiController
      * @OA\Put(
      *     path="/api/products/{id}",
      *     summary="Update the specified product",
+     *     tags={"Products"},
      *     @OA\Parameter(
      *       name="id",
      *       in="path",
@@ -190,6 +194,7 @@ class ProductController extends ApiController
      * @OA\Delete(
      *     path="/api/products/{id}",
      *     summary="Remove the specified product",
+     *     tags={"Products"},
      *     @OA\Parameter(
      *       name="id",
      *       in="path",
