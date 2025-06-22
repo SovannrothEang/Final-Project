@@ -125,167 +125,161 @@ export default function ContactPage() {
 	}
 
 	return (
-		<div className="h-[730px] w-screen">
-			<div className="container px-25 pt-10">
-				{/* Breadcrumb */}
-				<div className="text-sm text-gray-500 mb-8">
-					<Link href="/" className="hover:text-gray-800">
-						Home
-					</Link>
-					<span className="mx-2">/</span>
-					<span>Contact</span>
-				</div>
+		<div className="bg-white w-screen">
+    		<div className="max-w-7xl mx-auto px-4 pt-10">
+    		    {/* Breadcrumb */}
+    		    <div className="text-sm text-gray-500 mb-8">
+    		        <Link href="/" className="hover:text-gray-800">
+    		            Home
+    		        </Link>
+    		        <span className="mx-2">/</span>
+    		        <span>Contact</span>
+    		    </div>
 
-				<div className="grid lg:grid-cols-3 gap-12">
-					{/* Contact Information */}
-					<div className="lg:col-span-1 space-y-8">
-						{/* Call To Us */}
-						<div className="w-[414px] h-[220px] flex flex-col justify-center pl-5 rounded-lg shadow-sm border">
-							<div className="flex items-center gap-3 mb-4">
-								<div className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center">
-									<Phone className="w-5 h-5 text-white" />
-								</div>
-								<h3 className="text-lg font-semibold">Call To Us</h3>
-							</div>
-							<p className="text-gray-600 mb-4">
-								We are available 24/7, 7 days a week.
-							</p>
-							<p className="text-gray-800 font-medium">Phone: +8558512345678</p>
-							<p className="text-gray-800 font-medium">Phone: +8558633332222</p>
-							<p className="text-gray-800 font-medium">Phone: +8559899887766</p>
-						</div>
+    		    <div className="grid lg:grid-cols-3 gap-8">
+    		        {/* Contact Information */}
+    		        <div className="lg:col-span-1 space-y-8">
+    		            {/* Call To Us */}
+    		            <div className="w-full flex flex-col justify-center pl-5 rounded-lg shadow-sm border py-6">
+    		                <div className="flex items-center gap-3 mb-4">
+    		                    <div className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center">
+    		                        <Phone className="w-5 h-5 text-white" />
+    		                    </div>
+    		                    <h3 className="text-lg font-semibold">Call To Us</h3>
+    		                </div>
+    		                <p className="text-gray-600 mb-4">
+    		                    We are available 24/7, 7 days a week.
+    		                </p>
+    		                <p className="text-gray-800 font-medium">Phone: +8558512345678</p>
+    		                <p className="text-gray-800 font-medium">Phone: +8558633332222</p>
+    		                <p className="text-gray-800 font-medium">Phone: +8559899887766</p>
+    		            </div>
 
 						{/* Write To Us */}
-						<div className="w-[414px] h-[260px] flex flex-col justify-center pl-5 rounded-lg shadow-sm border">
-							<div className="flex items-center gap-3 mb-4">
-								<div className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center">
-									<Mail className="w-5 h-5 text-white" />
-								</div>
-								<h3 className="text-lg font-semibold">Write To Us</h3>
-							</div>
-							<p className="text-gray-600 mb-4">
-								Fill out our form and we will contact you within 24 hours.
-							</p>
-							<div className="space-y-2">
-								<p className="text-gray-800">Emails: customer@exclusive.com</p>
-								<p className="text-gray-800">Emails: support@exclusive.com</p>
-							</div>
-						</div>
-					</div>
+                		<div className="w-full flex flex-col justify-center pl-5 rounded-lg shadow-sm border py-6 bg-white">
+                		    <div className="flex items-center gap-3 mb-4">
+                		        <div className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center">
+                		            <Mail className="w-5 h-5 text-white" />
+                		        </div>
+                		        <h3 className="text-lg font-semibold">Write To Us</h3>
+                		    </div>
+                		    <p className="text-gray-600 mb-4">
+                		        Fill out our form and we will contact you within 24 hours.
+                		    </p>
+                		    <div className="space-y-2">
+                		        <p className="text-gray-800">Emails: customer@exclusive.com</p>
+                		        <p className="text-gray-800">Emails: support@exclusive.com</p>
+                		    </div>
+                		</div>
+            		</div>
 
 					{/* Contact Form */}
 					<div className="lg:col-span-2">
-						<div className="bg-white w-[865px] h-[513px] flex justify-center items-center rounded-lg shadow-sm border">
-							<form onSubmit={handleSubmit} className="space-y-6">
-								{errors.general && (
-									<div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm">
-										{errors.general}
-									</div>
-								)}
+					    <div className="bg-white w-full max-w-3xl mx-auto flex flex-col justify-center items-center rounded-lg shadow-sm border py-8 px-4 sm:h-[477px]">
+        					<form onSubmit={handleSubmit} className="space-y-6 w-full flex flex-col h-full">
+        					    {errors.general && (
+        					        <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm">
+        					            {errors.general}
+        					        </div>
+        					    )}
 
-								{/* Name, Email, Phone Row */}
-								<div className="grid md:grid-cols-3 gap-4">
-									<div className="space-y-1">
-										<Label htmlFor="name" className="sr-only">
-											Your Name
-										</Label>
-										<Input
-											id="name"
-											placeholder="Your Name *"
-											value={formData.name}
-											onChange={(e) =>
-												handleInputChange("name", e.target.value)
-											}
-											className={`bg-gray-100 ${
-												errors.name ? "border-red-500" : ""
-											}`}
-											disabled={isLoading}
-										/>
-										{errors.name && (
-											<p className="text-red-500 text-sm">{errors.name}</p>
-										)}
-									</div>
-
-									<div className="space-y-1">
-										<Label htmlFor="email" className="sr-only">
-											Your Email
-										</Label>
-										<Input
-											id="email"
-											type="email"
-											placeholder="Your Email *"
-											value={formData.email}
-											onChange={(e) =>
-												handleInputChange("email", e.target.value)
-											}
-											className={`bg-gray-100 ${
-												errors.email ? "border-red-500" : ""
-											}`}
-											disabled={isLoading}
-										/>
-										{errors.email && (
-											<p className="text-red-500 text-sm">{errors.email}</p>
-										)}
-									</div>
-
-									<div className="space-y-1">
-										<Label htmlFor="phone" className="sr-only">
-											Your Phone
-										</Label>
-										<Input
-											id="phone"
-											type="tel"
-											placeholder="Your Phone *"
-											value={formData.phone}
-											onChange={(e) =>
-												handleInputChange("phone", e.target.value)
-											}
-											className={`bg-gray-100 ${
-												errors.phone ? "border-red-500" : ""
-											}`}
-											disabled={isLoading}
-										/>
-										{errors.phone && (
-											<p className="text-red-500 text-sm">{errors.phone}</p>
-										)}
-									</div>
-								</div>
-
-								{/* Message */}
-								<div className="w-[680px] h-[300px]">
-									<Label htmlFor="message" className="sr-only">
-										Your Message
-									</Label>
-									<Textarea
-										id="message"
-										placeholder="Your Message"
-										rows={8}
-										value={formData.message}
-										onChange={(e) =>
-											handleInputChange("message", e.target.value)
-										}
-										className={`bg-gray-100 w-full h-full resize-none ${
-											errors.message ? "border-red-500" : ""
-										}`}
-										disabled={isLoading}
-									/>
-									{errors.message && (
-										<p className="text-red-500 text-sm">{errors.message}</p>
-									)}
-								</div>
-
-								{/* Submit Button */}
-								<div className="flex justify-end">
-									<Button
-										type="submit"
-										className="bg-red-500 hover:bg-red-600 px-8 py-3"
-										disabled={isLoading}
-									>
-										{isLoading ? "Sending..." : "Send Message"}
-									</Button>
-								</div>
-							</form>
-						</div>
+        					    {/* Name, Email, Phone Row */}
+        					    <div className="grid md:grid-cols-3 gap-4">
+        					        <div className="space-y-1">
+        					            <Label htmlFor="name" className="sr-only">
+        					                Your Name
+        					            </Label>
+        					            <Input
+        					                id="name"
+        					                placeholder="Your Name *"
+        					                value={formData.name}
+        					                onChange={(e) =>
+        					                    handleInputChange("name", e.target.value)
+        					                }
+        					                className={`bg-gray-100 ${errors.name ? "border-red-500" : ""}`}
+        					                disabled={isLoading}
+        					            />
+        					            {errors.name && (
+        					                <p className="text-red-500 text-sm">{errors.name}</p>
+        					            )}
+        					        </div>
+									
+        					        <div className="space-y-1">
+        					            <Label htmlFor="email" className="sr-only">
+        					                Your Email
+        					            </Label>
+        					            <Input
+        					                id="email"
+        					                type="email"
+        					                placeholder="Your Email *"
+        					                value={formData.email}
+        					                onChange={(e) =>
+        					                    handleInputChange("email", e.target.value)
+        					                }
+        					                className={`bg-gray-100 ${errors.email ? "border-red-500" : ""}`}
+        					                disabled={isLoading}
+        					            />
+        					            {errors.email && (
+        					                <p className="text-red-500 text-sm">{errors.email}</p>
+        					            )}
+        					        </div>
+									
+        					        <div className="space-y-1">
+        					            <Label htmlFor="phone" className="sr-only">
+        					                Your Phone
+        					            </Label>
+        					            <Input
+        					                id="phone"
+        					                type="tel"
+        					                placeholder="Your Phone *"
+        					                value={formData.phone}
+        					                onChange={(e) =>
+        					                    handleInputChange("phone", e.target.value)
+        					                }
+        					                className={`bg-gray-100 ${errors.phone ? "border-red-500" : ""}`}
+        					                disabled={isLoading}
+        					            />
+        					            {errors.phone && (
+        					                <p className="text-red-500 text-sm">{errors.phone}</p>
+        					            )}
+        					        </div>
+        					    </div>
+									
+        					    {/* Message */}
+        					    <div className="flex-1 flex flex-col">
+        					        <Label htmlFor="message" className="sr-only">
+        					            Your Message
+        					        </Label>
+        					        <Textarea
+        					            id="message"
+        					            placeholder="Your Message"
+        					            rows={8}
+        					            value={formData.message}
+        					            onChange={(e) =>
+        					                handleInputChange("message", e.target.value)
+        					            }
+        					            className={`bg-gray-100 w-full min-h-[150px] sm:min-h-[220px] flex-1 resize-none ${
+        					                errors.message ? "border-red-500" : ""
+        					            }`}
+        					            disabled={isLoading}
+        					        />
+        					        {errors.message && (
+        					            <p className="text-red-500 text-sm">{errors.message}</p>
+        					        )}
+        					    </div>
+								
+        					    {/* Submit Button */}
+        					    <div className="flex justify-end">
+        					        <Button
+        					            type="submit"
+        					            className="bg-red-500 hover:bg-red-600 px-8 py-3"
+        					            disabled={isLoading}
+        					        >
+        					            {isLoading ? "Sending..." : "Send Message"}
+        					        </Button>
+        					    </div>
+        					</form>
+					    </div>
 					</div>
 				</div>
 			</div>

@@ -115,7 +115,7 @@ export default function NewProductPage() {
 			{/* Header */}
 			<div className="flex items-center gap-4">
 				<Button variant="ghost" size="icon" asChild>
-					<Link href="/admin/products">
+					<Link href="/admin">
 						<ArrowLeft className="w-4 h-4" />
 					</Link>
 				</Button>

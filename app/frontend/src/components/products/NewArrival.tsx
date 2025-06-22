@@ -1,3 +1,5 @@
+"use client";
+import { useEffect, useState } from "react";
 const products = [
 	{
 		name: "Razer Blade 16",
@@ -41,12 +43,22 @@ type NewArrivalProps = {
 };
 
 export function NewArrival({ title }: NewArrivalProps) {
+	const [time, setTime] = useState<string>("");
+	
+		useEffect(() => {
+			const update = () => setTime(new Date().toLocaleTimeString());
+			update();
+			const interval = setInterval(update, 1000);
+			return () => clearInterval(interval);
+		}, []);
+	
 	return (
 		<section className="h-[1800px] sm:h-[1000px] w-full mb-12 md:h-[1200px] lg:h-[660px]">
 			<div className="mb-8">
 				<div className="flex items-center gap-2 mb-2">
 					<div className="w-4 h-10 bg-black rounded"></div>
 					<span className="font-bold text-2xl">{title}</span>
+					<span className="text-2xl text-gray-500 ml-3">{time}</span>
 				</div>
 			</div>
 
@@ -82,36 +94,43 @@ export function NewArrival({ title }: NewArrivalProps) {
 }
 
 function ProductCard({
-	product,
-	isSmall = false,
+    product,
+    isSmall = false,
 }: {
-	product: (typeof products)[number];
-	isSmall?: boolean;
+    product: (typeof products)[number];
+    isSmall?: boolean;
 }) {
-	return (
-		<div
-			className="h-full w-full bg-black bg-contain bg-no-repeat bg-center relative text-white"
-			style={{ backgroundImage: `url(${product.img})` }}
-		>
-			{/* Optional dark overlay for readability */}
-			<div className="absolute inset-0 bg-black opacity-30" />
+    return (
+        <div
+            className={`
+                h-full w-full bg-black bg-contain bg-no-repeat bg-center relative text-white
+                transition-transform duration-300
+                hover:scale-105 hover:shadow-2xl
+                active:scale-95
+                group
+            `}
+            style={{ backgroundImage: `url(${product.img})` }}
+            tabIndex={0} // for keyboard accessibility
+        >
+            {/* Optional dark overlay for readability */}
+            <div className="absolute inset-0 bg-black opacity-30 group-hover:opacity-40 group-active:opacity-50 transition-opacity duration-300" />
 
-			{/* Content */}
-			<div className="relative z-10 h-full p-4 flex flex-col justify-end">
-				<h3 className={`${isSmall ? "text-lg" : "text-2xl"} font-bold`}>
-					{product.name}
-				</h3>
-				<p className={`pt-1 ${isSmall ? "text-xs" : "text-sm"} text-whtie`}>
-					{product.desc}
-				</p>
-				<button
-					className={`underline font-semibold pt-2 mt-2 text-left text-white ${
-						isSmall ? "text-sm" : "text-base"
-					} hover:text-gray-300`}
-				>
-					Shop Now
-				</button>
-			</div>
-		</div>
-	);
+            {/* Content */}
+            <div className="relative z-10 h-full p-4 flex flex-col justify-end">
+                <h3 className={`${isSmall ? "text-lg" : "text-2xl"} font-bold`}>
+                    {product.name}
+                </h3>
+                <p className={`pt-1 ${isSmall ? "text-xs" : "text-sm"} text-white`}>
+                    {product.desc}
+                </p>
+                <button
+                    className={`underline font-semibold pt-2 mt-2 text-left text-white ${
+                        isSmall ? "text-sm" : "text-base"
+                    } hover:text-gray-300 active:text-green-400 transition-colors duration-200`}
+                >
+                    Shop Now
+                </button>
+            </div>
+        </div>
+    );
 }
