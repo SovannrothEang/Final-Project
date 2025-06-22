@@ -82,7 +82,7 @@ export function ClawBanner() {
             <div className="relative z-20 flex flex-col justify-center items-start h-full text-white px-4 bg-black/10">
                 <h2 className="text-3xl sm:text-4xl font-bold mb-2">{banners[current].title}</h2>
                 <p className="text-lg sm:text-xl mb-4">{banners[current].desc}</p>
-                <Button className="bg-white text-black hover:bg-gray-100 w-[100px]">
+                <Button className="bg-white text-black hover:bg-black hover:text-white w-[100px]">
                     Shop Now
                 </Button>
             </div>
