@@ -102,7 +102,7 @@ export default function NewProductPage() {
 			console.log("Creating product:", { ...formData, images });
 
 			// Redirect to products list
-			router.push("/admin/products");
+			router.push("/admin");
 		} catch (error) {
 			console.error("Failed to create product:", error);
 		} finally {

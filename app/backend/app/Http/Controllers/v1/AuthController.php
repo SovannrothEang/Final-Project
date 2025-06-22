@@ -26,6 +26,7 @@ class AuthController extends ApiController
      *         ref="#/components/schemas/loginRequest"
      *       )
      *     ),
+     *     tags={"Authentication"},
      *     @OA\Response(response="200", description="Successful login"),
      *     @OA\Response(response="404", description="User not found"),
      *     @OA\Response(response="422", description="Validation errors"),
@@ -69,6 +70,7 @@ class AuthController extends ApiController
      *         ref="#/components/schemas/registerRequest"
      *       )
      *     ),
+     *     tags={"Authentication"},
      *     @OA\Response(response="201", description="User registered successfully"),
      *     @OA\Response(response="422", description="Validation errors"),
      *     @OA\Response(response="500", description="Internal error")
@@ -100,6 +102,7 @@ class AuthController extends ApiController
      * @OA\Post(
      *     path="/api/logout",
      *     summary="Logout authenticated user",
+     *     tags={"Authentication"},
      *     @OA\Response(response="200", description="Logged out successfully"),
      *     @OA\Response(response="401", description="No active session to log out")
      * )
@@ -127,6 +130,7 @@ class AuthController extends ApiController
      * @OA\Get(
      *     path="/api/user",
      *     summary="Get authenticated user details",
+     *     tags={"Users"},
      *     @OA\Response(response="200", description="Successful operation")
      * )
      */
@@ -161,6 +165,7 @@ class AuthController extends ApiController
      * @OA\Get(
      *     path="/api/verify-token",
      *     summary="Get authenticated user details",
+     *     tags={"Authentication"},
      *     @OA\Response(response="200", description="Successful operation"),
      *     @OA\Response(response="401", description="Unauthenticated")
      * )

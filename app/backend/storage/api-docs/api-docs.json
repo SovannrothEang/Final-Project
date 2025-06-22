@@ -20,6 +20,9 @@
     "paths": {
         "/api/login": {
             "post": {
+                "tags": [
+                    "Authentication"
+                ],
                 "summary": "Authenticate the user and generate token",
                 "operationId": "dccac2a5094d04cf5cc9c1582abc2e7b",
                 "requestBody": {
@@ -50,6 +53,9 @@
         },
         "/api/register": {
             "post": {
+                "tags": [
+                    "Authentication"
+                ],
                 "summary": "Register a new user",
                 "operationId": "f167f186a486a0f8e06ffb1336624738",
                 "requestBody": {
@@ -77,6 +83,9 @@
         },
         "/api/logout": {
             "post": {
+                "tags": [
+                    "Authentication"
+                ],
                 "summary": "Logout authenticated user",
                 "operationId": "00d3150b2027492394868c44c5f59d67",
                 "responses": {
@@ -91,6 +100,9 @@
         },
         "/api/user": {
             "get": {
+                "tags": [
+                    "Users"
+                ],
                 "summary": "Get authenticated user details",
                 "operationId": "60d38658484dc1931140abc31ad7b146",
                 "responses": {
@@ -102,6 +114,9 @@
         },
         "/api/verify-token": {
             "get": {
+                "tags": [
+                    "Authentication"
+                ],
                 "summary": "Get authenticated user details",
                 "operationId": "4fe7221687a66a816bc6b2916c39b770",
                 "responses": {
@@ -116,6 +131,9 @@
         },
         "/api/products": {
             "get": {
+                "tags": [
+                    "Products"
+                ],
                 "summary": "Display a listing of products",
                 "operationId": "f53089f4fc0a517f40c0cdc2628a0ee0",
                 "responses": {
@@ -128,6 +146,9 @@
                 }
             },
             "post": {
+                "tags": [
+                    "Products"
+                ],
                 "summary": "Store a newly created product",
                 "operationId": "c2401354142b3a4ae63f7656ca402ee7",
                 "requestBody": {
@@ -155,6 +176,9 @@
         },
         "/api/products/{id}": {
             "get": {
+                "tags": [
+                    "Products"
+                ],
                 "summary": "Display the specified product",
                 "operationId": "1502abea5463e596733f38d93f860a53",
                 "parameters": [
@@ -177,6 +201,9 @@
                 }
             },
             "put": {
+                "tags": [
+                    "Products"
+                ],
                 "summary": "Update the specified product",
                 "operationId": "af19c0e93c35fb16a1cb32a370ce59c0",
                 "parameters": [
@@ -215,6 +242,9 @@
                 }
             },
             "delete": {
+                "tags": [
+                    "Products"
+                ],
                 "summary": "Remove the specified product",
                 "operationId": "12cd2aab2b42245b4a57c4131cf094f6",
                 "parameters": [
@@ -470,6 +500,20 @@
             }
         }
     },
+    "tags": [
+        {
+            "name": "Products",
+            "description": "API Endpoints for Products"
+        },
+        {
+            "name": "Authentication",
+            "description": "API Endpoints for Authenticating"
+        },
+        {
+            "name": "Users",
+            "description": "API Endpoints for Users"
+        }
+    ],
     "security": [
         {
             "sanctum": []
