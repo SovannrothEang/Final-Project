@@ -150,9 +150,9 @@ export default function ContactPage() {
     		                <p className="text-gray-600 mb-4">
     		                    We are available 24/7, 7 days a week.
     		                </p>
-    		                <p className="text-gray-800 font-medium">Phone: +8558512345678</p>
-    		                <p className="text-gray-800 font-medium">Phone: +8558633332222</p>
-    		                <p className="text-gray-800 font-medium">Phone: +8559899887766</p>
+    		                <p className="text-gray-800 font-medium">Phone: 085 123 456</p>
+    		                <p className="text-gray-800 font-medium">Phone: 086 333 322</p>
+    		                <p className="text-gray-800 font-medium">Phone: 098 998 876</p>
     		            </div>
 
 						{/* Write To Us */}

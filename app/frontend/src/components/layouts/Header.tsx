@@ -29,7 +29,9 @@ export function Header() {
 			<header className="border-b sticky z-50 top-0 bg-gray-50/75 backdrop-blur-sm">
 				<div className="container mx-auto px-4 py-4 grid grid-cols-2 md:grid-cols-3">
 					<div className="text-2xl font-bold flex items-center">
-						<Link href="/">Exclusive</Link>
+						<span className="animate-bounce-up">
+							<Link href="/">Exclusive</Link>
+						</span>
 					</div>
 					<div className="flex items-center justify-center md:px-4">
 						<div className="relative w-full rounded-full border border-gray-400">
@@ -68,6 +70,29 @@ export function Header() {
 					</nav>
 				</div>
 			</header>
+			<style jsx global>{`
+    			@keyframes bounce-up {
+    			    0%, 100% {
+    			        transform: translateY(0);
+    			    }
+    			    20% {
+    			        transform: translateY(-18px);
+    			    }
+    			    40% {
+    			        transform: translateY(0);
+    			    }
+    			    60% {
+    			        transform: translateY(-10px);
+    			    }
+    			    80% {
+    			        transform: translateY(0);
+    			    }
+    			}
+    			.animate-bounce-up {
+    			    display: inline-block;
+    			    animation: bounce-up 1.6s infinite;
+    			}
+			`}</style>
 		</>
 	);
 }
