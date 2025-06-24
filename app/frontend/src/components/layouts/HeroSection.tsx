@@ -1,10 +1,11 @@
 "use client";
+
 import { useState } from "react";
 import { useEffect } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import Asuspic from "../../assets/asus.png";
+import Asuspic from "../../assets/Asus.png";
 import Razerpic from "../../assets/razer.webp";
 import Acerpic from "../../assets/acer.png";
 import Msipic from "../../assets/msi.png";
