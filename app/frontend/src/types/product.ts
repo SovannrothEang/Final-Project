@@ -1,22 +1,48 @@
-export interface Product {
-	id: string;
+// export interface Product {
+// 	id: string;
+// 	name: string;
+// 	brand: string;
+// 	sku: string;
+// 	price: number;
+// 	description: string;
+// 	options: { colors: string[]; sizes: string[] };
+// 	discount: number;
+// 	stock: number;
+// 	inStock: boolean;
+// 	isNew: boolean;
+// 	category: string;
+// 	status: string;
+// 	rating: number;
+// 	reviews: number;
+// 	images: string;
+// 	createdAt: string;
+// }
+// // image: { src: string; alt: string };
+
+export interface Product{
+	id: number;
 	name: string;
-	brand: string;
-	sku: string;
+	category: number; // store category id
 	price: number;
 	description: string;
-	options: { colors: string[]; sizes: string[] };
+	options: {
+		series: string[];
+		colors: string[];
+		sizes: string[];
+	};
 	discount: number;
 	stock: number;
 	inStock: boolean;
 	isNew: boolean;
-	category: string;
+	isTop: boolean;
 	status: string;
 	rating: number;
 	reviews: number;
 	images: string;
 	createdAt: string;
+	updatedAt: string;
 }
-// image: { src: string; alt: string };
 
 export type ProductList = Product[];
+
+
