@@ -23,9 +23,9 @@ export default async function EditProductPage({
 			{/* Header */}
 			<div className="flex items-center gap-4">
 				<Button variant="ghost" size="icon" asChild>
-					<Link href="/admin">
+					{/* <Link href="/admin"> */}
 						<ArrowLeft className="w-4 h-4" />
-					</Link>
+					{/* </Link> */}
 				</Button>
 				<div>
 					<h1 className="text-3xl font-bold text-gray-900">Edit Product</h1>

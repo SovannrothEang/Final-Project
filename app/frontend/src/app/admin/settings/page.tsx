@@ -26,6 +26,7 @@ import {
 	Bell,
 	Save,
 	Trash2,
+	Plus,
 } from "lucide-react";
 
 export default function AdminSettingsPage() {
@@ -43,6 +44,7 @@ export default function AdminSettingsPage() {
 		timezone: "Asia/Dhaka",
 		language: "English",
 		maintenanceMode: false,
+		storeEmails: ["admin@gmail.com"],
 	});
 
 	// Email Settings State
@@ -117,6 +119,29 @@ export default function AdminSettingsPage() {
 		}
 	};
 
+	const addEmail = () => {
+		setGeneralSettings((prev) => ({
+		...prev,
+		storeEmails: [...prev.storeEmails, ''],
+		}));
+	};
+
+	// Function to remove an email field
+	const removeEmail = (index: number) => {
+		setGeneralSettings((prev) => ({
+		...prev,
+		storeEmails: prev.storeEmails.filter((_, i) => i !== index),
+		}));
+	};
+
+	// Function to update an email at a specific index
+	const updateEmail = (index: number, value: string) => {
+		setGeneralSettings((prev) => ({
+		...prev,
+		storeEmails: prev.storeEmails.map((email, i) => (i === index ? value : email)),
+		}));
+	};
+
 	return (
 		<div className="space-y-6">
 			{/* Header */}
@@ -139,27 +164,35 @@ export default function AdminSettingsPage() {
 					</TabsTrigger>
 					<TabsTrigger value="email" className="flex items-center gap-2">
 						<Mail className="w-4 h-4" />
-						Email
+						Contact
 					</TabsTrigger>
-					<TabsTrigger value="payment" className="flex items-center gap-2">
+					<TabsTrigger value="message" className="flex items-center gap-2">
+						<Mail className="w-4 h-4" />
+						Message
+					</TabsTrigger>
+					{/* <TabsTrigger value="email" className="flex items-center gap-2">
+						<Mail className="w-4 h-4" />
+						Email
+					</TabsTrigger> */}
+					{/* <TabsTrigger value="payment" className="flex items-center gap-2">
 						<CreditCard className="w-4 h-4" />
 						Payment
-					</TabsTrigger>
-					<TabsTrigger value="shipping" className="flex items-center gap-2">
+					</TabsTrigger> */}
+					{/* <TabsTrigger value="shipping" className="flex items-center gap-2">
 						<Truck className="w-4 h-4" />
 						Shipping
-					</TabsTrigger>
-					<TabsTrigger value="security" className="flex items-center gap-2">
+					</TabsTrigger> */}
+					{/* <TabsTrigger value="security" className="flex items-center gap-2">
 						<Shield className="w-4 h-4" />
 						Security
-					</TabsTrigger>
-					<TabsTrigger
+					</TabsTrigger> */}
+					{/* <TabsTrigger
 						value="notifications"
 						className="flex items-center gap-2"
 					>
 						<Bell className="w-4 h-4" />
 						Notifications
-					</TabsTrigger>
+					</TabsTrigger> */}
 				</TabsList>
 
 				{/* General Settings */}
@@ -186,7 +219,7 @@ export default function AdminSettingsPage() {
 										}
 									/>
 								</div>
-								<div className="space-y-2">
+								{/* <div className="space-y-2">
 									<Label htmlFor="storeEmail">Store Email</Label>
 									<Input
 										id="storeEmail"
@@ -199,6 +232,38 @@ export default function AdminSettingsPage() {
 											}))
 										}
 									/>
+								</div> */}
+								<div className="space-y-2">
+								<Label>Store Emails</Label>
+								{(generalSettings.storeEmails || []).map((email, index) => (
+									<div key={index} className="flex items-center gap-2">
+									<Input
+										id={`storeEmail-${index}`}
+										type="email"
+										value={email}
+										onChange={(e) => updateEmail(index, e.target.value)}
+										placeholder={`Email ${index + 1}`}
+									/>
+									{generalSettings.storeEmails.length > 1 && (
+										<Button
+										variant="destructive"
+										size="icon"
+										onClick={() => removeEmail(index)}
+										>
+										<Trash2 className="w-4 h-4" />
+										</Button>
+									)}
+									</div>
+								))}
+								<Button
+									variant="outline"
+									size="sm"
+									onClick={addEmail}
+									className="mt-2"
+								>
+									<Plus className="w-4 h-4 mr-2" />
+									Add Email
+								</Button>
 								</div>
 							</div>
 
@@ -302,7 +367,7 @@ export default function AdminSettingsPage() {
 				</TabsContent>
 
 				{/* Email Settings */}
-				<TabsContent value="email" className="space-y-6">
+				{/* <TabsContent value="email" className="space-y-6">
 					<Card>
 						<CardHeader>
 							<CardTitle className="flex items-center gap-2">
@@ -423,7 +488,7 @@ export default function AdminSettingsPage() {
 							</Button>
 						</CardContent>
 					</Card>
-				</TabsContent>
+				</TabsContent> */}
 
 				{/* Payment Settings */}
 				<TabsContent value="payment" className="space-y-6">
