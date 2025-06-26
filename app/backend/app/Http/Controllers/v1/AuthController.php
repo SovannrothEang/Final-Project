@@ -53,7 +53,7 @@ class AuthController extends ApiController
                 'success' => false,
                 'message' => 'Validation failed',
                 'errors' => $e->getMessage()
-            ], 500);
+            ], 422);
         }
     }
 
@@ -92,7 +92,7 @@ class AuthController extends ApiController
                 'success' => false,
                 'message' => 'Registeration failed',
                 'errors' => $e->getMessage()
-            ], 500);
+            ], 422);
         }
     }
     /**

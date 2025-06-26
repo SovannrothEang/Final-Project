@@ -2,53 +2,102 @@
 
 namespace App\Http\Requests\Products;
 
+use App\Rules\ValidProductOptions;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
- * @OA\Schema(
- *      schema="storeProduct",
- *      required={"name", "description", "price", "quantity", "options"},
- *     @OA\Property(
- *         property="name",
- *         type="string"
- *     ),
- *     @OA\Property(
- *         property="description",
- *         type="string",
- *     ),
- *     @OA\Property(
- *         property="price",
- *         type="number",
- *         format="float",
- *     ),
- *     @OA\Property(
- *         property="quantity",
- *         type="integer"
- *     ),
- *     @OA\Property(
- *         property="options",
- *         type="array",
- *         description="Available product options",
- *         @OA\Items(
- *             type="object",
- *             @OA\Property(
- *                  property="color",
- *                  type="array",
- *                  @OA\Items(
- *                    type="string"
- *                  )
- *              ),
- *             @OA\Property(
- *                  property="size",
- *                  type="array",
- *                  @OA\Items(
- *                    type="string"
- *                  )
- *              )
- *         )
- *     )
- * )
- */
+ *  @OA\Schema(
+ *       schema="storeProduct",
+ *       required={"name", "brand", "price", "quantity", "options", "category_id", "stock", "user_id"},
+ *      @OA\Property(
+ *          property="name",
+ *          type="string",
+ *          description="Product name"
+ *      ),
+ *      @OA\Property(
+ *          property="brand",
+ *          type="string",
+ *          description="Product brand"
+ *      ),
+ *      @OA\Property(
+ *          property="price",
+ *          type="number",
+ *          format="float",
+ *          description="Product price"
+ *      ),
+ *      @OA\Property(
+ *          property="category_id",
+ *          type="integer",
+ *          description="Category ID"
+ *      ),
+ *      @OA\Property(
+ *          property="description",
+ *          type="string",
+ *          description="Product description",
+ *          nullable=true
+ *      ),
+ *      @OA\Property(
+ *          property="short_description",
+ *          type="string",
+ *          description="Short product description",
+ *          nullable=true
+ *      ),
+ *      @OA\Property(
+ *          property="stock",
+ *          type="integer",
+ *          description="Stock quantity",
+ *          example=10
+ *      ),
+ *      @OA\Property(
+ *          property="options",
+ *          type="object",
+ *          description="Available product options (color, size, etc.)",
+ *          example={
+ *              "color": {"red", "blue"},
+ *              "size": {"small", "medium"}
+ *          }
+ *      ),
+ *      @OA\Property(
+ *          property="discount",
+ *          type="integer",
+ *          description="Discount percentage",
+ *          nullable=true,
+ *          example=10
+ *      ),
+ *      @OA\Property(
+ *          property="is_top",
+ *          type="boolean",
+ *          description="Is top product flag",
+ *          nullable=true
+ *      ),
+ *      @OA\Property(
+ *          property="status",
+ *          type="string",
+ *          description="Product status",
+ *          nullable=true,
+ *          enum={"available", "out_of_stock", "discontinued"}
+ *      ),
+ *      @OA\Property(
+ *          property="rating",
+ *          type="integer",
+ *          description="Product rating",
+ *          nullable=true,
+ *          example=5
+ *      ),
+ *      @OA\Property(
+ *          property="reviews",
+ *          type="integer",
+ *          description="Number of reviews",
+ *          nullable=true,
+ *          example=10
+ *      ),
+ *      @OA\Property(
+ *          property="user_id",
+ *          type="integer",
+ *          description="ID of the user who created the product"
+ *      )
+ *  )
+ */ 
 
 class StoreProductRequest extends FormRequest
 {
@@ -69,12 +118,21 @@ class StoreProductRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'description' => 'nullable|string|max:255',
+            'brand' => 'required|string|max:255',
             'price' => 'required|numeric|min:0.01',
-            'quantity' => 'required|integer|min:1',
-            'options' => 'nullable|array',
-            'options.*' => ['array'],
-            'options.*.*' => ['string'],
+            'category_id' => 'required|integer',
+            'description' => 'nullable|string|max:255',
+            'short_description' => 'nullable|string|max:255',
+            'stock' => 'required|integer|min:1',
+            'options' => [
+                'required',
+                new ValidProductOptions(),
+            ],
+            'discount' => 'nullable|integer',
+            'is_top' => 'nullable|boolean',
+            'status' => 'nullable|string',
+            'rating' => 'nullable|integer',
+            'reviews' => 'nullable|integer',
             'user_id' => 'required|integer',
         ];
     }
@@ -84,10 +142,43 @@ class StoreProductRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'Product name is required',
-            'price.min' => 'Price must be at least 0.01',
-            'quantity.min' => 'Stock must be at least 1',
-        ];
+        'name.required' => 'Product name is required',
+        'name.string' => 'Product name must be a string',
+        'name.max' => 'Product name must not exceed 255 characters',
+        
+        'brand.required' => 'Brand name is required',
+        'brand.string' => 'Brand name must be a string',
+        'brand.max' => 'Brand name must not exceed 255 characters',
+        
+        'price.required' => 'Price is required',
+        'price.numeric' => 'Price must be a number',
+        'price.min' => 'Price must be at least 0.01',
+        
+        'description.string' => 'Description must be a string',
+        'description.max' => 'Description must not exceed 255 characters',
+        
+        'short_description.string' => 'Short description must be a string',
+        'short_description.max' => 'Short description must not exceed 255 characters',
+        
+        'stock.required' => 'Stock quantity is required',
+        'stock.integer' => 'Stock must be an integer',
+        'stock.min' => 'Stock must be at least 1',
+        
+        'options.required' => 'Product options are required',
+        
+        'discount.integer' => 'Discount must be an integer',
+        
+        'is_top.integer' => 'Top product flag must be an integer',
+        
+        'status.string' => 'Status must be a string',
+        
+        'rating.integer' => 'Rating must be an integer',
+        
+        'reviews.integer' => 'Reviews count must be an integer',
+        
+        'user_id.required' => 'User ID is required',
+        'user_id.integer' => 'User ID must be an integer',
+    ];
     }
 
     /**

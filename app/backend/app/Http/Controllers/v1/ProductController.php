@@ -17,7 +17,7 @@ class ProductController extends ApiController
      */
     /**
      * @OA\Get(
-     *     path="/api/products",
+     *     path="/api/v1/products",
      *     summary="Display a listing of products",
      *     tags={"Products"},
      *     @OA\Response(
@@ -45,7 +45,7 @@ class ProductController extends ApiController
      */
     /**
      * @OA\Post(
-     *     path="/api/products",
+     *     path="/api/v1/products",
      *     summary="Store a newly created product",
      *     tags={"Products"},
      *     @OA\RequestBody(
@@ -71,11 +71,17 @@ class ProductController extends ApiController
         try {
             $validated = $request->validated();
             $product = Product::create($validated);
+            if ($product)
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Create product successfully!',
+                    'location' => env('APP_URL').'/api/v1/products/'.$product->id,
+                ], 201);
+
             return response()->json([
-                'success' => true,
-                'message' => 'Create product successfully!',
-                'location' => env('APP_URL').'/api/products/'.$product->id,
-            ], 201);
+                'success' => false,
+                'message' => 'Failed to create product!',
+            ], 400);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -90,7 +96,7 @@ class ProductController extends ApiController
      */
     /**
      * @OA\Get(
-     *     path="/api/products/{id}",
+     *     path="/api/v1/products/{id}",
      *     summary="Display the specified product",
      *     tags={"Products"},
      *     @OA\Parameter(
@@ -129,7 +135,7 @@ class ProductController extends ApiController
      */
     /**
      * @OA\Put(
-     *     path="/api/products/{id}",
+     *     path="/api/v1/products/{id}",
      *     summary="Update the specified product",
      *     tags={"Products"},
      *     @OA\Parameter(
@@ -192,7 +198,7 @@ class ProductController extends ApiController
      */
     /**
      * @OA\Delete(
-     *     path="/api/products/{id}",
+     *     path="/api/v1/products/{id}",
      *     summary="Remove the specified product",
      *     tags={"Products"},
      *     @OA\Parameter(

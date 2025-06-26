@@ -129,13 +129,13 @@
                 }
             }
         },
-        "/api/products": {
+        "/api/v1/products": {
             "get": {
                 "tags": [
                     "Products"
                 ],
                 "summary": "Display a listing of products",
-                "operationId": "f53089f4fc0a517f40c0cdc2628a0ee0",
+                "operationId": "a31062dc8c5c8351b96c47fbe4f0534e",
                 "responses": {
                     "200": {
                         "description": "Successful operation"
@@ -150,7 +150,7 @@
                     "Products"
                 ],
                 "summary": "Store a newly created product",
-                "operationId": "c2401354142b3a4ae63f7656ca402ee7",
+                "operationId": "55c957b76252aec7cefa0f9fcb5677fc",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -174,13 +174,13 @@
                 }
             }
         },
-        "/api/products/{id}": {
+        "/api/v1/products/{id}": {
             "get": {
                 "tags": [
                     "Products"
                 ],
                 "summary": "Display the specified product",
-                "operationId": "1502abea5463e596733f38d93f860a53",
+                "operationId": "275c4d703cdf48428bd7d6542154af8a",
                 "parameters": [
                     {
                         "name": "id",
@@ -205,7 +205,7 @@
                     "Products"
                 ],
                 "summary": "Update the specified product",
-                "operationId": "af19c0e93c35fb16a1cb32a370ce59c0",
+                "operationId": "d23c5cabb1aa9757915f62f375f44d51",
                 "parameters": [
                     {
                         "name": "id",
@@ -246,7 +246,7 @@
                     "Products"
                 ],
                 "summary": "Remove the specified product",
-                "operationId": "12cd2aab2b42245b4a57c4131cf094f6",
+                "operationId": "082b04e8a7c8b26ec6c42f977bfbdc99",
                 "parameters": [
                     {
                         "name": "id",
@@ -313,45 +313,97 @@
             "storeProduct": {
                 "required": [
                     "name",
-                    "description",
+                    "brand",
                     "price",
                     "quantity",
-                    "options"
+                    "options",
+                    "category_id",
+                    "stock",
+                    "user_id"
                 ],
                 "properties": {
                     "name": {
+                        "description": "Product name",
                         "type": "string"
                     },
-                    "description": {
+                    "brand": {
+                        "description": "Product brand",
                         "type": "string"
                     },
                     "price": {
+                        "description": "Product price",
                         "type": "number",
                         "format": "float"
                     },
-                    "quantity": {
+                    "category_id": {
+                        "description": "Category ID",
                         "type": "integer"
                     },
+                    "description": {
+                        "description": "Product description",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "short_description": {
+                        "description": "Short product description",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "stock": {
+                        "description": "Stock quantity",
+                        "type": "integer",
+                        "example": 10
+                    },
                     "options": {
-                        "description": "Available product options",
-                        "type": "array",
-                        "items": {
-                            "properties": {
-                                "color": {
-                                    "type": "array",
-                                    "items": {
-                                        "type": "string"
-                                    }
-                                },
-                                "size": {
-                                    "type": "array",
-                                    "items": {
-                                        "type": "string"
-                                    }
-                                }
-                            },
-                            "type": "object"
+                        "description": "Available product options (color, size, etc.)",
+                        "type": "object",
+                        "example": {
+                            "color": [
+                                "red",
+                                "blue"
+                            ],
+                            "size": [
+                                "small",
+                                "medium"
+                            ]
                         }
+                    },
+                    "discount": {
+                        "description": "Discount percentage",
+                        "type": "integer",
+                        "example": 10,
+                        "nullable": true
+                    },
+                    "is_top": {
+                        "description": "Is top product flag",
+                        "type": "boolean",
+                        "nullable": true
+                    },
+                    "status": {
+                        "description": "Product status",
+                        "type": "string",
+                        "enum": [
+                            "available",
+                            "out_of_stock",
+                            "discontinued"
+                        ],
+                        "nullable": true
+                    },
+                    "rating": {
+                        "description": "Product rating",
+                        "type": "integer",
+                        "example": 5,
+                        "nullable": true
+                    },
+                    "reviews": {
+                        "description": "Number of reviews",
+                        "type": "integer",
+                        "example": 10,
+                        "nullable": true
+                    },
+                    "user_id": {
+                        "description": "ID of the user who created the product",
+                        "type": "integer"
                     }
                 },
                 "type": "object"
@@ -405,48 +457,94 @@
             "product": {
                 "required": [
                     "name",
-                    "descriptions",
+                    "brand",
                     "price",
-                    "quantity"
+                    "quantity",
+                    "options"
                 ],
                 "properties": {
                     "id": {
+                        "description": "Product ID",
                         "type": "integer",
                         "format": "int64"
                     },
                     "name": {
+                        "description": "Product name",
                         "type": "string"
                     },
-                    "descriptions": {
+                    "brand": {
+                        "description": "Product brand",
+                        "type": "string"
+                    },
+                    "description": {
+                        "description": "Product description",
+                        "type": "string"
+                    },
+                    "short_description": {
+                        "description": "Short product description",
                         "type": "string"
                     },
                     "price": {
+                        "description": "Product price",
                         "type": "number",
                         "format": "float"
                     },
-                    "quantity": {
+                    "stock": {
+                        "description": "Stock quantity (alias for quantity)",
                         "type": "integer"
                     },
                     "options": {
-                        "description": "Available product options",
+                        "description": "Available product options (color, size, etc.)",
+                        "type": "object",
+                        "example": {
+                            "color": [
+                                "red",
+                                "blue"
+                            ],
+                            "size": [
+                                "small",
+                                "medium"
+                            ]
+                        }
+                    },
+                    "discount": {
+                        "description": "Discount percentage",
+                        "type": "integer",
+                        "example": 10
+                    },
+                    "is_top": {
+                        "description": "Is top product flag",
+                        "type": "boolean"
+                    },
+                    "status": {
+                        "description": "Product status",
+                        "type": "string",
+                        "enum": [
+                            "available",
+                            "out_of_stock",
+                            "discontinued"
+                        ]
+                    },
+                    "rating": {
+                        "description": "Product rating",
+                        "type": "integer",
+                        "example": 5
+                    },
+                    "reviews": {
+                        "description": "Number of reviews",
+                        "type": "integer",
+                        "example": 10
+                    },
+                    "images_id": {
+                        "description": "Array of image IDs",
                         "type": "array",
                         "items": {
-                            "properties": {
-                                "color": {
-                                    "type": "array",
-                                    "items": {
-                                        "type": "string"
-                                    }
-                                },
-                                "size": {
-                                    "type": "array",
-                                    "items": {
-                                        "type": "string"
-                                    }
-                                }
-                            },
-                            "type": "object"
+                            "type": "integer"
                         }
+                    },
+                    "user_id": {
+                        "description": "ID of the user who created the product",
+                        "type": "integer"
                     },
                     "created_at": {
                         "description": "Creation timestamp",

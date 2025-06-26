@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Products;
 
+use App\Rules\ValidProductOptions;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
@@ -59,12 +60,20 @@ class UpdateProductRequest extends FormRequest
     {
         return [
             'name' => 'sometimes|string|max:255',
-            'description' => 'sometimes|string|max:255',
+            'brand' => 'sometimes|string|max:255',
             'price' => 'sometimes|numeric|min:0.01',
-            'quantity' => 'sometimes|integer|min:1',
-            'options' => 'sometimes|array',
-            'options.*' => ['sometimes'],
-            'options.*.*' => ['sometimes'],
+            'description' => 'nullable|string|max:255',
+            'short_description' => 'nullable|string|max:255',
+            'stock' => 'sometimes|integer|min:1',
+            'options' => [
+                'sometimes',
+                new ValidProductOptions(),
+            ],
+            'discount' => 'nullable|integer',
+            'is_top' => 'nullable|boolean',
+            'status' => 'nullable|string',
+            'rating' => 'nullable|integer',
+            'reviews' => 'nullable|integer',
         ];
     }
     /**
@@ -73,9 +82,25 @@ class UpdateProductRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'Product name is required',
+            'name.string' => 'Product name must be a string',
+            'name.max' => 'Product name must not exceed 255 characters',
+            
+            'brand.string' => 'Brand name must be a string',
+            'brand.max' => 'Brand name must not exceed 255 characters',
+            
+            'price.numeric' => 'Price must be a number',
             'price.min' => 'Price must be at least 0.01',
-            'quantity.min' => 'Stock must be at least 1',
+            
+            'description.string' => 'Description must be a string',
+            'description.max' => 'Description must not exceed 255 characters',
+            
+            'short_description.string' => 'Short description must be a string',
+            'short_description.max' => 'Short description must not exceed 255 characters',
+            
+            'stock.integer' => 'Stock must be an integer',
+            'stock.min' => 'Stock must be at least 1',
+            
+            'options.*' => 'Invalid product options format',
         ];
     }
 }
