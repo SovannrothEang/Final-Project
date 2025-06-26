@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('tbl_products', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('brand');
+            $table->foreignId('brand_id')
+                ->constrained('tbl_brands', 'id');
             $table->foreignId('category_id')
                 ->constrained('tbl_categories', 'id');
             $table->decimal('price', 10, 2);
@@ -24,8 +25,8 @@ return new class extends Migration
             $table->integer('discount')->nullable();
             $table->integer('stock')->default(0);
             $table->boolean('is_top');
-            $table->string('status', ['pending', 'completed', 'failed'])
-                ->default('pending');
+            $table->string('status', ['available', 'out_of_stock', 'discontinued'])
+                ->default('available');
             $table->integer('rating');
             $table->integer('reviews');
             $table->foreignId('user_id')

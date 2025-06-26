@@ -3,7 +3,7 @@
 namespace App\Enum;
 
 enum Status: string {
-  case PENDING = 'pending';
-  case COMPLETED = 'completed';
-  case FAILED = 'failed';
+  case AVAILABLE = 'available';
+  case OUT_OF_STOCK = 'out_of_stock';
+  case DISCONTINUED = 'discontinued';
 }

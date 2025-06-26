@@ -8,6 +8,7 @@ use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Exception;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 
@@ -18,7 +19,7 @@ class AuthController extends ApiController
      */
     /**
      * @OA\Post(
-     *     path="/api/login",
+     *     path="/api/auth/login",
      *     summary="Authenticate the user and generate token",
      *     @OA\RequestBody(
      *       required=true,
@@ -35,26 +36,20 @@ class AuthController extends ApiController
      */
     public function login(LoginRequest $request) : JsonResponse
     {
-        try {
-            $validated = $request->validated();
-            $user = User::where('email', $validated['email'])->first();
-            if(!$user || !Hash::check($validated['password'], $user->password)){
-                return response()->json([
-                    'success' => false,
-                    'message' => 'The provided credential is incorrect!',
-                ], 404);
-            }
-            return response()->json([
-                'success' => true,
-                'token' => $user->createToken('api-token')->plainTextToken
-            ], 200);
-        } catch(Exception $e) {
+        $validated = $request->validated();
+
+        $user = User::where('email', $validated['email'])->first();
+
+        if(!$user || !Hash::check($validated['password'], $user->password)){
             return response()->json([
                 'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $e->getMessage()
-            ], 422);
+                'message' => 'Invalid credential',
+            ], 401);
         }
+        return response()->json([
+            'success' => true,
+            'token' => $user->createToken('api-token')->plainTextToken
+        ], 200);
     }
 
     /**
@@ -62,7 +57,7 @@ class AuthController extends ApiController
      */
     /**
      * @OA\Post(
-     *     path="/api/register",
+     *     path="/api/auth/register",
      *     summary="Register a new user",
      *     @OA\RequestBody(
      *       required=true,
@@ -82,17 +77,26 @@ class AuthController extends ApiController
         try {
             $validated = $request->validated();
             $user = User::create($validated);
+            
             return response()->json([
                 'success' => true,
                 'message' => 'User registered successfully',
                 'token' => $user->createToken('api-token')->plainTextToken
             ], 201);
-        } catch(Exception $e) {
+            
+        } catch (QueryException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Registeration failed',
-                'errors' => $e->getMessage()
-            ], 422);
+                'message' => 'Registration failed: database error',
+                'errors' => config('app.debug') ? $e->getMessage() : null
+            ], 500);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Registration failed',
+                'errors' => config('app.debug') ? $e->getMessage() : null
+            ], 500);
         }
     }
     /**
@@ -110,14 +114,16 @@ class AuthController extends ApiController
     public function logout(Request $request)
     {
         $user = $request->user();
-        if( $user && $user->currentAccessToken()) {
-            $user->tokens()
-                ->where('id', $user->currentAccessToken()->id)->delete();
+        
+        if ($user && $user->currentAccessToken()) {
+            $user->currentAccessToken()->delete();
+            
             return response()->json([
                 'success' => true,
-                'message' => 'Logged out successfully']
-            );
+                'message' => 'Logged out successfully'
+            ]);
         }
+
         return response()->json([
             'success' => false,
             'message' => 'No active session to log out'
@@ -128,34 +134,27 @@ class AuthController extends ApiController
      */
     /**
      * @OA\Get(
-     *     path="/api/user",
+     *     path="/api/auth/user",
      *     summary="Get authenticated user details",
      *     tags={"Users"},
-     *     @OA\Response(response="200", description="Successful operation")
-     * )
+     *     @OA\Response(response="200", description="Successful operation"),
+     *     @OA\Response(response="401", description="Unauthenticated")
+     *  )
      */
     public function user()
     {
         $user = auth()->user();
+
         if (!$user) {
             return response()->json([
                 'success' => false,
-                'message' => 'Unauthenticated.'
+                'message' => 'Unauthenticated'
             ], 401);
         }
 
-        $id = $user->id;
-        $data = User::where('id', $id)->firstOrFail();
-        if($data === null)
-        {
-            return response()->json([
-                'success' => false,
-                'message' => "Invalid user ID!",
-            ]);
-        }
         return response()->json([
             'success' => true,
-            'data' => new UserResource($data)
+            'data' => new UserResource($user)
         ]);
     }
     /**
@@ -163,7 +162,7 @@ class AuthController extends ApiController
      */
     /**
      * @OA\Get(
-     *     path="/api/verify-token",
+     *     path="/api/v1/verify-token",
      *     summary="Get authenticated user details",
      *     tags={"Authentication"},
      *     @OA\Response(response="200", description="Successful operation"),

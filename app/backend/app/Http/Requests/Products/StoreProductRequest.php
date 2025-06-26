@@ -4,98 +4,29 @@ namespace App\Http\Requests\Products;
 
 use App\Rules\ValidProductOptions;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 /**
  *  @OA\Schema(
  *       schema="storeProduct",
  *       required={"name", "brand", "price", "quantity", "options", "category_id", "stock", "user_id"},
- *      @OA\Property(
- *          property="name",
- *          type="string",
- *          description="Product name"
- *      ),
- *      @OA\Property(
- *          property="brand",
- *          type="string",
- *          description="Product brand"
- *      ),
- *      @OA\Property(
- *          property="price",
- *          type="number",
- *          format="float",
- *          description="Product price"
- *      ),
- *      @OA\Property(
- *          property="category_id",
- *          type="integer",
- *          description="Category ID"
- *      ),
- *      @OA\Property(
- *          property="description",
- *          type="string",
- *          description="Product description",
- *          nullable=true
- *      ),
- *      @OA\Property(
- *          property="short_description",
- *          type="string",
- *          description="Short product description",
- *          nullable=true
- *      ),
- *      @OA\Property(
- *          property="stock",
- *          type="integer",
- *          description="Stock quantity",
- *          example=10
- *      ),
- *      @OA\Property(
- *          property="options",
- *          type="object",
- *          description="Available product options (color, size, etc.)",
+ *      @OA\Property(property="name", type="string", description="Product name"),
+ *      @OA\Property(property="brand", type="string", description="Product brand"),
+ *      @OA\Property(property="price", type="number", format="float", description="Product price"),
+ *      @OA\Property(property="category_id", type="integer", description="Category ID"),
+ *      @OA\Property(property="description", type="string", description="Product description", nullable=true),
+ *      @OA\Property(property="short_description", type="string", description="Short product description", nullable=true),
+ *      @OA\Property(property="stock", type="integer", description="Stock quantity", example=10),
+ *      @OA\Property( property="options", type="object", description="Available product options (color, size, etc.)",
  *          example={
  *              "color": {"red", "blue"},
  *              "size": {"small", "medium"}
- *          }
- *      ),
- *      @OA\Property(
- *          property="discount",
- *          type="integer",
- *          description="Discount percentage",
- *          nullable=true,
- *          example=10
- *      ),
- *      @OA\Property(
- *          property="is_top",
- *          type="boolean",
- *          description="Is top product flag",
- *          nullable=true
- *      ),
- *      @OA\Property(
- *          property="status",
- *          type="string",
- *          description="Product status",
- *          nullable=true,
- *          enum={"available", "out_of_stock", "discontinued"}
- *      ),
- *      @OA\Property(
- *          property="rating",
- *          type="integer",
- *          description="Product rating",
- *          nullable=true,
- *          example=5
- *      ),
- *      @OA\Property(
- *          property="reviews",
- *          type="integer",
- *          description="Number of reviews",
- *          nullable=true,
- *          example=10
- *      ),
- *      @OA\Property(
- *          property="user_id",
- *          type="integer",
- *          description="ID of the user who created the product"
- *      )
+ *          }),
+ *      @OA\Property(property="discount", type="integer", description="Discount percentage", nullable=true, example=10),
+ *      @OA\Property(property="is_top", type="boolean", description="Is top product flag", nullable=true),
+ *      @OA\Property(property="status", type="string", description="Product status", nullable=true, enum={"available", "out_of_stock", "discontinued"}),
+ *      @OA\Property(property="rating", type="integer", description="Product rating", nullable=true, example=5),
+ *      @OA\Property(property="reviews", type="integer", description="Number of reviews", nullable=true, example=10)
  *  )
  */ 
 
@@ -106,7 +37,9 @@ class StoreProductRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return Auth::check();
+        // return auth()->check();
+        // return $this->user()->can('create', Product::class);
     }
 
     /**
@@ -118,9 +51,9 @@ class StoreProductRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'brand' => 'required|string|max:255',
+            'brand_id' => 'required|integer|exists:tbl_brands,id',
             'price' => 'required|numeric|min:0.01',
-            'category_id' => 'required|integer',
+            'category_id' => 'required|integer|exists:tbl_categories,id',
             'description' => 'nullable|string|max:255',
             'short_description' => 'nullable|string|max:255',
             'stock' => 'required|integer|min:1',
@@ -133,7 +66,7 @@ class StoreProductRequest extends FormRequest
             'status' => 'nullable|string',
             'rating' => 'nullable|integer',
             'reviews' => 'nullable|integer',
-            'user_id' => 'required|integer',
+            'user_id' => 'required|integer|exists:tbl_users,id',
         ];
     }
     /**
@@ -146,9 +79,9 @@ class StoreProductRequest extends FormRequest
         'name.string' => 'Product name must be a string',
         'name.max' => 'Product name must not exceed 255 characters',
         
-        'brand.required' => 'Brand name is required',
-        'brand.string' => 'Brand name must be a string',
-        'brand.max' => 'Brand name must not exceed 255 characters',
+        'brand_id.required' => 'Brand is required',
+
+        'category_id.required' => 'Category is required',
         
         'price.required' => 'Price is required',
         'price.numeric' => 'Price must be a number',

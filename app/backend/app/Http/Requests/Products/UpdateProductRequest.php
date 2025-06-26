@@ -4,6 +4,7 @@ namespace App\Http\Requests\Products;
 
 use App\Rules\ValidProductOptions;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * @OA\Schema(
@@ -56,14 +57,29 @@ class UpdateProductRequest extends FormRequest
     /**
      * Determine if the user is authorized to make this request.
      */
+    public function authorize(): bool
+    {
+        return Auth::check();
+        // return auth()->check();
+        // return $this->user()->can('update', Product::class);
+
+        // Only product owner can update
+        // $product = Product::find($this->route('id'));
+        // return $product && $this->user()->id === $product->user_id;
+    }
+
+    /**
+     * Determine if the user is authorized to make this request.
+     */
     public function rules(): array
     {
         return [
             'name' => 'sometimes|string|max:255',
-            'brand' => 'sometimes|string|max:255',
+            'brand_id' => 'sometimes|integer|exists:tbl_brands,id',
             'price' => 'sometimes|numeric|min:0.01',
             'description' => 'nullable|string|max:255',
             'short_description' => 'nullable|string|max:255',
+            'category_id' => 'sometimes|integer|exists:tbl_categories,id',
             'stock' => 'sometimes|integer|min:1',
             'options' => [
                 'sometimes',
@@ -85,8 +101,9 @@ class UpdateProductRequest extends FormRequest
             'name.string' => 'Product name must be a string',
             'name.max' => 'Product name must not exceed 255 characters',
             
-            'brand.string' => 'Brand name must be a string',
-            'brand.max' => 'Brand name must not exceed 255 characters',
+            'brand_id.integer' => 'Brand id must be an integer',
+
+            'category_id.integer' => 'Category id must be an integer',
             
             'price.numeric' => 'Price must be a number',
             'price.min' => 'Price must be at least 0.01',

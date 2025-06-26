@@ -6,9 +6,38 @@ use App\Http\Requests\Products\StoreProductRequest;
 use App\Http\Requests\Products\UpdateProductRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
+use Exception;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 
+/**
+ *  @OA\Schema(
+ *     schema="productPagination",
+ *     type="object",
+ *     @OA\Property(property="current_page", type="integer", example=1),
+ *     @OA\Property(property="data", type="array",
+ *         @OA\Items(ref="#/components/schemas/product")
+ *     ),
+ *     @OA\Property(property="first_page_url", type="string", example="http://api.example.com/api/v1/products?page=1"),
+ *     @OA\Property(property="from", type="integer", example=1),
+ *     @OA\Property(property="last_page", type="integer", example=10),
+ *     @OA\Property(property="last_page_url", type="string", example="http://api.example.com/api/v1/products?page=10"),
+ *     @OA\Property(property="links", type="array",
+ *         @OA\Items(
+ *             @OA\Property(property="url", type="string", nullable=true),
+ *             @OA\Property(property="label", type="string"),
+ *             @OA\Property(property="active", type="boolean")
+ *         )
+ *     ),
+ *     @OA\Property(property="next_page_url", type="string", nullable=true, example="http://api.example.com/api/v1/products?page=2"),
+ *     @OA\Property(property="path", type="string", example="http://api.example.com/api/v1/products"),
+ *     @OA\Property(property="per_page", type="integer", example=15),
+ *     @OA\Property(property="prev_page_url", type="string", nullable=true),
+ *     @OA\Property(property="to", type="integer", example=15),
+ *     @OA\Property(property="total", type="integer", example=150)
+ * )
+ */
 class ProductController extends ApiController
 {
     use AuthorizesRequests;
@@ -16,28 +45,163 @@ class ProductController extends ApiController
      * Display a listing of the resource.
      */
     /**
-     * @OA\Get(
+     *  @OA\Get(
      *     path="/api/v1/products",
      *     summary="Display a listing of products",
      *     tags={"Products"},
-     *     @OA\Response(
-     *       response=200,
-     *       description="Successful operation",
+     *     @OA\Parameter(
+     *         name="name",
+     *         in="query",
+     *         description="Filter by product name (partial match)",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="category_id",
+     *         in="query",
+     *         description="Filter by category ID",
+     *         required=false,
+     *         @OA\Schema(type="integer", format="int64")
+     *     ),
+     *     @OA\Parameter(
+     *         name="min_price",
+     *         in="query",
+     *         description="Minimum price filter",
+     *         required=false,
+     *         @OA\Schema(type="number", format="float")
+     *     ),
+     *     @OA\Parameter(
+     *         name="max_price",
+     *         in="query",
+     *         description="Maximum price filter",
+     *         required=false,
+     *         @OA\Schema(type="number", format="float")
+     *     ),
+     *     @OA\Parameter(
+     *         name="brand_id",
+     *         in="query",
+     *         description="Filter by brand ID",
+     *         required=false,
+     *         @OA\Schema(type="integer", format="int64")
+     *     ),
+     *     @OA\Parameter(
+     *         name="status",
+     *         in="query",
+     *         description="Filter by product status (partial match)",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="created_at_start",
+     *         in="query",
+     *         description="Filter by creation date start (YYYY-MM-DD)",
+     *         required=false,
+     *         @OA\Schema(type="string", format="date")
+     *     ),
+     *     @OA\Parameter(
+     *         name="created_at_end",
+     *         in="query",
+     *         description="Filter by creation date end (YYYY-MM-DD)",
+     *         required=false,
+     *         @OA\Schema(type="string", format="date")
      *     ),
      *     @OA\Response(
-     *       response=404,
-     *       description="No Product was found!",
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="data", ref="#/components/schemas/productPagination")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="No products found",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="No products found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal server error",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Internal server error"),
+     *             @OA\Property(property="error", type="string")
+     *         )
      *     )
      * )
      */
     public function index(): JsonResponse
     {
-        return response()->json([
-            'success' => true,
-            'data' => ProductResource::collection(
-                Product::latest()->paginate(15)
-            )
-        ]);
+        try {
+            $query = Product::query();
+
+            // Apply filters
+            if ($name = request('name')) {
+                $query->where('name', 'like', '%' . $name . '%');
+            }
+            
+            if ($categoryId = request('category_id')) {
+                $query->where('category_id', $categoryId);
+            }
+
+            if ($minPrice = request('min_price')) {
+                $query->where('price', '>=', $minPrice);
+            }
+
+            if ($maxPrice = request('max_price')) {
+                $query->where('price', '<=', $maxPrice);
+            }
+            
+            if ($brandId = request('brand_id')) {
+                $query->where('brand_id', $brandId);
+            }
+            
+            if ($status = request('status')) {
+                $query->where('status', 'like', '%' . $status . '%');
+            }
+
+            if ($createdAtStart = request('created_at_start')) {
+                $query->whereDate('created_at', '>=', $createdAtStart);
+            }
+
+            if ($createdAtEnd = request('created_at_end')) {
+                $query->whereDate('created_at', '<=', $createdAtEnd);
+            }
+
+            // Paginate the results
+            $products = $query->latest()->paginate(15);
+
+            // Check if any products were found
+            if ($products->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No products found'
+                ], 404);
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => ProductResource::collection($products)
+            ]);
+
+        } catch (QueryException $e) {
+            if ($e->getCode() == 23000) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Foreign key constraint violation'
+                ], 409);
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Database error'
+            ], 500);
+        }
     }
 
     /**
@@ -75,7 +239,7 @@ class ProductController extends ApiController
                 return response()->json([
                     'success' => true,
                     'message' => 'Create product successfully!',
-                    'location' => env('APP_URL').'/api/v1/products/'.$product->id,
+                    'data' => $product,
                 ], 201);
 
             return response()->json([
@@ -85,8 +249,7 @@ class ProductController extends ApiController
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Something happened in Creating Product',
-                'errors' => $e->getMessage()
+                'message' => 'Internal error ' . $e->getMessage(),
             ], 500);
         }
     }
@@ -117,17 +280,12 @@ class ProductController extends ApiController
      */
     public function show(string $id) : JsonResponse
     {
-        $product = Product::where('id', $id)->firstOrFail();
-        return $product !== null
-            ? response()->json([
+        $product = Product::with(['category', 'brand'])->findOrFail($id);
+        return response()->json([
                 'success' => true,
                 'message' => 'Get product by ID successfully!',
                 'data' => new ProductResource($product)
-            ])
-            : response()->json([
-                'success' => false,
-                'message' => 'Product Not Found!',
-            ],404);
+            ]);
     }
 
     /**
@@ -171,12 +329,7 @@ class ProductController extends ApiController
     public function update(UpdateProductRequest $request, string $id) : JsonResponse
     {
         try {
-            $product = Product::where('id', $id)->firstOrFail();
-            if ($product === null)
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Product Not Found!',
-                ], 404);
+            $product = Product::with(['category', 'brand'])->findOrFail($id);
             $validated = $request->validated();
             $product->update($validated);
             return response()->json([
@@ -219,12 +372,7 @@ class ProductController extends ApiController
      */
     public function destroy(string $id) : JsonResponse
     {
-        $product = Product::where('id', $id)->firstOrFail();
-        if ($product === null)
-            return response()->json([
-                'success' => false,
-                'message' => 'Product Not Found!',
-            ], 404);
+        $product = Product::with(['category', 'brand'])->findOrFail($id);
         $product->delete();
         return response()->json([
             'success' => true,
