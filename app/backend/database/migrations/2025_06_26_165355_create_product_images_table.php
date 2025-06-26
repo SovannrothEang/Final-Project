@@ -14,12 +14,10 @@ return new class extends Migration
         Schema::create('tbl_images', function (Blueprint $table) {
             $table->id();
             $table->string('url');
-            $table->unsignedBigInteger('product_id');
+            $table->foreignId('product_id')
+                ->constrained('tbl_products', 'id')
+                ->cascadeOnDelete();
             $table->timestamps();
-
-            $table->foreign('product_id')
-                ->references('id')->on('tbl_products')
-                ->onDelete('cascade');
         });
     }
 
