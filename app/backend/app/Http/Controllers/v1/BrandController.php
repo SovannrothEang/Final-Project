@@ -5,6 +5,7 @@ namespace App\Http\Controllers\v1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreBrandRequest;
 use App\Http\Requests\UpdateBrandRequest;
+use App\Http\Resources\BrandResource;
 use App\Models\Brand;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
@@ -118,6 +119,15 @@ class BrandController extends Controller
                 'message' => 'Database error'
             ], 500);
         }
+    }
+
+    public function show(int $id) {
+        $brand = Brand::findOrFail($id);
+        return response()->json([
+                'success' => true,
+                'message' => 'Get brand by ID successfully',
+                'data' => new BrandResource($brand)
+            ]);
     }
 
     /**

@@ -139,43 +139,33 @@ class ProductController extends ApiController
     {
         try {
             $query = Product::query();
-
-            // Apply filters
-            if ($name = request('name')) {
+            // Checking params
+            if ($name = request('search_name')) {
                 $query->where('name', 'like', '%' . $name . '%');
             }
-            
             if ($categoryId = request('category_id')) {
                 $query->where('category_id', $categoryId);
             }
-
             if ($minPrice = request('min_price')) {
                 $query->where('price', '>=', $minPrice);
             }
-
             if ($maxPrice = request('max_price')) {
                 $query->where('price', '<=', $maxPrice);
             }
-            
             if ($brandId = request('brand_id')) {
                 $query->where('brand_id', $brandId);
             }
-            
             if ($status = request('status')) {
                 $query->where('status', 'like', '%' . $status . '%');
             }
-
             if ($createdAtStart = request('created_at_start')) {
                 $query->whereDate('created_at', '>=', $createdAtStart);
             }
-
             if ($createdAtEnd = request('created_at_end')) {
                 $query->whereDate('created_at', '<=', $createdAtEnd);
             }
-
             // Paginate the results
             $products = $query->latest()->paginate(15);
-
             // Check if any products were found
             if ($products->isEmpty()) {
                 return response()->json([
@@ -188,7 +178,6 @@ class ProductController extends ApiController
                 'success' => true,
                 'data' => ProductResource::collection($products)
             ]);
-
         } catch (QueryException $e) {
             if ($e->getCode() == 23000) {
                 return response()->json([

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\v1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
+use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
@@ -62,6 +63,16 @@ class CategoryController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function show(int $id) {
+        $category = Category::findOrFail($id);
+        return response()->json([
+                'success' => true,
+                'message' => 'Get category by ID successfully',
+                'data' => new CategoryResource($category)
+            ]);
+    }
     }
 
     /**

@@ -25,7 +25,7 @@ return new class extends Migration
             $table->integer('discount')->nullable();
             $table->integer('stock')->default(0);
             $table->boolean('is_top');
-            $table->string('status', ['available', 'out_of_stock', 'discontinued'])
+            $table->enum('status', ['available', 'out_of_stock', 'discontinued'])
                 ->default('available');
             $table->integer('rating');
             $table->integer('reviews');
