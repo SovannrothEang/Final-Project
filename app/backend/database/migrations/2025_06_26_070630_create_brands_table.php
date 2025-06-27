@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('tbl_brands', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name')->unique();
             $table->string('description');
             $table->string('country');
             $table->string('website_url');

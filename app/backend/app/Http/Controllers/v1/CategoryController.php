@@ -7,6 +7,7 @@ use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 
@@ -66,13 +67,27 @@ class CategoryController extends Controller
     }
 
     public function show(int $id) {
-        $category = Category::findOrFail($id);
-        return response()->json([
-                'success' => true,
-                'message' => 'Get category by ID successfully',
-                'data' => new CategoryResource($category)
-            ]);
-    }
+        try {
+            $category = Category::findOrFail($id);
+            return response()->json([
+                    'success' => true,
+                    'message' => 'Get category by ID successfully',
+                    'data' => new CategoryResource($category)
+                ]);
+        } catch (\Exception $e) {
+            if($e instanceof ModelNotFoundException)
+                return response()->json([
+                        'success' => false,
+                        'message' => 'Category is not found by id: ' . $id,
+                        'error' => $e->getMessage(),
+                    ],404);
+
+            return response()->json([
+                    'success' => false,
+                    'message' => 'Internal error',
+                    'error' => $e->getMessage(),
+                ],500);
+        }
     }
 
     /**

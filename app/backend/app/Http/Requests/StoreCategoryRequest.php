@@ -34,7 +34,7 @@ class StoreCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:tbl_categories,name',
             'description' => 'nullable|string|max:500',
             'is_active' => 'nullable|boolean',
             'user_id' => 'required|integer|exists:tbl_users,id',
@@ -50,6 +50,7 @@ class StoreCategoryRequest extends FormRequest
             'name.required' => 'Category name is required',
             'name.string' => 'Category name must be a string',
             'name.max' => 'Category name must not exceed 255 characters',
+            'name.unique' => 'Category name must be unique',
             
             'description.string' => 'Description must be a string',
             'description.max' => 'Description must not exceed 500 characters',

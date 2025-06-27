@@ -32,7 +32,11 @@ class UpdateCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'sometimes|string|max:255',
+            // The 'name' must be unique in the 'tbl_categories' table, except 
+            // for the category record that has the ID matching the 'category' parameter in the current route.
+            //
+            // $this->route('id') . 'id' => gets the value of {id} parameter you've defined in your route
+            'name' => 'sometimes|string|max:255|unique:tbl_categories,name,' . $this->route('id') . ',id',
             'description' => 'nullable|string|max:500',
             'is_active' => 'nullable|boolean',
             'user_id' => 'sometimes|integer|exists:tbl_users,id',
@@ -44,8 +48,11 @@ class UpdateCategoryRequest extends FormRequest
         return [
             'name.string' => 'Category name must be a string',
             'name.max' => 'Category name must not exceed 255 characters',
+            'name.unique' => 'Category name must be unique',
+
             'description.string' => 'Description must be a string',
             'description.max' => 'Description must not exceed 500 characters',
+            
             'is_active.boolean' => 'Is active must be a boolean value',
             'user_id.exists' => 'Specified user does not exist',
         ];

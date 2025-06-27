@@ -7,18 +7,61 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Product } from "@/types/product";
-import ProductImage from "./ProductImage";
-import ProductPricing from "./ProductPricing";
-import ProductSidebar from "./ProductSidebar";
+import ProductImage from "./edit/ProductImage";
+import ProductSidebar from "./edit/ProductSidebar";
 
-export default function EditProductPage({ product }: { product: Product }) {
+const defaultProduct: Product = {
+	id: "",
+	name: "",
+	image: "", // Assuming single image for now; adjust if multiple images are needed
+	description: "",
+	short_description: "",
+	brand: "",
+	category: "",
+	price: 0,
+	stock: 0,
+	option: {
+		color: [],
+		size: [],
+	},
+	discount: 0,
+	status: "inactive", // or whatever default you prefer
+	in_stock: true,
+	is_active: true,
+	is_new: false,
+	is_top: 0,
+	review: 0,
+	created_at: new Date().toISOString(),
+	updated_at: new Date().toISOString(),
+};
+
+export default function ProductForm({ product }: { product?: Product }) {
 	const router = useRouter();
 	const [isLoading, setIsLoading] = useState(false);
 	// const [images, setImages] = useState<string>(product.images);
-	const [formData, setFormData] = useState(product);
+	const [formData, setFormData] = useState<Product>({
+		...defaultProduct,
+		...product,
+		option: {
+			...defaultProduct.option,
+			...(product?.option || {}), // Ensure nested option is merged correctly
+		},
+	});
 
-	const handleInputChange = (field: string, value: string | boolean) => {
-		setFormData((prev) => ({ ...prev, [field]: value }));
+	const handleInputChange = (
+		field: string,
+		value: string | number | boolean | { color: string[]; size: string[] }
+	) => {
+		if (field === "option") {
+			// Handle nested object update
+			setFormData((prev) => ({
+				...prev,
+				option: value as { color: string[]; size: string[] },
+			}));
+		} else {
+			// Handle regular field update
+			setFormData((prev) => ({ ...prev, [field]: value }));
+		}
 	};
 
 	// const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -109,15 +152,35 @@ export default function EditProductPage({ product }: { product: Product }) {
 									rows={3}
 								/>
 							</div>
+							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+								<div className="space-y-2">
+									<Label htmlFor="price">Price *</Label>
+									<Input
+										id="price"
+										type="number"
+										step="0.01"
+										value={formData.price}
+										onChange={(e) => handleInputChange("price", e.target.value)}
+										placeholder="0.00"
+										required
+									/>
+								</div>
+							</div>
+
+							<div className="space-y-2">
+								<Label htmlFor="stock">Quantity</Label>
+								<Input
+									id="stock"
+									type="number"
+									value={formData.stock}
+									onChange={(e) => handleInputChange("stock", e.target.value)}
+									placeholder="0"
+								/>
+							</div>
 						</CardContent>
 					</Card>
 
 					<ProductImage />
-
-					<ProductPricing
-						price={formData.price}
-						handleInputChange={handleInputChange}
-					/>
 				</div>
 
 				<ProductSidebar

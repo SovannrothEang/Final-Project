@@ -36,7 +36,7 @@ class StoreBrandRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:tbl_brands,name',
             'description' => 'nullable|string|max:500',
             'country' => 'required|string|max:100',
             'website_url' => 'nullable|url|max:255',
@@ -54,6 +54,7 @@ class StoreBrandRequest extends FormRequest
             'name.required' => 'Brand name is required',
             'name.string' => 'Brand name must be a string',
             'name.max' => 'Brand name must not exceed 255 characters',
+            'name.unique' => 'Brand name must be unique',
             
             'description.string' => 'Description must be a string',
             'description.max' => 'Description must not exceed 500 characters',

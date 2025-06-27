@@ -7,6 +7,7 @@ use App\Http\Requests\Products\UpdateProductRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
@@ -138,31 +139,41 @@ class ProductController extends ApiController
     public function index(): JsonResponse
     {
         try {
+            $validated = request()->validate([
+                'search_name' => 'nullable|string|max:255',
+                'category_id' => 'nullable|integer|exists:tbl_categories,id',
+                'brand_id' => 'nullable|integer|exists:tbl_brands,id',
+                'status' => 'nullable|integer|in:0,1,2',
+                'min_price' => 'nullable|numeric|min:0',
+                'max_price' => 'nullable|numeric|min:0',
+                'created_at_start' => 'nullable|date',
+                'created_at_end' => 'nullable|date',
+            ]);
             $query = Product::query();
             // Checking params
-            if ($name = request('search_name')) {
-                $query->where('name', 'like', '%' . $name . '%');
+            if (isset($validated['search_name'])) {
+                $query->where('name', 'like', '%' . $validated['search_name'] . '%');
             }
-            if ($categoryId = request('category_id')) {
-                $query->where('category_id', $categoryId);
+            if (isset($validated['brand_id'])) {
+                $query->where('brand_id', $validated['brand_id']);
             }
-            if ($minPrice = request('min_price')) {
-                $query->where('price', '>=', $minPrice);
+            if (isset($validated['category_id'])) {
+                $query->where('category_id', $validated['category_id']);
             }
-            if ($maxPrice = request('max_price')) {
-                $query->where('price', '<=', $maxPrice);
+            if (isset($validated['status'])) {
+                $query->where('status', 'like', '%' . $validated['status'] . '%');
             }
-            if ($brandId = request('brand_id')) {
-                $query->where('brand_id', $brandId);
+            if (isset($validated['min_price'])) {
+                $query->where('price', '>=', $validated['min_price']);
             }
-            if ($status = request('status')) {
-                $query->where('status', 'like', '%' . $status . '%');
+            if (isset($validated['max_price'])) {
+                $query->where('price', '<=', $validated['max_price']);
             }
-            if ($createdAtStart = request('created_at_start')) {
-                $query->whereDate('created_at', '>=', $createdAtStart);
+            if (isset($validated['created_at_start'])) {
+                $query->whereDate('created_at', '>=', $validated['created_at_start']);
             }
-            if ($createdAtEnd = request('created_at_end')) {
-                $query->whereDate('created_at', '<=', $createdAtEnd);
+            if (isset($validated['created_at_end'])) {
+                $query->whereDate('created_at', '<=', $validated['created_at_end']);
             }
             // Paginate the results
             $products = $query->latest()->paginate(15);
@@ -176,7 +187,15 @@ class ProductController extends ApiController
 
             return response()->json([
                 'success' => true,
-                'data' => ProductResource::collection($products)
+                'data' => ProductResource::collection($products),
+                'meta' => [
+                    'current_page' => $products->currentPage(),
+                    'last_page' => $products->lastPage(),
+                    'per_page' => $products->perPage(),
+                    'total' => $products->total(),
+                    'from' => $products->firstItem(),
+                    'to' => $products->lastItem()
+                ]
             ]);
         } catch (QueryException $e) {
             if ($e->getCode() == 23000) {
@@ -235,10 +254,11 @@ class ProductController extends ApiController
                 'success' => false,
                 'message' => 'Failed to create product!',
             ], 400);
-        } catch (\Exception $e) {
+        } catch (QueryException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Internal error ' . $e->getMessage(),
+                'message' => 'Database error',
+                'error' =>  $e->getMessage(),
             ], 500);
         }
     }
@@ -269,12 +289,27 @@ class ProductController extends ApiController
      */
     public function show(string $id) : JsonResponse
     {
-        $product = Product::with(['category', 'brand'])->findOrFail($id);
-        return response()->json([
-                'success' => true,
-                'message' => 'Get product by ID successfully!',
-                'data' => new ProductResource($product)
-            ]);
+        try {
+            $product = Product::with(['category', 'brand'])->findOrFail($id);
+            return response()->json([
+                    'success' => true,
+                    'message' => 'Get product by ID successfully!',
+                    'data' => new ProductResource($product)
+                ]);
+        } catch (\Exception $e) {
+            if($e instanceof ModelNotFoundException)
+                return response()->json([
+                        'success' => false,
+                        'message' => 'Product is not found by id: ' . $id,
+                        'error' => $e->getMessage(),
+                    ],404);
+
+            return response()->json([
+                    'success' => false,
+                    'message' => 'Internal error',
+                    'error' => $e->getMessage(),
+                ],500);
+        }
     }
 
     /**
@@ -326,10 +361,10 @@ class ProductController extends ApiController
                 'message' => 'Update product successfully!',
                 'location' => env('APP_URL')."/api/products".$id
             ]);
-        } catch (\Exception $e) {
+        } catch (QueryException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Something happened while Updating Product',
+                'message' => 'Database error',
                 'errors' => $e->getMessage()
             ], 500);
         }
@@ -361,11 +396,19 @@ class ProductController extends ApiController
      */
     public function destroy(string $id) : JsonResponse
     {
-        $product = Product::with(['category', 'brand'])->findOrFail($id);
-        $product->delete();
-        return response()->json([
-            'success' => true,
-            'message' => 'Delete product successfully!'
-        ], 204);
+        try {
+            $product = Product::with(['category', 'brand'])->findOrFail($id);
+            $product->delete();
+            return response()->json([
+                'success' => true,
+                'message' => 'Delete product successfully!'
+            ], 204);
+        } catch (QueryException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Database error',
+                'error' =>  $e->getMessage(),
+            ], 500);
+        }
     }
 }

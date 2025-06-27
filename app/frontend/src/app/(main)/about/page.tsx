@@ -1,8 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faXTwitter, faLinkedinIn, faInstagram} from '@fortawesome/free-brands-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+	faXTwitter,
+	faLinkedinIn,
+	faInstagram,
+} from "@fortawesome/free-brands-svg-icons";
 import {
 	Store,
 	DollarSign,
@@ -89,39 +93,39 @@ export default function AboutPage() {
 					<span>Contact</span>
 				</div>
 
-			{/* Our Story Section */}
-			<section className="grid lg:grid-cols-2 gap-20 items-center mb-20 pl-12">
-				<div>
-					<h1 className="text-4xl font-semibold mb-6">Our Story</h1>
-					<div className="space-y-4 text-gray-600">
-						<p>
-							Launched in 2015, Exclusive is South Asia&apos;s premier online
-							shopping marketplace with an active presence in Bangladesh.
-							Supported by wide range of tailored marketing, data and service
-							solutions, Exclusive has 10,500 sellers and 300 brands and
-							serves 3 millions customers across the region.
-						</p>
-						<p>
-							Exclusive has more than 1 Million products to offer, growing at
-							a very fast. Exclusive offers a diverse assortment in categories
-							ranging from consumer.
-						</p>
+				{/* Our Story Section */}
+				<section className="grid lg:grid-cols-2 gap-20 items-center mb-20 pl-12">
+					<div>
+						<h1 className="text-4xl font-semibold mb-6">Our Story</h1>
+						<div className="space-y-4 text-gray-600">
+							<p>
+								Launched in 2015, Exclusive is South Asia&apos;s premier online
+								shopping marketplace with an active presence in Bangladesh.
+								Supported by wide range of tailored marketing, data and service
+								solutions, Exclusive has 10,500 sellers and 300 brands and
+								serves 3 millions customers across the region.
+							</p>
+							<p>
+								Exclusive has more than 1 Million products to offer, growing at
+								a very fast. Exclusive offers a diverse assortment in categories
+								ranging from consumer.
+							</p>
+						</div>
 					</div>
-				</div>
 
-				{/* Full Image in Pink Box */}
-				<div className="relative min-h-[400px]">
-					<div className="absolute inset-0 bg-gradient-to-br from-pink-400 to-pink-500 rounded-lg overflow-hidden">
-						<Image
-							src="/About.jpg"
-							alt="Two women shopping with bags"
-							fill
-							className="object-cover"
-							priority
-						/>
+					{/* Full Image in Pink Box */}
+					<div className="relative min-h-[400px]">
+						<div className="absolute inset-0 bg-gradient-to-br from-pink-400 to-pink-500 rounded-lg overflow-hidden">
+							<Image
+								src="/About.jpg"
+								alt="Two women shopping with bags"
+								fill
+								className="object-cover"
+								priority
+							/>
+						</div>
 					</div>
-				</div>
-			</section>
+				</section>
 
 				{/* Statistics Section */}
 				<section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-15 px-20 mb-20">

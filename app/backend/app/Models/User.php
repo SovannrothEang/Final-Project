@@ -80,8 +80,4 @@ class User extends Authenticatable
     public function products(){
         return $this->hasMany(Product::class);
     }
-
-    public static function getProducts(){
-        return Auth::user()->products;
-    }
 }

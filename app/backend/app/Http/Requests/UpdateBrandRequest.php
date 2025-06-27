@@ -35,7 +35,11 @@ class UpdateBrandRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'sometimes|string|max:255',
+            // The 'name' must be unique in the 'tbl_brands' table, except for the
+            // brand record that has the same ID as the one in the current route.
+            //
+            // $this->route('id') . 'id' => gets the value of {id} parameter you've defined in your route
+            'name' => 'sometimes|string|max:255|unique:tbl_brands,name,' . $this->route('id') . ',id',
             'description' => 'nullable|string|max:500',
             'country' => 'nullable|string|max:100',
             'website_url' => 'nullable|url|max:255',
@@ -49,12 +53,17 @@ class UpdateBrandRequest extends FormRequest
         return [
             'name.string' => 'Brand name must be a string',
             'name.max' => 'Brand name must not exceed 255 characters',
+            'name.unique' => 'Brand name must be unique',
+
             'description.string' => 'Description must be a string',
             'description.max' => 'Description must not exceed 500 characters',
+
             'country.string' => 'Country must be a string',
             'country.max' => 'Country must not exceed 100 characters',
+
             'website_url.url' => 'Website URL must be a valid URL',
             'website_url.max' => 'Website URL must not exceed 255 characters',
+            
             'is_active.boolean' => 'Is active must be a boolean value',
             'user_id.exists' => 'Specified user does not exist',
         ];

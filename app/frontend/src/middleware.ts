@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const API_URL = process.env.API_URL + "/api/verify-token";
+const API_URL = process.env.API_URL + "/api/auth/verify-token";
 export async function middleware(req: NextRequest) {
 	const token = req.cookies.get("auth_token")?.value;
 	// const token = await req.cookies.get("auth_token")?.value;

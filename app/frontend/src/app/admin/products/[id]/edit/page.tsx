@@ -1,4 +1,4 @@
-import EditProduct from "@/components/pages/products/edit/EditPage";
+import ProductForm from "@/components/pages/products/ProductForm";
 import { Button } from "@/components/ui/button";
 import products from "@/data/products";
 import { ArrowLeft } from "lucide-react";
@@ -23,9 +23,9 @@ export default async function EditProductPage({
 			{/* Header */}
 			<div className="flex items-center gap-4">
 				<Button variant="ghost" size="icon" asChild>
-					{/* <Link href="/admin"> */}
+					<Link href="/admin/products">
 						<ArrowLeft className="w-4 h-4" />
-					{/* </Link> */}
+					</Link>
 				</Button>
 				<div>
 					<h1 className="text-3xl font-bold text-gray-900">Edit Product</h1>
@@ -33,7 +33,7 @@ export default async function EditProductPage({
 				</div>
 			</div>
 
-			<EditProduct product={product} />
+			<ProductForm product={product} />
 		</div>
 	);
 }

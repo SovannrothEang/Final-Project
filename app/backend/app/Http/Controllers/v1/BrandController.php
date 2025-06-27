@@ -7,11 +7,15 @@ use App\Http\Requests\StoreBrandRequest;
 use App\Http\Requests\UpdateBrandRequest;
 use App\Http\Resources\BrandResource;
 use App\Models\Brand;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\UnauthorizedException;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 
 class BrandController extends Controller
 {
@@ -73,27 +77,29 @@ class BrandController extends Controller
     public function index(): JsonResponse
     {
         try {
+            $validated = request()->validate([
+                'name' => 'nullable|string|max:255',
+                'country' => 'nullable|string|max:100',
+                'is_active' => 'nullable|boolean',
+                'user_id' => 'nullable|integer|exists:tbl_users,id',
+            ]);
             $query = Brand::query();
 
             // Apply filters if provided
-            if ($name = request('name')) {
-                $query->where('name', 'like', '%' . $name . '%');
+            if (isset($validated['name'])) {
+                $query->where('name', 'like', '%' . $validated['name'] . '%');
             }
-
-            if ($country = request('country')) {
-                $query->where('country', 'like', '%' . $country . '%');
+            if (isset($validated['country'])) {
+                $query->where('country', 'like', '%' . $validated['country'] . '%');
             }
-
-            if ($isActive = request('is_active')) {
-                $query->where('is_active', $isActive);
+            if (isset($validated['is_active'])) {
+                $query->where('is_active', $validated['is_active']);
             }
-
-            if ($userId = request('user_id')) {
-                $query->where('user_id', $userId);
+            if (isset($validated['user_id'])) {
+                $query->where('user_id', $validated['user_id']);
             }
 
             $brands = $query->get();
-
             // Check if any products were found
             if ($brands->isEmpty()) {
                 return response()->json([
@@ -106,6 +112,12 @@ class BrandController extends Controller
                 'success' => true,
                 'data' => $brands
             ]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors' => $e->errors()
+            ], 422);
         } catch (QueryException $e) {
             if ($e->getCode() == 23000) {
                 return response()->json([
@@ -118,16 +130,37 @@ class BrandController extends Controller
                 'success' => false,
                 'message' => 'Database error'
             ], 500);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Internal server error',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 
     public function show(int $id) {
-        $brand = Brand::findOrFail($id);
-        return response()->json([
-                'success' => true,
-                'message' => 'Get brand by ID successfully',
-                'data' => new BrandResource($brand)
-            ]);
+        try {
+            $brand = Brand::findOrFail($id);
+            return response()->json([
+                    'success' => true,
+                    'message' => 'Get brand by ID successfully',
+                    'data' => new BrandResource($brand)
+                ]);
+        } catch (\Exception $e) {
+            if($e instanceof ModelNotFoundException)
+                return response()->json([
+                        'success' => false,
+                        'message' => 'Brand is not found by id: ' . $id,
+                        'error' => $e->getMessage(),
+                    ],404);
+
+            return response()->json([
+                    'success' => false,
+                    'message' => 'Internal error',
+                    'error' => $e->getMessage(),
+                ],500);
+        }
     }
 
     /**
@@ -171,6 +204,12 @@ class BrandController extends Controller
                 'message' => 'Brand created successfully',
                 'data' => $brand
             ], 201);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors' => $e->errors()
+            ], 422);
         } catch (QueryException $e) {
             if ($e->getCode() == 23000) {
                 return response()->json([
