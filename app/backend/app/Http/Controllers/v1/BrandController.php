@@ -110,7 +110,7 @@ class BrandController extends Controller
 
             return response()->json([
                 'success' => true,
-                'data' => $brands
+                'data' => BrandResource::collection($brands)
             ]);
         } catch (ValidationException $e) {
             return response()->json([

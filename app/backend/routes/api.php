@@ -3,6 +3,7 @@
 use App\Http\Controllers\v1\AuthController;
 use App\Http\Controllers\v1\BrandController;
 use App\Http\Controllers\v1\CategoryController;
+use App\Http\Controllers\v1\ImageController;
 use App\Http\Controllers\v1\ProductController;
 use Illuminate\Support\Facades\Route;
 
@@ -19,6 +20,8 @@ Route::prefix('/auth')->group(function () {
 Route::prefix('/v1')->group(function () {
     Route::get('/products', [ProductController::class, 'index']);
     Route::get('/products/{id}', [ProductController::class, 'show']);
+    Route::get('/images', [ImageController::class, 'index']);
+    Route::get('/images/{id}', [ImageController::class, 'show']);
     Route::get('/brands', [BrandController::class, 'index']);
     Route::get('/brands/{id}', [BrandController::class, 'show']);
     Route::get('/categories', [CategoryController::class, 'index']);
@@ -33,6 +36,10 @@ Route::prefix('/v1')->group(function () {
         Route::put('/products/{id}', [ProductController::class, 'update']);
         Route::delete('/products/{id}', [ProductController::class, 'destroy']);
     
+        Route::post('/images', [ImageController::class, 'store']);
+        Route::put('/images/{id}', [ImageController::class, 'update']);
+        Route::delete('/images/{id}', [ImageController::class, 'destroy']);
+
         Route::post('/brands', [BrandController::class, 'store']);
         Route::put('/brands/{id}', [BrandController::class, 'update']);
         Route::delete('/brands/{id}', [BrandController::class, 'destroy']);

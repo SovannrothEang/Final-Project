@@ -55,7 +55,7 @@ class CategoryController extends Controller
 
             return response()->json([
                 'success' => true,
-                'data' => $categories
+                'data' => CategoryResource::collection($categories)
             ]);
         } catch (\Exception $e) {
             return response()->json([
