@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const MAX_AGE = 60 * 60 * 24 * 7; // 1 week
-const API_URL = process.env.API_URL + "/api/auth/login";
+const API_URL = process.env.API_BASE_URL + "/api/auth/login";
 
 export async function POST(request: NextRequest) {
 	try {

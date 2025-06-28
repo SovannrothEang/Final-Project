@@ -6,11 +6,11 @@ import {
 	CategoryResponse,
 } from "@/types/category";
 
-// const API_BASE = process.env.API_URL?.replace(/\/$/, "") || ""
-// const API_URL = `${process.env.API_URL}/api/v1/categories`
-// const API_URL = process.env.API_URL + "/api/v1/categories";
+// const API_URL = process.env.API_BASE_URL?.replace(/\/$/, "") || ""
+// const API_URL = `${process.env.API_BASE_URL}/api/v1/categories`
+// const API_URL = process.env.API_BASE_URL + "/api/v1/categories";
 // const API_URL = `${API_BASE}/api/v1/categories`
-const API_URL = `${process.env.API_URL}/api/v1/categories`;
+const API_URL = `${process.env.API_BASE_URL}/api/v1/categories`;
 
 // export async function fetchCategories(filters?: CategoryFilters): Promise<Category[]> {
 //   const query = filters
@@ -22,7 +22,7 @@ const API_URL = `${process.env.API_URL}/api/v1/categories`;
 //       ).toString()}`
 //     : ""
 
-//   const res = await fetch(`${API_URL}${query}`)
+//   const res = await fetch(`${API_BASE_URL}${query}`)
 //   if (!res.ok) throw new Error("Failed to fetch categories")
 //   const data: CategoryResponse = await res.json()
 //   return data.data

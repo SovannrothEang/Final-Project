@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const API_URL = process.env.API_URL + "/api/auth/logout";
+const API_URL = process.env.API_BASE_URL + "/api/auth/logout";
 
 export async function POST(req: NextRequest) {
 	try {
