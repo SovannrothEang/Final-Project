@@ -34,6 +34,7 @@ export async function fetchCategories(): Promise<Category[]> {
 		headers: { "Content-Type": "application/json" },
 	});
 	if (!res.ok) throw new Error("Failed to fetch categories ...!");
+	
 	const result: CategoryResponse = await res.json();
 	return result.data;
 }

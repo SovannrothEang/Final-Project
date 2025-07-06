@@ -105,7 +105,7 @@ class BrandController extends Controller
                 return response()->json([
                     'success' => false,
                     'message' => 'No brands found'
-                ], 404);
+                ], 200);
             }
 
             return response()->json([

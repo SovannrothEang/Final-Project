@@ -50,7 +50,7 @@ class CategoryController extends Controller
                 return response()->json([
                     'success' => false,
                     'message' => 'No categories found'
-                ], 404);
+                ], 200);
             }
 
             return response()->json([
