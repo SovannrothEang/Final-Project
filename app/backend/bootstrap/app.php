@@ -6,7 +6,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Support\Facades\Log;
-use Throwable;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -27,7 +27,6 @@ return Application::configure(basePath: dirname(__DIR__))
                 'error' => $e->getMessage()
             ], 401);
         });
-
         $exceptions->renderable(function (AuthorizationException $e) {
             return response()->json([
                 'success' => false,
@@ -35,9 +34,19 @@ return Application::configure(basePath: dirname(__DIR__))
                 'error' => $e->getMessage()
             ], 403);
         });
-
+        $exceptions->renderable(function (NotFoundHttpException $e, $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Resource not found',
+                    'errors' => [
+                        'url' => $e->getMessage(),
+                        'method' => $request->method()
+                    ],
+                ], 404);
+            }
+        });
         $exceptions->renderable(function (\Throwable $e) {
-            // Log the exception for debugging purposes
             Log::error('[Unhandled exception] '. $e->getMessage());
             return response()->json([
                 'success' => false,

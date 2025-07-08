@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\v1;
+namespace App\Http\Controllers\v1\images;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\v1\ApiController;
 use App\Http\Requests\StoreImageRequest;
 use App\Http\Requests\UpdateImageRequest;
 use App\Http\Resources\ImageResource;
@@ -10,9 +10,8 @@ use App\Models\Image;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
-class ImageController extends Controller
+class ImageController extends ApiController
 {
     public function index(): JsonResponse
     {

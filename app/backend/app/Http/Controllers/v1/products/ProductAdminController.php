@@ -40,10 +40,11 @@ class ProductAdminController extends ApiController
             $query = Product::query();
             // Search
             if (isset($validated['search'])) {
-                $query->where(function ($q) use ($validated) {
-                    $q->where('name', 'like', '%' . $validated['search'] . '%')
-                    ->orWhere('description', 'like', '%' . $validated['search'] . '%');
-                });
+                $query->where(fn ($q) => $q
+                    ->where('name', 'like', '%' . $validated['search'] . '%')
+                    ->orWhere('short_description', 'like', '%' . $validated['search'] . '%')
+                    ->orWhere('description', 'like', '%' . $validated['search'] . '%')
+                );
             }
 
             // Filter
@@ -72,6 +73,7 @@ class ProductAdminController extends ApiController
                     ->when(isset($validated['date_range']['end']), 
                     fn($q) => $q->whereDate('created_at', '<=', $validated['date_range']['end']));
             }
+
             // Sorting
             $sortBy = $validated['sort_by'] ?? 'created_at';
             $sortDirection = $validated['sort_direction'] ?? 'desc';
@@ -81,7 +83,6 @@ class ProductAdminController extends ApiController
             $perPage = $validated['per_page'] ?? 15;
             $products = $query->paginate($perPage);
 
-            // If empty
             if ($products->isEmpty()) {
                 return response()->json([
                     'success' => true,

@@ -170,13 +170,13 @@ class BrandAdminController extends ApiController
                 ],500);
         }
     }
+
     public function store(StoreBrandRequest $request)
     {
         DB::beginTransaction();
         try {
             $brand = Brand::create($request->validated());
             DB::commit();
-            Log::info('Create Brand successfully');
             return response()->json([
                 'success' => true,
                 'message' => 'Brand created successfully',
@@ -198,22 +198,17 @@ class BrandAdminController extends ApiController
                 'error' => $e->getMessage(),
                 'code' => $e->getCode()
             ]);
+            if ($e->errorInfo[1] == 1062) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Category name already exists'
+                ], 400);
+            }
+
             return response()->json([
                 'success' => false,
                 'message' => 'Database error occurred',
                 'error' => config('app.debug') ? $e->getMessage() : 'Please try again later'
-            ], 500);
-
-        } catch (QueryException $e) {
-            DB::rollBack();
-            Log::error('Brand creation failed', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-            return response()->json([
-                'success' => false,
-                'message' => 'Database error',
-                'error' =>  $e->getMessage(),
             ], 500);
         }
     }
@@ -221,14 +216,16 @@ class BrandAdminController extends ApiController
     public function update(UpdateBrandRequest $request, int $id): JsonResponse
     {
         try {
-            DB::transaction(function () use ($request, $id) {
+            $brand = DB::transaction(function () use ($request, $id) {
                 $brand = Brand::where('id', $id)->lockForUpdate()->firstOrFail();
                 $brand->update($request->validated());
+                return $brand->fresh();
             });
 
             return response()->json([
                 'success' => true,
                 'message' => 'Brand updated successfully.',
+                'data' => new BrandResource($brand),
             ]);
         } catch (ModelNotFoundException $e) {
             return response()->json([
@@ -243,54 +240,19 @@ class BrandAdminController extends ApiController
         }
     }
 
-    /**
-     *  @OA\Delete(
-     *     path="/api/v1/brands/{id}",
-     *     summary="Delete a brand",
-     *     tags={"Brands"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Brand ID",
-     *         @OA\Schema(type="integer", format="int64")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Brand deleted successfully",
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="message", type="string", example="Brand deleted successfully")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Brand not found",
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="success", type="boolean", example=false),
-     *             @OA\Property(property="message", type="string", example="Brand not found")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=500,
-     *         description="Server error",
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="success", type="boolean", example=false),
-     *             @OA\Property(property="message", type="string", example="Failed to delete brand"),
-     *             @OA\Property(property="error", type="string")
-     *         )
-     *     )
-     *  )
-     */
     public function destroy(int $id): JsonResponse
     {
         try {
-            $brand = Brand::findOrFail($id);
-            $brand->delete();
-
+            DB::transaction(function () use ($id) {
+                $brand = Brand::withCount('products')->findOrFail($id);
+                if ($brand->products_count > 0) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Cannot delete brand because it has associated products'
+                    ], 409);
+                }
+                $brand->delete();
+            });
             return response()->json([
                 'success' => true,
                 'message' => 'Brand deleted successfully'
@@ -300,7 +262,7 @@ class BrandAdminController extends ApiController
                 'success' => false,
                 'message' => 'Brand not found'
             ], 404);
-        } catch (\Illuminate\Database\QueryException $e) {
+        } catch (QueryException $e) {
             if ($e->errorInfo[1] == 1451) {
                 return response()->json([
                     'success' => false,

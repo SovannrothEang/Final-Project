@@ -135,8 +135,14 @@ class ProductResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'brand' => $brand->name, 
-            'category' => $category->name,
+            'brand' => [
+                'id' => $brand->id,
+                'name' => $brand->name,
+            ], 
+            'category' => [
+                'id' => $category->id,
+                'name' => $category->name,
+            ],
             'description' => $this->description,
             'short_description' => $this->short_description, 
             'price' => $this->price,
@@ -146,8 +152,9 @@ class ProductResource extends JsonResource
             'in_stock' => $this->inStock(),
             'is_top' => $this->is_top,
             'is_new' => $this->isNew(),
+            'is_active' => $this->is_active,
             'status' => $this->status, 
-            'rating' => $this->rating, 
+            'rating' => $this->rating,
             'reviews' => $this->reviews, 
             'created_at' => $this->created_at->toDateTimeString(), 
             'updated_at' => $this->updated_at->toDateTimeString(), 

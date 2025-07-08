@@ -7,10 +7,8 @@ use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 use App\Models\User;
-use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends ApiController
@@ -18,29 +16,9 @@ class AuthController extends ApiController
     /**
      * Handle user login
      */
-    /**
-     * @OA\Post(
-     *     path="/api/auth/login",
-     *     summary="Authenticate the user and generate token",
-     *     @OA\RequestBody(
-     *       required=true,
-     *       @OA\JsonContent(
-     *         ref="#/components/schemas/loginRequest"
-     *       )
-     *     ),
-     *     tags={"Authentication"},
-     *     @OA\Response(response="200", description="Successful login"),
-     *     @OA\Response(response="404", description="User not found"),
-     *     @OA\Response(response="422", description="Validation errors"),
-     *     @OA\Response(response="500", description="Internal error")
-     * )
-     */
     public function login(LoginRequest $request) : JsonResponse
     {
         $validated = $request->validated();
-        if (!Auth::guard('sanctum')->attempt($validated)) {
-            return response()->json(['message' => 'Unauthorized'], 401);
-        }
         $user = User::where('email', $validated['email'])->first();
         if(!$user || !Hash::check($validated['password'], $user->password)){
             return response()->json([
@@ -48,9 +26,16 @@ class AuthController extends ApiController
                 'message' => 'Invalid credential',
             ], 401);
         }
+        $user->tokens()->delete();
+        $token = $user->createToken(
+            'api-token',
+            ['*'],
+            now()->addMinutes(config('sanctum.expiration'))
+        );
         return response()->json([
             'success' => true,
-            'token' => $user->createToken('api-token')->plainTextToken
+            'token' => $token->plainTextToken,
+            'token_expires_at' => $token->accessToken->expires_at,
         ], 200);
     }
 
@@ -83,7 +68,6 @@ class AuthController extends ApiController
             return response()->json([
                 'success' => true,
                 'message' => 'User registered successfully',
-                'token' => $user->createToken('api-token')->plainTextToken
             ], 201);
             
         } catch (QueryException $e) {
