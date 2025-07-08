@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\v1\AuthController;
-use App\Http\Controllers\v1\BrandController;
+use App\Http\Controllers\v1\brands\BrandAdminController;
+use App\Http\Controllers\v1\brands\BrandController;
 use App\Http\Controllers\v1\CategoryController;
 use App\Http\Controllers\v1\ImageController;
-use App\Http\Controllers\v1\ProductController;
+use App\Http\Controllers\v1\products\ProductAdminController;
+use App\Http\Controllers\v1\products\ProductController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('/auth')->group(function () {
@@ -18,34 +20,45 @@ Route::prefix('/auth')->group(function () {
 });
 
 Route::prefix('/v1')->group(function () {
+    // Products
     Route::get('/products', [ProductController::class, 'index']);
     Route::get('/products/{id}', [ProductController::class, 'show']);
+    // Images
     Route::get('/images', [ImageController::class, 'index']);
     Route::get('/images/{id}', [ImageController::class, 'show']);
+    // Brands
     Route::get('/brands', [BrandController::class, 'index']);
     Route::get('/brands/{id}', [BrandController::class, 'show']);
+    // Categories
     Route::get('/categories', [CategoryController::class, 'index']);
     Route::get('/categories/{id}', [CategoryController::class, 'show']);
-    Route::get('/test', function() {
-        return 'test';
-    });
 
     Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/user', [AuthController::class, 'user']);
-        Route::post('/products', [ProductController::class, 'store']);
-        Route::put('/products/{id}', [ProductController::class, 'update']);
-        Route::delete('/products/{id}', [ProductController::class, 'destroy']);
-    
-        Route::post('/images', [ImageController::class, 'store']);
-        Route::put('/images/{id}', [ImageController::class, 'update']);
-        Route::delete('/images/{id}', [ImageController::class, 'destroy']);
 
-        Route::post('/brands', [BrandController::class, 'store']);
-        Route::put('/brands/{id}', [BrandController::class, 'update']);
-        Route::delete('/brands/{id}', [BrandController::class, 'destroy']);
-
-        Route::post('/categories', [CategoryController::class, 'store']);
-        Route::put('/categories/{id}', [CategoryController::class, 'update']);
-        Route::delete('/categories/{id}', [CategoryController::class, 'destroy']);
+        Route::prefix('/admin/products')->group(function () {
+            Route::get('/', [ProductAdminController::class, 'index']);
+            Route::get('/{id}', [ProductAdminController::class, 'show']);
+            Route::post('/', [ProductAdminController::class, 'store']);
+            Route::put('/{id}', [ProductAdminController::class, 'update']);
+            Route::delete('/{id}', [ProductAdminController::class, 'destroy']);
+        });
+        Route::prefix('/admin/images')->group(function () {
+            Route::post('/', [ImageController::class, 'store']);
+            Route::put('/{id}', [ImageController::class, 'update']);
+            Route::delete('/{id}', [ImageController::class, 'destroy']);
+        });
+        Route::prefix('/admin/brands')->group(function () {
+            Route::get('/', [BrandAdminController::class, 'index']);
+            Route::get('/{id}', [BrandAdminController::class, 'show']);
+            Route::post('/', [BrandAdminController::class, 'store']);
+            Route::put('/{id}', [BrandAdminController::class, 'update']);
+            Route::delete('/{id}', [BrandAdminController::class, 'destroy']);
+        });
+        Route::prefix('/admin/categories')->group(function () {
+            Route::post('/', [CategoryController::class, 'store']);
+            Route::put('/{id}', [CategoryController::class, 'update']);
+            Route::delete('/{id}', [CategoryController::class, 'destroy']);
+        });
     });
 });

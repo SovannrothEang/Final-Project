@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\v1;
+namespace App\Http\Controllers\v1\products;
 
+use App\Http\Controllers\v1\ApiController;
 use App\Http\Requests\Products\StoreProductRequest;
-use App\Http\Requests\Products\UpdateProductRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use Exception;
@@ -11,6 +11,8 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 /**
  *  @OA\Schema(
@@ -140,49 +142,77 @@ class ProductController extends ApiController
     {
         try {
             $validated = request()->validate([
-                'search_name' => 'nullable|string|max:255',
+                'search' => 'nullable|string|max:255',
                 'category_id' => 'nullable|integer|exists:tbl_categories,id',
                 'brand_id' => 'nullable|integer|exists:tbl_brands,id',
                 'status' => 'nullable|integer|in:0,1,2',
-                'min_price' => 'nullable|numeric|min:0',
-                'max_price' => 'nullable|numeric|min:0',
-                'created_at_start' => 'nullable|date',
-                'created_at_end' => 'nullable|date',
+                'price_range' => 'nullable|array',
+                'price_range.min' => 'nullable|numeric|min:0',
+                'price_range.max' => 'nullable|numeric|min:0',
+                'date_range' => 'nullable|array',
+                'date_range.start' => 'nullable|date',
+                'date_range.end' => 'nullable|date',
+                'sort_by' => 'nullable|string|in:name,price,created_at',
+                'sort_direction' => 'nullable|string|in:asc,desc',
+                'per_page' => 'nullable|integer|min:1|max:100',
             ]);
-            $query = Product::query();
-            // Checking params
-            if (isset($validated['search_name'])) {
-                $query->where('name', 'like', '%' . $validated['search_name'] . '%');
+            $query = Product::query()->where('is_active', true);
+            // Search
+            if (isset($validated['search'])) {
+                $query->where(function ($q) use ($validated) {
+                    $q->where('name', 'like', '%' . $validated['search'] . '%')
+                    ->orWhere('description', 'like', '%' . $validated['search'] . '%');
+                });
             }
-            if (isset($validated['brand_id'])) {
-                $query->where('brand_id', $validated['brand_id']);
-            }
-            if (isset($validated['category_id'])) {
-                $query->where('category_id', $validated['category_id']);
-            }
-            if (isset($validated['status'])) {
-                $query->where('status', 'like', '%' . $validated['status'] . '%');
-            }
-            if (isset($validated['min_price'])) {
-                $query->where('price', '>=', $validated['min_price']);
+
+            // Filter
+            $query->when(isset($validated['brand_id']), fn($q) =>
+                    $q->where('brand_id', $validated['brand_id']))
+                ->when(isset($validated['category_id']), fn($q) =>
+                    $q->where('category_id', $validated['category_id']))
+                ->when(isset($validated['status']), fn($q) =>
+                    $q->where('status', $validated['status']));
+
+            // Price range
+            if (isset($validated['price_range'])) {
+                $query->when(isset($validated['price_range']['min']),
+                        fn($q) => $q->where('price', '>=', $validated['price_range']['min']))
+                    ->when(isset($validated['price_range']['max']), 
+                        fn($q) => $q->where('price', '<=', $validated['price_range']['max']));
             }
             if (isset($validated['max_price'])) {
                 $query->where('price', '<=', $validated['max_price']);
             }
-            if (isset($validated['created_at_start'])) {
-                $query->whereDate('created_at', '>=', $validated['created_at_start']);
+
+            // Date range
+            if (isset($validated['date_range'])) {
+                $query->when(isset($validated['date_range']['start']), 
+                    fn($q) => $q->whereDate('created_at', '>=', $validated['date_range']['start']))
+                    ->when(isset($validated['date_range']['end']), 
+                    fn($q) => $q->whereDate('created_at', '<=', $validated['date_range']['end']));
             }
-            if (isset($validated['created_at_end'])) {
-                $query->whereDate('created_at', '<=', $validated['created_at_end']);
-            }
-            // Paginate the results
-            $products = $query->latest()->paginate(15);
-            // Check if any products were found
+            // Sorting
+            $sortBy = $validated['sort_by'] ?? 'created_at';
+            $sortDirection = $validated['sort_direction'] ?? 'desc';
+            $query->orderBy($sortBy, $sortDirection);
+
+            // Pagination
+            $perPage = $validated['per_page'] ?? 15;
+            $products = $query->paginate($perPage);
+
+            // If empty
             if ($products->isEmpty()) {
                 return response()->json([
-                    'success' => false,
-                    'message' => 'No products found'
-                ], 404);
+                    'success' => true,
+                    'message' => 'No products found',
+                    'data' => [],
+                    'meta' => [
+                        'current_page' => $products->currentPage(),
+                        'last_page' => $products->lastPage(),
+                        'per_page' => $products->perPage(),
+                        'total' => $products->total()
+                    ]
+                ]);
             }
 
             return response()->json([
@@ -194,9 +224,21 @@ class ProductController extends ApiController
                     'per_page' => $products->perPage(),
                     'total' => $products->total(),
                     'from' => $products->firstItem(),
-                    'to' => $products->lastItem()
+                    'to' => $products->lastItem(),
+                    'sort' => [
+                        'by' => $sortBy,
+                        'direction' => $sortDirection
+                    ],
+                    'filters' => $validated
                 ]
             ]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors' => $e->errors()
+            ], 422);
+
         } catch (QueryException $e) {
             if ($e->getCode() == 23000) {
                 return response()->json([
@@ -211,204 +253,42 @@ class ProductController extends ApiController
             ], 500);
         }
     }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    /**
-     * @OA\Post(
-     *     path="/api/v1/products",
-     *     summary="Store a newly created product",
-     *     tags={"Products"},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/storeProduct")
-     *     ),
-     *     @OA\Response(
-     *       response="201",
-     *       description="Successful operation"
-     *     ),
-     *     @OA\Response(
-     *       response=422,
-     *       description="Invalid request!"
-     *     ),
-     *     @OA\Response(
-     *       response=500,
-     *       description="Internal Error!"
-     *     )
-     * )
-     */
-    public function store(StoreProductRequest $request) : JsonResponse
-    {
-        try {
-            $validated = $request->validated();
-            $product = Product::create($validated);
-            if ($product)
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Create product successfully!',
-                    'data' => $product,
-                ], 201);
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to create product!',
-            ], 400);
-        } catch (QueryException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Database error',
-                'error' =>  $e->getMessage(),
-            ], 500);
-        }
-    }
-
     /**
      * Display the specified resource.
      */
-    /**
-     * @OA\Get(
-     *     path="/api/v1/products/{id}",
-     *     summary="Display the specified product",
-     *     tags={"Products"},
-     *     @OA\Parameter(
-     *       name="id",
-     *       in="path",
-     *       required=true,
-     *       @OA\Schema(type="string")
-     *     ),
-     *     @OA\Response(
-     *       response="200", 
-     *       description="Successful operation"
-     *     ),
-     *     @OA\Response(
-     *       response="404", 
-     *       description="Product not found!"
-     *     )
-     * )
-     */
-    public function show(string $id) : JsonResponse
+    public function show(int $id) : JsonResponse
     {
         try {
-            $product = Product::with(['category', 'brand'])->findOrFail($id);
+            $product = Product::with(['category', 'brand'])
+                ->where('is_active', true)
+                ->findOrFail($id);
             return response()->json([
                     'success' => true,
                     'message' => 'Get product by ID successfully!',
                     'data' => new ProductResource($product)
                 ]);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Product not found',
+                'error' => 'No product found with ID: ' . $id
+            ], 404);
+
+        } catch (QueryException $e) {
+            Log::error('Product fetch error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Database error occurred',
+                'error' => 'Please try again later'
+            ], 500);
+
         } catch (\Exception $e) {
-            if($e instanceof ModelNotFoundException)
-                return response()->json([
-                        'success' => false,
-                        'message' => 'Product is not found by id: ' . $id,
-                        'error' => $e->getMessage(),
-                    ],404);
-
-            return response()->json([
-                    'success' => false,
-                    'message' => 'Internal error',
-                    'error' => $e->getMessage(),
-                ],500);
-        }
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    /**
-     * @OA\Put(
-     *     path="/api/v1/products/{id}",
-     *     summary="Update the specified product",
-     *     tags={"Products"},
-     *     @OA\Parameter(
-     *       name="id",
-     *       in="path",
-     *       required=true,
-     *       @OA\Schema(type="string")
-     *     ),
-     *     @OA\RequestBody(
-     *       required=true,
-     *       @OA\JsonContent(
-     *         ref="#/components/schemas/updateProduct"
-     *       )
-     *     ),
-     *     @OA\Response(
-     *       response="200", 
-     *       description="Successful operation"
-     *     ),
-     *     @OA\Response(
-     *       response="404", 
-     *       description="Product not found!"
-     *     ),
-     *     @OA\Response(
-     *       response="422", 
-     *       description="Unprocessable Entity!"
-     *     ),
-     *     @OA\Response(
-     *       response="500", 
-     *       description="Internal Error!"
-     *     )
-     * )
-     */
-    public function update(UpdateProductRequest $request, string $id) : JsonResponse
-    {
-        try {
-            $product = Product::with(['category', 'brand'])->findOrFail($id);
-            $validated = $request->validated();
-            $product->update($validated);
-            return response()->json([
-                'success' => true,
-                'message' => 'Update product successfully!',
-                'location' => env('APP_URL')."/api/products".$id
-            ]);
-        } catch (QueryException $e) {
+            Log::error('Product fetch error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Database error',
-                'errors' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    /**
-     * @OA\Delete(
-     *     path="/api/v1/products/{id}",
-     *     summary="Remove the specified product",
-     *     tags={"Products"},
-     *     @OA\Parameter(
-     *       name="id",
-     *       in="path",
-     *       required=true,
-     *       @OA\Schema(type="string")
-     *     ),
-     *     @OA\Response(
-     *       response="204", 
-     *       description="Successful operation"
-     *     ),
-     *     @OA\Response(
-     *       response="404", 
-     *       description="Product not found!"
-     *     )
-     * )
-     */
-    public function destroy(string $id) : JsonResponse
-    {
-        try {
-            $product = Product::with(['category', 'brand'])->findOrFail($id);
-            $product->delete();
-            return response()->json([
-                'success' => true,
-                'message' => 'Delete product successfully!'
-            ], 204);
-        } catch (QueryException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Database error',
-                'error' =>  $e->getMessage(),
-            ], 500);
+                'message' => 'Internal error',
+                'error' => $e->getMessage(),
+            ],500);
         }
     }
 }

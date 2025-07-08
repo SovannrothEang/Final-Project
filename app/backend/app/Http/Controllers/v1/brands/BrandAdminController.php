@@ -1,23 +1,20 @@
 <?php
 
-namespace App\Http\Controllers\v1;
+namespace App\Http\Controllers\v1\brands;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\v1\ApiController;
 use App\Http\Requests\StoreBrandRequest;
 use App\Http\Requests\UpdateBrandRequest;
 use App\Http\Resources\BrandResource;
 use App\Models\Brand;
-use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\UnauthorizedException;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
-use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 
-class BrandController extends Controller
+class BrandAdminController extends ApiController
 {
     /**
      *  @OA\Get(
@@ -86,21 +83,17 @@ class BrandController extends Controller
             $query = Brand::query();
 
             // Apply filters if provided
-            if (isset($validated['name'])) {
-                $query->where('name', 'like', '%' . $validated['name'] . '%');
-            }
-            if (isset($validated['country'])) {
-                $query->where('country', 'like', '%' . $validated['country'] . '%');
-            }
-            if (isset($validated['is_active'])) {
-                $query->where('is_active', $validated['is_active']);
-            }
-            if (isset($validated['user_id'])) {
-                $query->where('user_id', $validated['user_id']);
-            }
+            $query->when(isset($validated['name']),
+                    fn($q) => $q->where('name', 'like', '%' . $validated['name'] . '%'))
+                ->when(isset($validated['country']),
+                    fn($q) => $q->where('country', 'like', '%' . $validated['country'] . '%'))
+                ->when(isset($validated['is_active']),
+                    fn($q) => $q->where('is_active', $validated['is_active']))
+                ->when(isset($validated['user_id']),
+                    fn($q) => $q->where('user_id', $validated['user_id']));
 
             $brands = $query->get();
-            // Check if any products were found
+            // Check if any Brands were found
             if ($brands->isEmpty()) {
                 return response()->json([
                     'success' => false,
@@ -147,6 +140,21 @@ class BrandController extends Controller
                     'message' => 'Get brand by ID successfully',
                     'data' => new BrandResource($brand)
                 ]);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Brand not found',
+                'error' => 'No brand found with ID: ' . $id
+            ], 404);
+
+        } catch (QueryException $e) {
+            Log::error('Brand fetch error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Database error occurred',
+                'error' => 'Please try again later'
+            ], 500);
+
         } catch (\Exception $e) {
             if($e instanceof ModelNotFoundException)
                 return response()->json([
@@ -162,129 +170,61 @@ class BrandController extends Controller
                 ],500);
         }
     }
-
-    /**
-     *  @OA\Post(
-     *     path="/api/v1/brands",
-     *     summary="Create a new brand",
-     *     tags={"Brands"},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/storeBrandRequest")
-     *     ),
-     *     @OA\Response(
-     *         response=201,
-     *         description="Brand created successfully",
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="message", type="string", example="Brand created successfully"),
-     *             @OA\Property(property="data", ref="#/components/schemas/brand")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=422,
-     *         description="Validation error",
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="success", type="boolean", example=false),
-     *             @OA\Property(property="message", type="string", example="Validation error"),
-     *             @OA\Property(property="errors", type="object")
-     *         )
-     *     )
-     * )
-     */
     public function store(StoreBrandRequest $request)
     {
+        DB::beginTransaction();
         try {
             $brand = Brand::create($request->validated());
-            
+            DB::commit();
+            Log::info('Create Brand successfully');
             return response()->json([
                 'success' => true,
                 'message' => 'Brand created successfully',
                 'data' => $brand
             ], 201);
         } catch (ValidationException $e) {
+            DB::rollBack();
+            Log::warning('Brand creation validation failed', ['errors' => $e->errors()]);
+            
             return response()->json([
                 'success' => false,
                 'message' => 'Validation error',
                 'errors' => $e->errors()
             ], 422);
-        } catch (QueryException $e) {
-            if ($e->getCode() == 23000) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Foreign key constraint violation'
-                ], 409);
-            }
 
+        } catch (QueryException $e) {
+            DB::rollBack();
+            Log::error('Brand creation database error', [
+                'error' => $e->getMessage(),
+                'code' => $e->getCode()
+            ]);
             return response()->json([
                 'success' => false,
-                'message' => 'Database error'
+                'message' => 'Database error occurred',
+                'error' => config('app.debug') ? $e->getMessage() : 'Please try again later'
             ], 500);
-        } catch (\Exception $e) {
+
+        } catch (QueryException $e) {
+            DB::rollBack();
+            Log::error('Brand creation failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to create brand',
-                'error' => $e->getMessage()
+                'message' => 'Database error',
+                'error' =>  $e->getMessage(),
             ], 500);
         }
     }
 
-    /**
-     *  @OA\Put(
-     *     path="/api/v1/brands/{id}",
-     *     summary="Update a brand",
-     *     tags={"Brands"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Brand ID",
-     *         @OA\Schema(type="integer", format="int64")
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/updateBrandRequest")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Brand updated successfully",
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="message", type="string", example="Brand updated successfully"),
-     *             @OA\Property(property="data", ref="#/components/schemas/brand")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Brand not found",
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="success", type="boolean", example=false),
-     *             @OA\Property(property="message", type="string", example="Brand not found")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=422,
-     *         description="Validation error",
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="success", type="boolean", example=false),
-     *             @OA\Property(property="message", type="string", example="Validation error"),
-     *             @OA\Property(property="errors", type="object")
-     *         )
-     *     )
-     * )
-     */
     public function update(UpdateBrandRequest $request, int $id): JsonResponse
     {
         try {
             DB::transaction(function () use ($request, $id) {
-            $brand = Brand::where('id', $id)->lockForUpdate()->firstOrFail();
-            $brand->update($request->validated());
-        });
+                $brand = Brand::where('id', $id)->lockForUpdate()->firstOrFail();
+                $brand->update($request->validated());
+            });
 
             return response()->json([
                 'success' => true,

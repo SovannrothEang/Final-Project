@@ -10,6 +10,7 @@ use App\Models\User;
 use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends ApiController
@@ -37,9 +38,10 @@ class AuthController extends ApiController
     public function login(LoginRequest $request) : JsonResponse
     {
         $validated = $request->validated();
-
+        if (!Auth::guard('sanctum')->attempt($validated)) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
         $user = User::where('email', $validated['email'])->first();
-
         if(!$user || !Hash::check($validated['password'], $user->password)){
             return response()->json([
                 'success' => false,
@@ -141,20 +143,29 @@ class AuthController extends ApiController
      *     @OA\Response(response="401", description="Unauthenticated")
      *  )
      */
-    public function user()
+    public function user(Request $request)
     {
-        $user = auth()->user();
-
-        if (!$user) {
+        // $user = Auth::user();
+        // if (!$user) {
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => 'Unauthenticated'
+        //     ], 401);
+        // }
+        if (!$request->user()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Unauthenticated'
+                'message' => 'Unauthenticated. Please log in.'
             ], 401);
         }
 
         return response()->json([
             'success' => true,
-            'data' => new UserResource($user)
+            'data' => [
+                'user' => new UserResource($request->user()),
+                'token_abilities' => $request->user()->currentAccessToken()->abilities ?? [],
+                'token_expires_at' => $request->user()->currentAccessToken()->expires_at ?? null,
+            ]
         ]);
     }
     /**
