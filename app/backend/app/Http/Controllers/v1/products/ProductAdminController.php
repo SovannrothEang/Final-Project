@@ -182,9 +182,9 @@ class ProductAdminController extends ApiController
             $validated = $request->validated();
             $product = Product::create($validated);
 
-            if ($request->has('category_id')) {
-                $product->category()->sync($request->input('categort_id'));
-            }
+            // if ($request->has('category_id')) {
+            //     $product->category()->sync($request->input('categort_id'));
+            // }
 
             DB::commit();
             Log::info('Product created successfully', ['product_id' => $product->id]);

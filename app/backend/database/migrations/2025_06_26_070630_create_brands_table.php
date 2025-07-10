@@ -16,8 +16,9 @@ return new class extends Migration
             $table->string('name')->unique();
             $table->string('description');
             $table->string('country');
-            $table->string('website_url');
-            $table->boolean('is_active');
+            $table->string('website_url')->nullable();
+            $table->string('logo')->nullable();
+            $table->boolean('is_active')->default(true);
             $table->foreignId('user_id')
                 ->constrained('tbl_users', 'id');
             $table->timestamps();

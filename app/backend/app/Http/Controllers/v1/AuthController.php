@@ -34,8 +34,10 @@ class AuthController extends ApiController
         );
         return response()->json([
             'success' => true,
-            'token' => $token->plainTextToken,
-            'token_expires_at' => $token->accessToken->expires_at,
+            'data' => [
+                'token' => $token->plainTextToken,
+                'token_expires_at' => $token->accessToken->expires_at,
+            ]
         ], 200);
     }
 

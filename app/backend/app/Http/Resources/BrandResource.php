@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Brand;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -29,12 +30,15 @@ class BrandResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $brand = Brand::withCount('products')->find($this->id);
         return [
             'id' => $this->id,
             'name' => $this->name,
             'description' => $this->description,
             'country' => $this->country,
             'website_url' => $this->website_url,
+            'logo' => $this->logo,
+            "products_count" => $brand->products_count,
             'is_active' => $this->is_active,
             'user_id' => $this->user_id,
             'created_at' => $this->created_at->toDateTimeString(),

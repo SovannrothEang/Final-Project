@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const API_URL = process.env.API_BASE_URL + "/api/auth/verify-token";
+const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL + "/api/auth/verify-token";
 export async function middleware(req: NextRequest) {
 	const token = req.cookies.get("auth_token")?.value;
 	// const token = await req.cookies.get("auth_token")?.value;
@@ -16,7 +16,7 @@ export async function middleware(req: NextRequest) {
 	}
 	// Validate the token
 	const res = await fetch(API_URL, {
-		method: "GET",
+		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
 			Authorization: `Bearer ${token}`,

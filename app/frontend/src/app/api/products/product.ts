@@ -1,6 +1,6 @@
 import { Product, ProductResponse } from "@/types/product";
 
-// const API_URL = `${process.env.API_BASE_URL}/api/v1/products`;
+// const API_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/products`;
 const API_URL = `http://localhost:8000/api/v1/products`;
 
 export async function fetchProducts(): Promise<Product[]> {

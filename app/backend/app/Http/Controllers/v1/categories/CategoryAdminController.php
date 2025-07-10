@@ -19,8 +19,25 @@ class CategoryAdminController extends ApiController
     public function index(): JsonResponse
     {
         try {
-            $categories = Category::all();
-            
+            $validated = request()->validate([
+                'name' => 'nullable|string|max:255',
+                'is_active' => 'nullable|boolean',
+                'user_id' => 'nullable|integer|exists:tbl_users,id',
+            ]);
+            $query = Category::query();
+
+            // Apply filters if provided
+            $query->when(isset($validated['name']),
+                    fn($q) => $q->where('name', 'like', '%' . $validated['name'] . '%'))
+                ->when(isset($validated['description']),
+                    fn($q) => $q->where('description', 'like', '%' . $validated['description'] . '%'))
+                ->when(isset($validated['is_active']),
+                    fn($q) => $q->where('is_active', $validated['is_active']))
+                ->when(isset($validated['user_id']),
+                    fn($q) => $q->where('user_id', $validated['user_id']));
+
+            $categories = $query->get();
+            // Check if any Brands were found
             if ($categories->isEmpty()) {
                 return response()->json([
                     'success' => false,
@@ -67,28 +84,20 @@ class CategoryAdminController extends ApiController
 
     public function store(StoreCategoryRequest $request): JsonResponse
     {
-        DB::beginTransaction();
         try {
-            $category = Category::create($request->validated());
-            DB::commit();
-            // Fixed inconsistent response structure
+            $category = DB::transaction(function () use ($request) {
+                $category = Category::create($request->validated());
+                DB::commit();
+                // Fixed inconsistent response structure
+                return $category->fresh();
+            });
             return response()->json([
                 'success' => true,
                 'message' => 'Create category successfully',
-                'data' => $category,
+                'data' => new CategoryResource($category),
             ], 201);
             
-        } catch (ValidationException $e) {
-            DB::rollBack();
-            Log::warning('Brand creation validation failed', ['errors' => $e->errors()]);
-            
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation error',
-                'errors' => $e->errors()
-            ], 422);
         } catch (QueryException $e) {
-            DB::rollBack();
             // Added specific handling for duplicate entries
             if ($e->errorInfo[1] == 1062) {
                 return response()->json([

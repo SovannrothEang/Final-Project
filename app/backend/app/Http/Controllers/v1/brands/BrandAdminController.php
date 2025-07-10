@@ -103,7 +103,9 @@ class BrandAdminController extends ApiController
 
             return response()->json([
                 'success' => true,
-                'data' => BrandResource::collection($brands)
+                'data' => [
+                    'brands' => BrandResource::collection($brands)
+                ]
             ]);
         } catch (ValidationException $e) {
             return response()->json([
@@ -173,42 +175,35 @@ class BrandAdminController extends ApiController
 
     public function store(StoreBrandRequest $request)
     {
-        DB::beginTransaction();
         try {
-            $brand = Brand::create($request->validated());
-            DB::commit();
+            $brand = DB::transaction(function () use ($request) {
+                $brand = Brand::create($request->validated());
+                DB::commit();
+                return $brand->fresh();
+            });
             return response()->json([
                 'success' => true,
                 'message' => 'Brand created successfully',
-                'data' => $brand
+                'data' => new BrandResource($brand)
             ], 201);
-        } catch (ValidationException $e) {
-            DB::rollBack();
-            Log::warning('Brand creation validation failed', ['errors' => $e->errors()]);
-            
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation error',
-                'errors' => $e->errors()
-            ], 422);
 
-        } catch (QueryException $e) {
-            DB::rollBack();
+        } catch (\Exception $e) {
             Log::error('Brand creation database error', [
                 'error' => $e->getMessage(),
                 'code' => $e->getCode()
             ]);
-            if ($e->errorInfo[1] == 1062) {
+            if ($e instanceof QueryException) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Category name already exists'
-                ], 400);
+                    'message' => 'Database error occurred',
+                    'error' => config('app.debug') ? $e->getMessage() : 'Please try again later'
+                ], 500);
             }
 
             return response()->json([
                 'success' => false,
-                'message' => 'Database error occurred',
-                'error' => config('app.debug') ? $e->getMessage() : 'Please try again later'
+                'message' => 'Unexpected error occurred',
+                'error' => $e->getMessage(),
             ], 500);
         }
     }

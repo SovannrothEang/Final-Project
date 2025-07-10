@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const MAX_AGE = 60 * 60 * 24 * 7; // 1 week
-const API_URL = process.env.API_BASE_URL + "/api/auth/login";
+const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL + "/api/auth/login";
 
 export async function POST(request: NextRequest) {
 	try {
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
 		// Set HTTP-only cookie
 		res.cookies.set({
 			name: "auth_token",
-			value: data.token,
+			value: data.data.token,
 			httpOnly: true,
 			secure: process.env.NODE_ENV === "production",
 			maxAge: MAX_AGE,

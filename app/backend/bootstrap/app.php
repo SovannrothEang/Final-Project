@@ -6,6 +6,8 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -46,12 +48,21 @@ return Application::configure(basePath: dirname(__DIR__))
                 ], 404);
             }
         });
+        $exceptions->renderable(function (ValidationException $e) {
+            Log::error('[Validation exception] '. $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors(),
+            ], 422);
+        });
         $exceptions->renderable(function (\Throwable $e) {
             Log::error('[Unhandled exception] '. $e->getMessage());
+            $statusCode = ($e instanceof HttpException) ? $e->getStatusCode() : 500;
             return response()->json([
                 'success' => false,
                 'message' => 'Internal server error',
-                'error' => 'An unexpected error occurred',
-            ], 500);
+                'error' => $e->getMessage(),
+            ], $statusCode);
         });
     })->create();
