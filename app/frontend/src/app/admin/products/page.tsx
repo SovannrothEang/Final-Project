@@ -37,50 +37,42 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import products from "@/data/products";
 import { Product } from "@/types/product";
-import { fetchProducts } from "@/app/api/products/product";
+import useFetch from "@/utils/data-fetching";
+import { ApiResponse } from "@/types/api";
 
 export default function ProductsPage() {
+	const { data, error, isLoading } =
+		useFetch<ApiResponse<Product[]>>("/admin/products");
 	const [productList, setProductList] = useState<Product[]>([]);
 	const [searchTerm, setSearchTerm] = useState("");
-	const [isLoading, setIsLoading] = useState(true);
 
 	useEffect(() => {
-		const loadProducts = async () => {
-			try {
-				const data = await fetchProducts();
-				setProductList(data);
-			} catch (error) {
-				// console.error(error);
-				console.log(error);
-			} finally {
-				setIsLoading(false);
-			}
-		};
+		if (data && data.data) setProductList(data.data);
+	}, [data]);
 
-		loadProducts();
-	});
-
+	if (error) {
+		return <div>Error fetching categories</div>;
+	}
 	if (isLoading) {
-		return <div>Loading...</div>;
+		return <div>Loading categories ...</div>;
 	}
 
-	const filteredProducts = productList.filter(
-		(product) =>
-			product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-			product.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-			product.brand.toLowerCase().includes(searchTerm.toLowerCase())
-	);
+	// const filteredProducts = productList.filter(
+	// 	(product) =>
+	// 		product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+	// 		product.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+	// 		product.brand.toLowerCase().includes(searchTerm.toLowerCase())
+	// );
 
-	const getStatusBadge = (status: string, stock: number) => {
+	const getStatusBadge = (active: boolean, stock: number) => {
 		if (stock === 0) {
 			return <Badge variant="destructive">Out of Stock</Badge>;
 		}
 		if (stock < 10) {
 			return <Badge variant="secondary">Low Stock</Badge>;
 		}
-		if (status === "inactive") {
+		if (!active) {
 			return <Badge variant="outline">Inactive</Badge>;
 		}
 		return <Badge className="bg-green-500 hover:bg-green-600">In Stock</Badge>;
@@ -104,9 +96,7 @@ export default function ProductsPage() {
 		(sum, product) => sum + product.price * product.stock,
 		0
 	);
-	const activeProducts = productList.filter(
-		(p) => p.status === "active"
-	).length;
+	const activeProducts = productList.filter((p) => p.is_active).length;
 	const outOfStock = productList.filter((p) => p.stock === 0).length;
 	const lowStock = productList.filter(
 		(p) => p.stock > 0 && p.stock < 10
@@ -218,8 +208,8 @@ export default function ProductsPage() {
 								</TableRow>
 							</TableHeader>
 							<TableBody>
-								{filteredProducts &&
-									filteredProducts.map((product) => (
+								{productList &&
+									productList.map((product) => (
 										<TableRow key={product.id}>
 											<TableCell className="font-medium">
 												<div className="flex items-center space-x-3">
@@ -238,12 +228,12 @@ export default function ProductsPage() {
 													</div>
 												</div>
 											</TableCell>
-											<TableCell>{product.category}</TableCell>
-											<TableCell>{product.brand}</TableCell>
+											<TableCell>{product.category.name}</TableCell>
+											<TableCell>{product.brand.name}</TableCell>
 											<TableCell>${product.price.toFixed(2)}</TableCell>
 											<TableCell>{product.stock}</TableCell>
 											<TableCell>
-												{getStatusBadge(product.status, product.stock)}
+												{getStatusBadge(product.is_active, product.stock)}
 											</TableCell>
 											<TableCell>
 												{new Date(product.created_at).toLocaleDateString()}

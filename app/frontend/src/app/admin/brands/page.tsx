@@ -38,88 +38,15 @@ import { BrandModal } from "@/components/admin/BrandModal";
 import { Brand } from "@/types/brands";
 import Image from "next/image";
 import useFetch from "@/utils/data-fetching";
-
-// Sample data
-const initialBrands = [
-	{
-		id: 1,
-		name: "Apple",
-		description: "Technology company known for innovative products",
-		productCount: 15,
-		status: "Active",
-		country: "USA",
-		website: "apple.com",
-		createdAt: "2024-01-15",
-		logo: "/placeholder.svg?height=50&width=50",
-	},
-	{
-		id: 2,
-		name: "Samsung",
-		description: "South Korean multinational electronics company",
-		productCount: 12,
-		status: "Active",
-		country: "South Korea",
-		website: "samsung.com",
-		createdAt: "2024-01-10",
-		logo: "/placeholder.svg?height=50&width=50",
-	},
-	{
-		id: 3,
-		name: "Nike",
-		description: "American multinational corporation for footwear and apparel",
-		productCount: 28,
-		status: "Active",
-		country: "USA",
-		website: "nike.com",
-		createdAt: "2024-01-08",
-		logo: "/placeholder.svg?height=50&width=50",
-	},
-	{
-		id: 4,
-		name: "Sony",
-		description: "Japanese multinational conglomerate corporation",
-		productCount: 8,
-		status: "Active",
-		country: "Japan",
-		website: "sony.com",
-		createdAt: "2024-01-05",
-		logo: "/placeholder.svg?height=50&width=50",
-	},
-	{
-		id: 5,
-		name: "Adidas",
-		description: "German multinational corporation for sportswear",
-		productCount: 22,
-		status: "Active",
-		country: "Germany",
-		website: "adidas.com",
-		createdAt: "2024-01-01",
-		logo: "/placeholder.svg?height=50&width=50",
-	},
-	{
-		id: 6,
-		name: "Puma",
-		description: "German multinational corporation for athletic wear",
-		productCount: 5,
-		status: "Inactive",
-		country: "Germany",
-		website: "puma.com",
-		createdAt: "2023-12-28",
-		logo: "/placeholder.svg?height=50&width=50",
-	},
-];
-
-interface BrandsResponse {
-	success: boolean;
-	data: { brands: Brand[] };
-}
+import { ApiResponse } from "@/types/api";
 
 export default function BrandsPage() {
-	const { data, error, isLoading } = useFetch<BrandsResponse>("/admin/brands");
+	const { data, error, isLoading } =
+		useFetch<ApiResponse<Brand[]>>("/admin/brands");
 
 	const [brands, setBrands] = useState<Brand[]>([]);
 	useEffect(() => {
-		if (data) setBrands(data.data.brands);
+		if (data && data.data) setBrands(data.data);
 	}, [data]);
 	const [searchTerm, setSearchTerm] = useState("");
 	const [isModalOpen, setIsModalOpen] = useState(false);
@@ -214,8 +141,7 @@ export default function BrandsPage() {
 					<CardContent>
 						<div className="text-2xl font-bold">
 							{brands && brands.length > 0
-								? brands.filter((b) => (b.is_active ? "Active" : "Not active"))
-										.length
+								? brands.filter((b) => b.is_active).length
 								: 0}
 						</div>
 						<p className="text-xs text-muted-foreground">Currently selling</p>
@@ -365,7 +291,7 @@ export default function BrandsPage() {
 									))
 								) : (
 									<TableRow>
-										<TableCell>&quot;No Products&quot;</TableCell>
+										<TableCell>&quot;No Brands&quot;</TableCell>
 									</TableRow>
 								)}
 							</TableBody>

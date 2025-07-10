@@ -22,6 +22,8 @@ export default function useFetch<T>(url: string) {
 		fetcher,
 		{
 			refreshInterval: 30000,
+			errorRetryInterval: 5000,
+			errorRetryCount: 3,
 		}
 	);
 

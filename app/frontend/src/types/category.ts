@@ -8,38 +8,39 @@
 // export type CategoryList = Category[];
 
 export interface Category {
-  id: string
-  name: string
-  description: string
-  is_active: boolean
-//   image?: string
-  created_at: string
-  updated_at: string
+	id: string;
+	name: string;
+	description?: string;
+	products_count: number;
+	is_active: boolean;
+	logo?: string;
+	created_at: string;
+	updated_at: string;
 }
 
 export interface CreateCategoryData {
-  name: string
-  description: string
-  is_active: boolean
-//   image?: string
+	name: string;
+	description: string;
+	is_active: boolean;
+	//   image?: string
 }
 
-export interface UpdateCategoryData extends Partial<CreateCategoryData> {}
+// export interface UpdateCategoryData extends Partial<CreateCategoryData> {}
 
 export interface CategoryFilters {
-  search?: string
-  status?: "Active" | "Inactive"
-  parent_id?: string
-  page?: number
-  per_page?: number
+	search?: string;
+	status?: "Active" | "Inactive";
+	parent_id?: string;
+	page?: number;
+	per_page?: number;
 }
 
 export interface CategoryResponse {
-  data: Category[]
-//   meta: {
-//     current_page: number
-//     last_page: number
-//     per_page: number
-//     total: number
-//   }
+	data: Category[];
+	//   meta: {
+	//     current_page: number
+	//     last_page: number
+	//     per_page: number
+	//     total: number
+	//   }
 }

@@ -48,24 +48,21 @@
 export interface Product {
 	id: string;
 	name: string;
-	image: string;
-	description: string;
+	brand: { id: string; name: string };
+	category: { id: string; name: string };
+	description?: string;
 	short_description?: string;
-	brand: string;
-	category: string;
 	price: number;
 	stock: number;
-	option: {
-		color: string[];
-		size: string[];
-	};
+	option: Record<string, string[]>;
 	discount: number;
-	status: string;
-	in_stock: boolean;
-	is_new: boolean;
+	image?: string;
 	is_active: boolean;
+	in_stock: boolean;
 	is_top: number;
+	is_new: boolean;
 	review: number;
+	rateing: number;
 	created_at: string;
 	updated_at: string;
 }
@@ -89,7 +86,7 @@ export interface CreateProductData {
 	review: number;
 }
 
-export interface UpdateProductData extends Partial<CreateProductData> {}
+// export interface UpdateProductData extends Partial<CreateProductData> {}
 
 export interface ProductFilters {
 	search?: string;

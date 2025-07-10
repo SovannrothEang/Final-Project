@@ -36,6 +36,7 @@ class StoreCategoryRequest extends FormRequest
         return [
             'name' => 'required|string|max:255|unique:tbl_categories,name',
             'description' => 'nullable|string|max:500',
+            'logo' => 'nullable|string|max:500',
             'is_active' => 'nullable|boolean',
             'user_id' => 'required|integer|exists:tbl_users,id',
         ];
@@ -54,6 +55,9 @@ class StoreCategoryRequest extends FormRequest
             
             'description.string' => 'Description must be a string',
             'description.max' => 'Description must not exceed 500 characters',
+
+            'logo.string' => 'Logo path must be a string',
+            'logo.max' => 'Logo path must not exceed 500 characters',
             
             'is_active.boolean' => 'Is active must be a boolean value',
             

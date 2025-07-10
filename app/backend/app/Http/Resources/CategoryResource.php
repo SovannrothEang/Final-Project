@@ -34,6 +34,7 @@ class CategoryResource extends JsonResource
             'name' => $this->name,
             'description' => $this->description,
             'products_count' => $category->products_count,
+            'logo' => $this->logo,
             'is_active' => $this->is_active,
             'user_id' => $this->user_id,
             'created_at' => $this->created_at->toDateTimeString(),

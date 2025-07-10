@@ -18,6 +18,7 @@ class Brand extends Model
         'description',
         'country',
         'website_url',
+        'logo',
         'is_active',
         'user_id',
     ];

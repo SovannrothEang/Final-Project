@@ -103,9 +103,7 @@ class BrandAdminController extends ApiController
 
             return response()->json([
                 'success' => true,
-                'data' => [
-                    'brands' => BrandResource::collection($brands)
-                ]
+                'data' => BrandResource::collection($brands)
             ]);
         } catch (ValidationException $e) {
             return response()->json([

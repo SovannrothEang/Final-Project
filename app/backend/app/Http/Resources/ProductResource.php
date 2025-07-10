@@ -149,6 +149,7 @@ class ProductResource extends JsonResource
             'stock' => $this->stock, 
             'options' => $this->formatOptions(), 
             'discount' => $this->discount,
+            'image' => $this->image,
             'in_stock' => $this->inStock(),
             'is_top' => $this->is_top,
             'is_new' => $this->isNew(),

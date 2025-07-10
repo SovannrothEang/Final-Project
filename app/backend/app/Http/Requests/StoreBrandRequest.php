@@ -40,6 +40,7 @@ class StoreBrandRequest extends FormRequest
             'description' => 'nullable|string|max:500',
             'country' => 'required|string|max:100',
             'website_url' => 'nullable|url|max:255',
+            'logo' => 'nullable|string|max:255',
             'is_active' => 'nullable|boolean',
             'user_id' => 'required|integer|exists:tbl_users,id',
         ];
@@ -58,6 +59,9 @@ class StoreBrandRequest extends FormRequest
             
             'description.string' => 'Description must be a string',
             'description.max' => 'Description must not exceed 500 characters',
+
+            'logo.string' => 'Logo path must be a string',
+            'logo.max' => 'Logo path must not exceed 500 characters',
             
             'country.required' => 'Country is required',
             'country.string' => 'Country must be a string',
