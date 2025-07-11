@@ -7,9 +7,30 @@ export async function createBrand(productData: Partial<Brand>) {
 	console.log("[Brand] " + productData.name);
 	console.log("[Brand] " + productData.country);
 	if (!token) throw new Error("No token was found");
-	await api.post("/admin/brands", productData, {
-		headers: {
-			Authorization: `Bearer ${token}`,
-		},
-	});
+	try {
+		await api
+			.post("/admin/brands", productData, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			})
+			.catch(function (error) {
+				if (
+					error.response &&
+					error.response.data &&
+					error.response.data.errors
+				) {
+					const errorMessages: string[] = [];
+					for (const key in error.response.data.errors) {
+						if (Array.isArray(error.response.data.errors[key])) {
+							errorMessages.push(...error.response.data.errors[key]);
+						}
+					}
+					throw errorMessages;
+				}
+				throw error;
+			});
+	} catch (error) {
+		throw error;
+	}
 }

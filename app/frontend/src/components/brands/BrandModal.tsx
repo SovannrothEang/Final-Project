@@ -6,13 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
+// import {
+// 	Select,
+// 	SelectContent,
+// 	SelectItem,
+// 	SelectTrigger,
+// 	SelectValue,
+// } from "@/components/ui/select";
 import {
 	Dialog,
 	DialogContent,
@@ -27,34 +27,25 @@ import Image from "next/image";
 import { Checkbox } from "../ui/checkbox";
 import { createBrandAction } from "@/utils/brands/action";
 import { initialState } from "@/lib/difinitions";
-import {
-	AlertDialog,
-	AlertDialogAction,
-	AlertDialogContent,
-	AlertDialogDescription,
-	AlertDialogFooter,
-	AlertDialogHeader,
-	AlertDialogTitle,
-} from "../ui/alert-dialog";
 
-const countries = [
-	"USA",
-	"Canada",
-	"United Kingdom",
-	"Germany",
-	"France",
-	"Italy",
-	"Spain",
-	"Netherlands",
-	"Japan",
-	"South Korea",
-	"China",
-	"India",
-	"Australia",
-	"Brazil",
-	"Mexico",
-	"Other",
-];
+// const countries = [
+// 	"USA",
+// 	"Canada",
+// 	"United Kingdom",
+// 	"Germany",
+// 	"France",
+// 	"Italy",
+// 	"Spain",
+// 	"Netherlands",
+// 	"Japan",
+// 	"South Korea",
+// 	"China",
+// 	"India",
+// 	"Australia",
+// 	"Brazil",
+// 	"Mexico",
+// 	"Other",
+// ];
 
 export function BrandModal({
 	isOpen,
@@ -77,7 +68,7 @@ export function BrandModal({
 		country: "",
 		website_url: "",
 		logo: "",
-		is_active: true,
+		is_active: false,
 	});
 	const [logoPreview, setLogoPreview] = useState<string>("");
 
@@ -100,11 +91,13 @@ export function BrandModal({
 				country: "",
 				website_url: "",
 				logo: "",
-				is_active: true,
+				is_active: false,
 			});
 			setLogoPreview("");
+			state.errors = {};
+			state.success = false;
 		}
-	}, [isOpen, brand]);
+	}, [isOpen, brand, state]);
 
 	useEffect(() => {
 		if (state.success) {
@@ -150,19 +143,9 @@ export function BrandModal({
 					</DialogDescription>
 				</DialogHeader>
 				{state.errors && "general" in state.errors && state.errors.general && (
-					<AlertDialog>
-						<AlertDialogContent>
-							<AlertDialogHeader>
-								<AlertDialogTitle>General errors</AlertDialogTitle>
-								<AlertDialogDescription>
-									{state.errors.general.join(", ")}
-								</AlertDialogDescription>
-							</AlertDialogHeader>
-							<AlertDialogFooter>
-								<AlertDialogAction>OK</AlertDialogAction>
-							</AlertDialogFooter>
-						</AlertDialogContent>
-					</AlertDialog>
+					<span className="text-destructive">
+						{state.errors.general.join(", ")}
+					</span>
 				)}
 				<form action={action} className="space-y-4">
 					{/* Brand Name */}
@@ -176,7 +159,6 @@ export function BrandModal({
 								setFormData((prev) => ({ ...prev, name: e.target.value }))
 							}
 							placeholder="Enter brand name"
-							required
 						/>
 						{state.errors && "name" in state.errors && state.errors.name && (
 							<p className="text-sm text-red-500">
@@ -199,7 +181,7 @@ export function BrandModal({
 								}))
 							}
 							placeholder="Enter brand description"
-							rows={3}
+							rows={1}
 						/>
 						{state.errors &&
 							"description" in state.errors &&
@@ -213,13 +195,24 @@ export function BrandModal({
 					{/* Country */}
 					<div className="space-y-2">
 						<Label htmlFor="country">Country</Label>
-						<Select
+						<Input
+							id="country"
+							name="country"
+							value={formData.country}
+							onChange={(e) =>
+								setFormData((prev) => ({
+									...prev,
+									country: e.target.value,
+								}))
+							}
+							placeholder="Enter the country of the Brand"
+						/>
+						{/* <Select
 							name="country"
 							value={formData.country}
 							onValueChange={(value) =>
 								setFormData((prev) => ({ ...prev, country: value }))
 							}
-							required
 						>
 							<SelectTrigger>
 								<SelectValue placeholder="Select country" />
@@ -231,12 +224,12 @@ export function BrandModal({
 									</SelectItem>
 								))}
 							</SelectContent>
-						</Select>
+						</Select> */}
 						{state.errors &&
 							"country" in state.errors &&
 							state.errors.country && (
 								<p className="text-sm text-red-500">
-									{state.errors?.country.join(", ")}
+									{state.errors.country.join(", ")}
 								</p>
 							)}
 					</div>
@@ -254,8 +247,7 @@ export function BrandModal({
 									website_url: e.target.value,
 								}))
 							}
-							placeholder="example.com"
-							required
+							placeholder="https://www.example.com"
 						/>
 						{state.errors &&
 							"website_url" in state.errors &&
@@ -272,11 +264,11 @@ export function BrandModal({
 						<Checkbox
 							id="is_active"
 							name="is_active"
-							checked={formData.is_active}
-							onCheckedChange={(checked) =>
+							checked={formData.is_active || false}
+							onCheckedChange={(checked: boolean) =>
 								setFormData((prev) => ({
 									...prev,
-									is_active: checked ? true : false,
+									is_active: checked,
 								}))
 							}
 						/>

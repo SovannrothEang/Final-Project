@@ -48,17 +48,17 @@ export default function AdminSettingsPage() {
 	});
 
 	// Email Settings State
-	const [emailSettings, setEmailSettings] = useState({
-		smtpHost: "smtp.gmail.com",
-		smtpPort: "587",
-		smtpUsername: "admin@exclusive.com",
-		smtpPassword: "",
-		fromEmail: "noreply@exclusive.com",
-		fromName: "Exclusive Store",
-		orderConfirmation: true,
-		shipmentNotification: true,
-		promotionalEmails: true,
-	});
+	// const [emailSettings, setEmailSettings] = useState({
+	// 	smtpHost: "smtp.gmail.com",
+	// 	smtpPort: "587",
+	// 	smtpUsername: "admin@exclusive.com",
+	// 	smtpPassword: "",
+	// 	fromEmail: "noreply@exclusive.com",
+	// 	fromName: "Exclusive Store",
+	// 	orderConfirmation: true,
+	// 	shipmentNotification: true,
+	// 	promotionalEmails: true,
+	// });
 
 	// Payment Settings State
 	const [paymentSettings, setPaymentSettings] = useState({
@@ -121,24 +121,26 @@ export default function AdminSettingsPage() {
 
 	const addEmail = () => {
 		setGeneralSettings((prev) => ({
-		...prev,
-		storeEmails: [...prev.storeEmails, ''],
+			...prev,
+			storeEmails: [...prev.storeEmails, ""],
 		}));
 	};
 
 	// Function to remove an email field
 	const removeEmail = (index: number) => {
 		setGeneralSettings((prev) => ({
-		...prev,
-		storeEmails: prev.storeEmails.filter((_, i) => i !== index),
+			...prev,
+			storeEmails: prev.storeEmails.filter((_, i) => i !== index),
 		}));
 	};
 
 	// Function to update an email at a specific index
 	const updateEmail = (index: number, value: string) => {
 		setGeneralSettings((prev) => ({
-		...prev,
-		storeEmails: prev.storeEmails.map((email, i) => (i === index ? value : email)),
+			...prev,
+			storeEmails: prev.storeEmails.map((email, i) =>
+				i === index ? value : email
+			),
 		}));
 	};
 
@@ -234,36 +236,36 @@ export default function AdminSettingsPage() {
 									/>
 								</div> */}
 								<div className="space-y-2">
-								<Label>Store Emails</Label>
-								{(generalSettings.storeEmails || []).map((email, index) => (
-									<div key={index} className="flex items-center gap-2">
-									<Input
-										id={`storeEmail-${index}`}
-										type="email"
-										value={email}
-										onChange={(e) => updateEmail(index, e.target.value)}
-										placeholder={`Email ${index + 1}`}
-									/>
-									{generalSettings.storeEmails.length > 1 && (
-										<Button
-										variant="destructive"
-										size="icon"
-										onClick={() => removeEmail(index)}
-										>
-										<Trash2 className="w-4 h-4" />
-										</Button>
-									)}
-									</div>
-								))}
-								<Button
-									variant="outline"
-									size="sm"
-									onClick={addEmail}
-									className="mt-2"
-								>
-									<Plus className="w-4 h-4 mr-2" />
-									Add Email
-								</Button>
+									<Label>Store Emails</Label>
+									{(generalSettings.storeEmails || []).map((email, index) => (
+										<div key={index} className="flex items-center gap-2">
+											<Input
+												id={`storeEmail-${index}`}
+												type="email"
+												value={email}
+												onChange={(e) => updateEmail(index, e.target.value)}
+												placeholder={`Email ${index + 1}`}
+											/>
+											{generalSettings.storeEmails.length > 1 && (
+												<Button
+													variant="destructive"
+													size="icon"
+													onClick={() => removeEmail(index)}
+												>
+													<Trash2 className="w-4 h-4" />
+												</Button>
+											)}
+										</div>
+									))}
+									<Button
+										variant="outline"
+										size="sm"
+										onClick={addEmail}
+										className="mt-2"
+									>
+										<Plus className="w-4 h-4 mr-2" />
+										Add Email
+									</Button>
 								</div>
 							</div>
 

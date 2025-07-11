@@ -19,10 +19,11 @@ export async function createBrandAction(state: FormState, formData: FormData) {
 	const validatedResult = createBrandSchema.safeParse({
 		name: formData.get("name"),
 		description: formData.get("description"),
+		// assuming that the url is corrected
 		website_url: formData.get("website_url"),
 		country: formData.get("country"),
 		logo: formData.get("logo"),
-		is_active: formData.get("is_active") === "true",
+		is_active: formData.get("is_active") !== null,
 	});
 	if (!validatedResult.success) {
 		const errors = validatedResult.error.flatten().fieldErrors;
@@ -42,20 +43,26 @@ export async function createBrandAction(state: FormState, formData: FormData) {
 	}
 	try {
 		await createBrand({ ...validatedResult.data });
-		console.log("[Create Product Action] success");
+		console.log("[Create Brand Action] success");
 		return {
 			success: true,
 		};
 	} catch (error) {
-		console.error("[Product action] error: ", error);
+		console.error("[Brand action] error: ", error);
+		let errorMessage: string;
+		if (error instanceof Error) {
+			errorMessage = error.message;
+		} else if (typeof error === "string") {
+			errorMessage = error;
+		} else if (Array.isArray(error)) {
+			errorMessage = error.join(",\n");
+		} else {
+			errorMessage = "An unexpected error occurred during creating brand.";
+		}
 		return {
 			success: false,
 			errors: {
-				general: [
-					error instanceof Error
-						? error.message
-						: "An unexpected error occurred during creating product.",
-				],
+				general: [errorMessage],
 			},
 		};
 	}

@@ -52,10 +52,10 @@ export default function ProductsPage() {
 	}, [data]);
 
 	if (error) {
-		return <div>Error fetching categories</div>;
+		return <div>Error fetching products</div>;
 	}
 	if (isLoading) {
-		return <div>Loading categories ...</div>;
+		return <div>Loading products ...</div>;
 	}
 
 	// const filteredProducts = productList.filter(
@@ -78,13 +78,13 @@ export default function ProductsPage() {
 		return <Badge className="bg-green-500 hover:bg-green-600">In Stock</Badge>;
 	};
 
-	const handleAddProduct = () => {
-		window.location.href = "/admin/products/new";
-	};
+	// const handleAddProduct = () => {
+	// 	window.location.href = "/admin/products/new";
+	// };
 
-	const handleEditProduct = (product: Product) => {
-		window.location.href = `/admin/products/${product.id}/edit`;
-	};
+	// const handleEditProduct = (product: Product) => {
+	// 	window.location.href = `/admin/products/${product.id}/edit`;
+	// };
 
 	const handleDeleteProduct = (productId: string) => {
 		if (confirm("Are you sure you want to delete this product?")) {
@@ -92,10 +92,10 @@ export default function ProductsPage() {
 		}
 	};
 
-	const totalValue = productList.reduce(
-		(sum, product) => sum + product.price * product.stock,
-		0
-	);
+	// const totalValue = productList.reduce(
+	// 	(sum, product) => sum + product.price * product.stock,
+	// 	0
+	// );
 	const activeProducts = productList.filter((p) => p.is_active).length;
 	const outOfStock = productList.filter((p) => p.stock === 0).length;
 	const lowStock = productList.filter(

@@ -6,7 +6,7 @@ export type FormState = {
 	errors?: Record<string, string[] | undefined>;
 };
 
-export const initialState = {
+export const initialState: FormState = {
 	success: false,
 	fields: {},
 	errors: {},

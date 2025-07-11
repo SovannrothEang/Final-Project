@@ -27,8 +27,19 @@ const api = axios.create({
 // 	(response) => response,
 // 	(error) => {
 // 		if (error.response?.status === 401) {
-// 			// Handle unauthorized access
 // 			window.location.href = "/login";
+// 		} else if (error.response?.status === 422) {
+// 			const errors = error.response.data.errors;
+// 			if (errors) {
+// 				for (const errorKey in errors) {
+// 					if (Object.hasOwnProperty.call(errors, errorKey)) {
+// 						console.error(`${errorKey}: ${errors[errorKey]}`);
+// 						// You can also display these errors to the user in a more user - friendly way,
+// 						// such as setting them in a state variable for a React component
+// 						// or showing a toast message.
+// 					}
+// 				}
+// 			}
 // 		}
 // 		return Promise.reject(error);
 // 	}

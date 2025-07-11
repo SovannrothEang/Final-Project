@@ -4,9 +4,6 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import api from "./api";
 import { createSession, deleteSession } from "@/lib/session";
-import { User } from "@/types/user";
-
-const BACKEND_API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export async function login(email: string, password: string): Promise<boolean> {
 	try {
