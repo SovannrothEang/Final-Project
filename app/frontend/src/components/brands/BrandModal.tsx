@@ -1,8 +1,7 @@
 "use client";
 
 import type React from "react";
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useActionState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,23 +25,17 @@ import { Upload, X } from "lucide-react";
 import { Brand } from "@/types/brands";
 import Image from "next/image";
 import { Checkbox } from "../ui/checkbox";
-
-interface BrandForm {
-	name: string;
-	description: string;
-	country: string;
-	website_url?: string;
-	logo?: string;
-	is_active: boolean;
-}
-
-interface BrandModalProps {
-	isOpen: boolean;
-	onClose: () => void;
-	onSave: (brand: BrandForm) => void;
-	brand?: Brand | null;
-	mode: "add" | "edit";
-}
+import { createBrandAction } from "@/utils/brands/action";
+import { initialState } from "@/lib/difinitions";
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from "../ui/alert-dialog";
 
 const countries = [
 	"USA",
@@ -66,11 +59,19 @@ const countries = [
 export function BrandModal({
 	isOpen,
 	onClose,
-	onSave,
 	brand,
-	mode,
-}: BrandModalProps) {
-	const [formData, setFormData] = useState<BrandForm>({
+	onBrandCreated,
+}: {
+	isOpen: boolean;
+	onClose: () => void;
+	brand: Brand | undefined;
+	onBrandCreated: () => void;
+}) {
+	const [state, action, pending] = useActionState(
+		createBrandAction,
+		initialState
+	);
+	const [formData, setFormData] = useState<Partial<Brand>>({
 		name: "",
 		description: "",
 		country: "",
@@ -79,91 +80,46 @@ export function BrandModal({
 		is_active: true,
 	});
 	const [logoPreview, setLogoPreview] = useState<string>("");
-	const [errors, setErrors] = useState<Record<string, string>>({});
-	const [isLoading, setIsLoading] = useState(false);
 
 	useEffect(() => {
-		if (mode === "edit" && brand) {
-			setFormData(brand);
-			setLogoPreview(brand.logo || "");
+		if (isOpen) {
+			if (brand) {
+				setFormData({
+					name: brand.name,
+					description: brand.description,
+					country: brand.country,
+					website_url: brand.website_url,
+					logo: brand.logo,
+					is_active: brand.is_active,
+				});
+			}
 		} else {
 			setFormData({
 				name: "",
 				description: "",
 				country: "",
 				website_url: "",
-				is_active: true,
 				logo: "",
+				is_active: true,
 			});
 			setLogoPreview("");
 		}
-		setErrors({});
-	}, [mode, brand, isOpen]);
+	}, [isOpen, brand]);
 
-	const validateForm = () => {
-		const newErrors: Record<string, string> = {};
-
-		if (!formData.name.trim()) {
-			newErrors.name = "Brand name is required";
-		} else if (formData.name.length < 2) {
-			newErrors.name = "Brand name must be at least 2 characters";
+	useEffect(() => {
+		if (state.success) {
+			onBrandCreated();
 		}
+	}, [state.success, onBrandCreated]);
 
-		if (!formData.description.trim()) {
-			newErrors.description = "Description is required";
-		} else if (formData.description.length < 10) {
-			newErrors.description = "Description must be at least 10 characters";
-		}
-
-		if (!formData.country) {
-			newErrors.country = "Country is required";
-		}
-
-		if (formData.website_url && !isValidUrl(formData.website_url)) {
-			newErrors.website = "Please enter a valid website URL";
-		}
-
-		setErrors(newErrors);
-		return Object.keys(newErrors).length === 0;
-	};
-
-	const isValidUrl = (url: string) => {
-		try {
-			new URL(url.startsWith("http") ? url : `https://${url}`);
-			return true;
-		} catch {
-			return false;
-		}
-	};
-
-	const handleSubmit = async (e: React.FormEvent) => {
-		e.preventDefault();
-
-		if (!validateForm()) {
-			return;
-		}
-
-		setIsLoading(true);
-
-		try {
-			// Simulate API call
-			await new Promise((resolve) => setTimeout(resolve, 1000));
-
-			onSave({
-				...formData,
-				logo: logoPreview,
-				website_url: formData.website_url?.startsWith("http")
-					? formData.website_url
-					: `https://${formData.website_url}`,
-			});
-
-			onClose();
-		} catch (error) {
-			console.error("Error saving brand:", error);
-		} finally {
-			setIsLoading(false);
-		}
-	};
+	// const isValidUrl = (url: string) => {
+	// 	try {
+	// 		new URL(url.startsWith("http") ? url : `https://${url}`);
+	// 		return true;
+	// 	} catch {
+	// 		return false;
+	// 	}
+	// };
 
 	const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
@@ -186,40 +142,56 @@ export function BrandModal({
 		<Dialog open={isOpen} onOpenChange={onClose}>
 			<DialogContent className="sm:max-w-[500px]">
 				<DialogHeader>
-					<DialogTitle>
-						{mode === "add" ? "Add New Brand" : "Edit Brand"}
-					</DialogTitle>
+					<DialogTitle>{brand ? "Edit Brand" : "Add New Brand"}</DialogTitle>
 					<DialogDescription>
-						{mode === "add"
-							? "Create a new brand to organize your products."
-							: "Update the brand information below."}
+						{brand
+							? "Update the brand information below."
+							: "Create a new brand to organize your products."}
 					</DialogDescription>
 				</DialogHeader>
-
-				<form onSubmit={handleSubmit} className="space-y-4">
+				{state.errors && "general" in state.errors && state.errors.general && (
+					<AlertDialog>
+						<AlertDialogContent>
+							<AlertDialogHeader>
+								<AlertDialogTitle>General errors</AlertDialogTitle>
+								<AlertDialogDescription>
+									{state.errors.general.join(", ")}
+								</AlertDialogDescription>
+							</AlertDialogHeader>
+							<AlertDialogFooter>
+								<AlertDialogAction>OK</AlertDialogAction>
+							</AlertDialogFooter>
+						</AlertDialogContent>
+					</AlertDialog>
+				)}
+				<form action={action} className="space-y-4">
 					{/* Brand Name */}
 					<div className="space-y-2">
-						<Label htmlFor="name">Brand Name *</Label>
+						<Label htmlFor="name">Name</Label>
 						<Input
 							id="name"
+							name="name"
 							value={formData.name}
 							onChange={(e) =>
 								setFormData((prev) => ({ ...prev, name: e.target.value }))
 							}
 							placeholder="Enter brand name"
-							className={errors.name ? "border-red-500" : ""}
+							required
 						/>
-						{errors.name && (
-							<p className="text-sm text-red-500">{errors.name}</p>
+						{state.errors && "name" in state.errors && state.errors.name && (
+							<p className="text-sm text-red-500">
+								{state.errors.name.join(", ")}
+							</p>
 						)}
 					</div>
 
 					{/* Description */}
 					<div className="space-y-2">
-						<Label htmlFor="description">Description *</Label>
+						<Label htmlFor="description">Description</Label>
 						<Textarea
 							id="description"
-							value={formData.description}
+							name="description"
+							value={formData.description ? formData.description : ""}
 							onChange={(e) =>
 								setFormData((prev) => ({
 									...prev,
@@ -228,23 +200,28 @@ export function BrandModal({
 							}
 							placeholder="Enter brand description"
 							rows={3}
-							className={errors.description ? "border-red-500" : ""}
 						/>
-						{errors.description && (
-							<p className="text-sm text-red-500">{errors.description}</p>
-						)}
+						{state.errors &&
+							"description" in state.errors &&
+							state.errors.description && (
+								<p className="text-sm text-red-500">
+									{state.errors?.description.join(", ")}
+								</p>
+							)}
 					</div>
 
 					{/* Country */}
 					<div className="space-y-2">
-						<Label htmlFor="country">Country *</Label>
+						<Label htmlFor="country">Country</Label>
 						<Select
+							name="country"
 							value={formData.country}
 							onValueChange={(value) =>
 								setFormData((prev) => ({ ...prev, country: value }))
 							}
+							required
 						>
-							<SelectTrigger className={errors.country ? "border-red-500" : ""}>
+							<SelectTrigger>
 								<SelectValue placeholder="Select country" />
 							</SelectTrigger>
 							<SelectContent>
@@ -255,33 +232,46 @@ export function BrandModal({
 								))}
 							</SelectContent>
 						</Select>
-						{errors.country && (
-							<p className="text-sm text-red-500">{errors.country}</p>
-						)}
+						{state.errors &&
+							"country" in state.errors &&
+							state.errors.country && (
+								<p className="text-sm text-red-500">
+									{state.errors?.country.join(", ")}
+								</p>
+							)}
 					</div>
 
 					{/* Website */}
 					<div className="space-y-2">
-						<Label htmlFor="website">Website</Label>
+						<Label htmlFor="website_url">Website</Label>
 						<Input
-							id="website"
+							id="website_url"
+							name="website_url"
 							value={formData.website_url}
 							onChange={(e) =>
-								setFormData((prev) => ({ ...prev, website: e.target.value }))
+								setFormData((prev) => ({
+									...prev,
+									website_url: e.target.value,
+								}))
 							}
 							placeholder="example.com"
-							className={errors.website ? "border-red-500" : ""}
+							required
 						/>
-						{errors.website && (
-							<p className="text-sm text-red-500">{errors.website}</p>
-						)}
+						{state.errors &&
+							"website_url" in state.errors &&
+							state.errors.website_url && (
+								<p className="text-sm text-red-500">
+									{state?.errors?.website_url.join(", ")}
+								</p>
+							)}
 					</div>
 
 					{/* Status */}
 					<div className="flex items-center space-x-2 space-y-2">
-						<Label htmlFor="isActive">Active</Label>
+						<Label htmlFor="is_active">Active</Label>
 						<Checkbox
-							id="isActive"
+							id="is_active"
+							name="is_active"
 							checked={formData.is_active}
 							onCheckedChange={(checked) =>
 								setFormData((prev) => ({
@@ -336,20 +326,16 @@ export function BrandModal({
 							type="button"
 							variant="outline"
 							onClick={onClose}
-							disabled={isLoading}
+							disabled={pending}
 						>
 							Cancel
 						</Button>
 						<Button
 							type="submit"
 							className="bg-red-600 hover:bg-red-700"
-							disabled={isLoading}
+							disabled={pending}
 						>
-							{isLoading
-								? "Saving..."
-								: mode === "add"
-								? "Add Brand"
-								: "Update Brand"}
+							{pending ? "Saving..." : brand ? "Update Brand" : "Add Brand"}
 						</Button>
 					</DialogFooter>
 				</form>

@@ -1,5 +1,5 @@
 import useSWR from "swr";
-import { getToken } from "./get-token";
+import { getToken } from "@/lib/session";
 
 const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL + "/api/v1";
 

@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { deleteSession, verifySession } from "./lib/session";
 
-const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL + "/api/auth/verify-token";
 export async function middleware(req: NextRequest) {
-	const token = req.cookies.get("auth_token")?.value;
 	// const token = await req.cookies.get("auth_token")?.value;
 	const protectedPath = ["/admin", "/admin/*"];
 	const nextPath = req.nextUrl.pathname;
@@ -10,33 +9,13 @@ export async function middleware(req: NextRequest) {
 	if (!isProtected) {
 		return NextResponse.next();
 	}
-
-	if (!token) {
-		return NextResponse.redirect(new URL("/login", req.url));
-	}
 	// Validate the token
-	const res = await fetch(API_URL, {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-			Authorization: `Bearer ${token}`,
-		},
-	});
-	if (!res.ok) {
-		const errRes = NextResponse.redirect(new URL("/login", req.url));
-		errRes.cookies.set({
-			name: "auth_token",
-			value: "",
-			httpOnly: true,
-			secure: process.env.NODE_ENV === "production",
-			sameSite: "lax",
-			path: "/",
-			maxAge: 0, // Expire immediately
-		});
-		return errRes;
+	if (await verifySession()) {
+		return NextResponse.next();
 	}
 
-	return NextResponse.next();
+	deleteSession();
+	return NextResponse.redirect(new URL("/login", req.url));
 	// try {
 	// 	const decoded = jwt.verify(token, JWT_SECRET, {
 	// 		complete: true,

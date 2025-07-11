@@ -10,10 +10,10 @@
 export interface Brand {
 	id: number;
 	name: string;
-	description: string;
+	description: string | null;
 	country: string;
-	website_url?: string;
-	logo?: string;
+	website_url: string;
+	logo?: string | null;
 	is_active: boolean;
 	user_id: number;
 	//   image: string
@@ -34,7 +34,7 @@ export interface CreateBrandData {
 	//   slug?: string
 }
 
-export interface UpdateBrandData extends Partial<CreateBrandData> {}
+// export interface UpdateBrandData extends Partial<CreateBrandData> {}
 
 // export interface BrandFilters {
 //   search?: string

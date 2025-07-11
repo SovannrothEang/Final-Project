@@ -1,6 +1,6 @@
+import { createSession } from "@/lib/session";
 import { NextRequest, NextResponse } from "next/server";
 
-const MAX_AGE = 60 * 60 * 24 * 7; // 1 week
 const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL + "/api/auth/login";
 
 export async function POST(request: NextRequest) {
@@ -13,25 +13,29 @@ export async function POST(request: NextRequest) {
 			},
 			body: JSON.stringify(requestBody),
 		});
-		const data = await response.json();
+		const resData = await response.json();
 
 		if (!response.ok) {
-			return NextResponse.json(data, { status: response.status });
+			return NextResponse.json(resData, { status: response.status });
 		}
 
 		// Create the response
-		const res = NextResponse.json(data, { status: response.status });
+		const res = NextResponse.json(resData, { status: response.status });
+		if (resData && resData.data.token) {
+			const token = resData.data.token;
+			await createSession(token);
+		}
 
 		// Set HTTP-only cookie
-		res.cookies.set({
-			name: "auth_token",
-			value: data.data.token,
-			httpOnly: true,
-			secure: process.env.NODE_ENV === "production",
-			maxAge: MAX_AGE,
-			path: "/",
-			sameSite: "strict",
-		});
+		// res.cookies.set({
+		// 	name: "auth_token",
+		// 	value: token,
+		// 	httpOnly: true,
+		// 	secure: process.env.NODE_ENV === "production",
+		// 	maxAge: MAX_AGE,
+		// 	path: "/",
+		// 	sameSite: "strict",
+		// });
 
 		return res;
 	} catch (err) {
