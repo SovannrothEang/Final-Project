@@ -232,10 +232,10 @@ class ProductAdminController extends ApiController
             // DB::table('tbl_products')->where('id', $id)->lockForUpdate()->get();
             $validated = $request->validated();
             $product ->update($validated);
-            if ($request->has('category_id')) { // maybe will lead to an error if since the input is string
-                $categoryId = (int)$request->input('category_id');
-                $product->category()->sync([$categoryId]);
-            }
+            // if ($request->has('category_id')) { // maybe will lead to an error if since the input is string
+            //     $categoryId = (int)$request->input('category_id');
+            //     $product->category()->sync([$categoryId]);
+            // }
             DB::commit();
             Log::info("Product updated successfully", [
                 'product_id' => $id,

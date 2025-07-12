@@ -32,7 +32,7 @@ export async function productAction(state: FormState, formData: FormData) {
 	const reviews = Number(formData.get("reviews")); // Assuming reviews is also from form data
 
 	const is_top = formData.get("is_top") === "on";
-	const is_active = formData.get("is_active") === "on";
+	const is_active = formData.get("is_active") === "true";
 
 	const validatedResult = productSchema.safeParse({
 		name: formData.get("name"),
@@ -78,7 +78,7 @@ export async function productAction(state: FormState, formData: FormData) {
 			success: true,
 		};
 	} catch (error) {
-		console.error("[Brand action] error: ", error);
+		console.error("[Product action] error: ", error);
 		let errorMessage: string;
 		if (error instanceof Error) {
 			errorMessage = error.message;

@@ -56,11 +56,8 @@ class StoreProductRequest extends FormRequest
             'category_id' => 'required|integer|exists:tbl_categories,id',
             'description' => 'nullable|string|max:255',
             'short_description' => 'nullable|string|max:255',
-            'stock' => 'required|integer|min:1',
-            'options' => [
-                'required',
-                new ValidProductOptions(),
-            ],
+            'stock' => 'required|integer|min:0',
+            'options' => new ValidProductOptions(),
             'discount' => 'nullable|integer',
             'is_top' => 'nullable|boolean',
             'is_active' => 'nullable|boolean',
@@ -97,8 +94,6 @@ class StoreProductRequest extends FormRequest
         'stock.required' => 'Stock quantity is required',
         'stock.integer' => 'Stock must be an integer',
         'stock.min' => 'Stock must be at least 1',
-        
-        'options.required' => 'Product options are required',
         
         'discount.integer' => 'Discount must be an integer',
         

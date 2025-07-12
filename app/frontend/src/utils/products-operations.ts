@@ -39,7 +39,7 @@ export async function updateProduct(id: number, productData: Partial<Product>) {
 	if (!token) throw new Error("No token was found");
 	try {
 		await api
-			.put(`/admin/product/${id}`, productData, {
+			.put(`/admin/products/${id}`, productData, {
 				headers: {
 					Authorization: `Bearer ${token}`,
 				},

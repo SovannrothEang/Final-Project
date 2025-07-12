@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useState, useEffect, useActionState, startTransition } from "react";
+import { useState, useEffect, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,6 +30,7 @@ import { Brand } from "@/types/brands";
 import { Category } from "@/types/category";
 import { productAction } from "@/lib/actions/product-action";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 
 export function ProductModal({
 	isOpen,
@@ -46,12 +47,11 @@ export function ProductModal({
 	categories: Category[];
 	onProductCreated: () => void;
 }) {
-	const [state, formAction, pending] = useActionState(
-		productAction,
-		initialState
-	);
+	// const [state, formAction, pending] = useActionState(
+	// 	productAction,
+	// 	initialState
+	// );
 	const [formData, setFormData] = useState<Partial<Product>>({
-		id: 0,
 		name: "",
 		brand: undefined,
 		category: undefined,
@@ -66,43 +66,76 @@ export function ProductModal({
 		options: {} as Record<string, string[]>,
 		image: "",
 	});
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [transitionState, startTransition] = useTransition();
+	const [actionState, setActionState] = useState(initialState);
 
-	const action = async (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
-		const data = new FormData();
-		data.append("name", formData.name || "");
-		data.append("brand_id", formData.brand?.id.toString() || "");
-		data.append("category_id", formData.category?.id.toString() || "");
-		data.append("description", formData.description || "");
-		data.append("short_description", formData.short_description || "");
-		data.append("price", formData.price?.toString() || "0");
-		data.append("stock", formData.stock?.toString() || "0");
-		data.append("discount", formData.discount?.toString() || "0");
-		data.append(
-			"is_active",
-			formData.is_active?.toString() === "checked" ? "true" : "false"
-		);
-		data.append("is_new", formData.is_new?.toString() || "false");
-		data.append("is_top", formData.is_top?.toString() || "false");
-		data.append("options", JSON.stringify(formData.options));
-		data.append("image", formData.image || "");
+	// const action = async (e: React.FormEvent<HTMLFormElement>) => {
+	// 	e.preventDefault();
+	// 	const data = new FormData();
+	// 	data.append("name", formData.name || "");
+	// 	data.append("brand_id", formData.brand?.id.toString() || "");
+	// 	data.append("category_id", formData.category?.id.toString() || "");
+	// 	data.append("description", formData.description || "");
+	// 	data.append("short_description", formData.short_description || "");
+	// 	data.append("price", formData.price?.toString() || "0");
+	// 	data.append("stock", formData.stock?.toString() || "0");
+	// 	data.append("discount", formData.discount?.toString() || "0");
+	// 	data.append(
+	// 		"is_active",
+	// 		formData.is_active?.toString() === "checked" ? "true" : "false"
+	// 	);
+	// 	data.append("is_new", formData.is_new?.toString() || "false");
+	// 	data.append("is_top", formData.is_top?.toString() || "false");
+	// 	data.append("options", JSON.stringify(formData.options));
+	// 	data.append("image", formData.image || "");
 
-		if (product && product.id) {
-			data.append("id", product.id.toString());
-		}
-		startTransition(() => {
-			formAction(data); // Not working with the async
-		});
-	};
+	// 	if (product && product.id) {
+	// 		data.append("id", product.id.toString());
+	// 	}
+	// 	startTransition(() => {
+	// 		formAction(data); // Not working with the async
+	// 	});
+	// };
 	const [logoPreview, setLogoPreview] = useState<string>("");
 	const [newOptionKey, setNewOptionKey] = useState("");
 	const [newOptionValue, setNewOptionValue] = useState("");
+
+	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		setIsSubmitting(true);
+
+		const dataToSend = {
+			...formData,
+			brand_id: formData.brand?.id,
+			category_id: formData.category?.id,
+			// ID if update
+			id: product?.id,
+		};
+
+		delete dataToSend.brand;
+		delete dataToSend.category;
+
+		startTransition(async () => {
+			const formDataObj = new FormData();
+			Object.entries(dataToSend).forEach(([key, value]) => {
+				if (value !== undefined && value !== null) {
+					formDataObj.append(
+						key,
+						typeof value === "object" ? JSON.stringify(value) : value.toString()
+					);
+				}
+			});
+			const result = await productAction(actionState, formDataObj);
+			setActionState(result);
+			setIsSubmitting(false);
+		});
+	};
 
 	useEffect(() => {
 		if (isOpen) {
 			if (product) {
 				setFormData({
-					id: product.id,
 					name: product.name,
 					brand: product.brand,
 					category: product.category,
@@ -114,13 +147,12 @@ export function ProductModal({
 					is_active: product.is_active,
 					is_new: product.is_new,
 					is_top: product.is_top,
-					options: product.options,
+					options: Array.isArray(product.options) ? {} : product.options,
 					image: product.image,
 				});
 			}
 		} else {
 			setFormData({
-				id: 0,
 				name: "",
 				brand: undefined,
 				category: undefined,
@@ -136,16 +168,23 @@ export function ProductModal({
 				image: "",
 			});
 			setLogoPreview("");
+			setActionState(initialState);
 		}
 	}, [isOpen, product]);
-
 	useEffect(() => {
-		if (state.success) {
+		if (actionState.success) {
 			onProductCreated();
-		} else if (state.errors && Object.keys(state.errors).length > 0) {
-			console.log("ProductModal: Server action reported errors:", state.errors);
+			setActionState(initialState);
+		} else if (
+			actionState.errors &&
+			Object.keys(actionState.errors).length > 0
+		) {
+			console.log(
+				"ProductModal: Server action reported errors:",
+				actionState.errors
+			);
 		}
-	}, [state.success, state.errors, onProductCreated]);
+	}, [actionState.success, actionState.errors, onProductCreated]);
 
 	// const isValidUrl = (url: string) => {
 	// 	try {
@@ -210,12 +249,14 @@ export function ProductModal({
 							: "Create a new Product to organize your products."}
 					</DialogDescription>
 				</DialogHeader>
-				{state.errors && "general" in state.errors && state.errors.general && (
-					<span className="text-destructive">
-						{state.errors.general.join(", ")}
-					</span>
-				)}
-				<form onSubmit={action} className="space-y-4">
+				{actionState.errors &&
+					"general" in actionState.errors &&
+					actionState.errors.general && (
+						<span className="text-destructive text-sm">
+							{actionState.errors.general.join(", ")}
+						</span>
+					)}
+				<form onSubmit={handleSubmit} className="space-y-4">
 					{/* For ID */}
 					<input type="hidden" name="id" value={product?.id || ""} />
 					{/* Name */}
@@ -231,11 +272,13 @@ export function ProductModal({
 								placeholder="Enter product name"
 								required
 							/>
-							{state.errors && "name" in state.errors && state.errors.name && (
-								<p className="text-sm text-red-500">
-									{state.errors.name.join(", ")}
-								</p>
-							)}
+							{actionState.errors &&
+								"name" in actionState.errors &&
+								actionState.errors.name && (
+									<p className="text-sm text-red-500">
+										{actionState.errors.name.join(", ")}
+									</p>
+								)}
 						</div>
 
 						{/* Brief description */}
@@ -254,11 +297,11 @@ export function ProductModal({
 								}
 								placeholder="Brief product description"
 							/>
-							{state.errors &&
-								"short_description" in state.errors &&
-								state.errors.short_description && (
+							{actionState.errors &&
+								"short_description" in actionState.errors &&
+								actionState.errors.short_description && (
 									<p className="text-sm text-red-500">
-										{state.errors?.short_description.join(", ")}
+										{actionState.errors?.short_description.join(", ")}
 									</p>
 								)}
 						</div>
@@ -266,60 +309,78 @@ export function ProductModal({
 
 					{/* Brand and Category */}
 					<div className="grid grid-cols-2 gap-4">
-						<div className="flex items-center gap-2">
-							<Label htmlFor="brand">Brand</Label>
-							<Select
-								value={formData.brand?.id.toString()}
-								onValueChange={(value) => {
-									const selectedBrand = brands.find(
-										(b) => b.id.toString() === value
-									);
-									setFormData({
-										...formData,
-										brand: selectedBrand,
-									});
-								}}
-							>
-								<SelectTrigger>
-									<SelectValue placeholder="Select brand" />
-								</SelectTrigger>
-								<SelectContent>
-									{brands.map((brand) => (
-										<SelectItem key={brand.id} value={brand.id.toString()}>
-											{brand.name}
-										</SelectItem>
-									))}
-								</SelectContent>
-							</Select>
+						<div className="space-y-2">
+							<div className="flex items-center gap-2">
+								<Label htmlFor="brand">Brand</Label>
+								<Select
+									value={formData.brand?.id.toString() || ""}
+									onValueChange={(value) => {
+										const selectedBrand = brands.find(
+											(b) => b.id.toString() === value
+										);
+										setFormData({
+											...formData,
+											brand: selectedBrand,
+										});
+									}}
+								>
+									<SelectTrigger>
+										<SelectValue placeholder="Select brand" />
+									</SelectTrigger>
+									<SelectContent>
+										{brands.map((brand) => (
+											<SelectItem key={brand.id} value={brand.id.toString()}>
+												{brand.name}
+											</SelectItem>
+										))}
+									</SelectContent>
+								</Select>
+							</div>
+							{actionState.errors &&
+								"brand_id" in actionState.errors &&
+								actionState.errors.brand_id && (
+									<span className="text-destructive text-sm">
+										{actionState.errors.brand_id.join(", ")}
+									</span>
+								)}
 						</div>
-						<div className="flex items-center gap-2">
-							<Label htmlFor="category">Category</Label>
-							<Select
-								value={formData.category?.id.toString()}
-								onValueChange={(value) => {
-									const selectedCategory = categories.find(
-										(c) => c.id.toString() === value
-									);
-									setFormData({
-										...formData,
-										category: selectedCategory,
-									});
-								}}
-							>
-								<SelectTrigger>
-									<SelectValue placeholder="Select category" />
-								</SelectTrigger>
-								<SelectContent>
-									{categories.map((category) => (
-										<SelectItem
-											key={category.id}
-											value={category.id.toString()}
-										>
-											{category.name}
-										</SelectItem>
-									))}
-								</SelectContent>
-							</Select>
+						<div className="space-y-2">
+							<div className="flex items-center gap-2">
+								<Label htmlFor="category">Category</Label>
+								<Select
+									value={formData.category?.id.toString() || ""}
+									onValueChange={(value) => {
+										const selectedCategory = categories.find(
+											(c) => c.id.toString() === value
+										);
+										setFormData({
+											...formData,
+											category: selectedCategory,
+										});
+									}}
+								>
+									<SelectTrigger>
+										<SelectValue placeholder="Select category" />
+									</SelectTrigger>
+									<SelectContent>
+										{categories.map((category) => (
+											<SelectItem
+												key={category.id}
+												value={category.id.toString()}
+											>
+												{category.name}
+											</SelectItem>
+										))}
+									</SelectContent>
+								</Select>
+							</div>
+							{actionState.errors &&
+								"category_id" in actionState.errors &&
+								actionState.errors.category_id && (
+									<span className="text-destructive text-sm">
+										{actionState.errors.category_id.join(", ")}
+									</span>
+								)}
 						</div>
 					</div>
 
@@ -336,11 +397,11 @@ export function ProductModal({
 							className="min-h-[70px]"
 							rows={1}
 						/>
-						{state.errors &&
-							"description" in state.errors &&
-							state.errors.description && (
+						{actionState.errors &&
+							"description" in actionState.errors &&
+							actionState.errors.description && (
 								<p className="text-sm text-red-500">
-									{state.errors?.description.join(", ")}
+									{actionState.errors?.description.join(", ")}
 								</p>
 							)}
 					</div>
@@ -363,11 +424,11 @@ export function ProductModal({
 								}
 								placeholder="0.00"
 							/>
-							{state.errors &&
-								"price" in state.errors &&
-								state.errors.price && (
+							{actionState.errors &&
+								"price" in actionState.errors &&
+								actionState.errors.price && (
 									<p className="text-sm text-red-500">
-										{state.errors?.price.join(", ")}
+										{actionState.errors?.price.join(", ")}
 									</p>
 								)}
 						</div>
@@ -388,11 +449,11 @@ export function ProductModal({
 								}
 								placeholder="0 %"
 							/>
-							{state.errors &&
-								"discount" in state.errors &&
-								state.errors.discount && (
+							{actionState.errors &&
+								"discount" in actionState.errors &&
+								actionState.errors.discount && (
 									<p className="text-sm text-red-500">
-										{state.errors?.discount.join(", ")}
+										{actionState.errors?.discount.join(", ")}
 									</p>
 								)}
 						</div>
@@ -409,11 +470,11 @@ export function ProductModal({
 								}
 								placeholder="0"
 							/>
-							{state.errors &&
-								"stock" in state.errors &&
-								state.errors.stock && (
+							{actionState.errors &&
+								"stock" in actionState.errors &&
+								actionState.errors.stock && (
 									<p className="text-sm text-red-500">
-										{state.errors?.stock.join(", ")}
+										{actionState.errors?.stock.join(", ")}
 									</p>
 								)}
 						</div>
@@ -472,17 +533,18 @@ export function ProductModal({
 							name="options"
 							value={JSON.stringify(formData.options)}
 						/>
-						{state.errors && "stock" in state.errors && state.errors.stock && (
-							<p className="text-sm text-red-500">
-								{state.errors?.stock.join(", ")}
-							</p>
-						)}
+						{actionState.errors &&
+							"options" in actionState.errors &&
+							actionState.errors.options && (
+								<p className="text-sm text-red-500">
+									{actionState.errors?.options.join(", ")}
+								</p>
+							)}
 					</div>
 
 					{/* Status */}
 					<div className="flex items-center space-x-2 space-y-2">
-						<Label htmlFor="is_active">Active</Label>
-						<Checkbox
+						<Switch
 							id="is_active"
 							name="is_active"
 							checked={formData.is_active || false}
@@ -493,6 +555,7 @@ export function ProductModal({
 								}))
 							}
 						/>
+						<Label htmlFor="is_active">Active</Label>
 					</div>
 
 					{/* Logo Upload */}
@@ -540,16 +603,16 @@ export function ProductModal({
 							variant="outline"
 							className="cursor-pointer"
 							onClick={onClose}
-							disabled={pending}
+							disabled={isSubmitting || transitionState}
 						>
 							Cancel
 						</Button>
 						<Button
 							type="submit"
 							className="bg-red-600 hover:bg-red-700 cursor-pointer"
-							disabled={pending}
+							disabled={isSubmitting || transitionState}
 						>
-							{pending
+							{isSubmitting || transitionState
 								? "Saving..."
 								: product
 								? "Update Product"

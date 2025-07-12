@@ -18,20 +18,17 @@ export const productSchema = z.object({
 		.trim()
 		.min(2, "2 or more characters")
 		.nonempty("name is required"),
-	brand_id: z.number().int().positive("Brand ID must be a positive integer"),
-	category_id: z
-		.number()
-		.int()
-		.positive("Category ID must be a positive integer"),
+	brand_id: z.number().int().positive("Brand is required"),
+	category_id: z.number().int().positive("Category is required"),
 	price: z
 		.number()
-		.positive("Price must be a positive number")
+		.positive("Price is required")
 		.max(99999999.99, "Price is too large"),
 	description: z.string().nullable(),
 	short_description: z.string().nullable(),
 	options: z.record(z.array(z.string())),
 	discount: z.number().int().min(0).default(0),
-	stock: z.number().int().min(0).default(0),
+	stock: z.number().int().min(0),
 	is_top: z.boolean().default(false),
 	image: z.string().nullable(),
 	is_active: z.boolean().default(true),

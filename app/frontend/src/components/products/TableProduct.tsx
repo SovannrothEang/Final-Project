@@ -28,14 +28,14 @@ export default function TableProduct({
 	handleDelete: (id: number) => void;
 }) {
 	const getStatusBadge = (active: boolean, stock: number) => {
+		if (!active) {
+			return <Badge variant="outline">Not active</Badge>;
+		}
 		if (stock === 0) {
 			return <Badge variant="destructive">Out of Stock</Badge>;
 		}
 		if (stock < 10) {
 			return <Badge variant="secondary">Low Stock</Badge>;
-		}
-		if (!active) {
-			return <Badge variant="outline">Not active</Badge>;
 		}
 		return <Badge className="bg-green-500 hover:bg-green-600">In Stock</Badge>;
 	};

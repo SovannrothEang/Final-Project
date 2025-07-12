@@ -95,11 +95,12 @@ export default function ProductsPage() {
 						Manage your product inventory and listings.
 					</p>
 				</div>
-				<Button className="bg-red-600 hover:bg-red-700" asChild>
-					<Button onClick={handleAddProduct}>
-						<Plus className="w-4 h-4 mr-2" />
-						Add Product
-					</Button>
+				<Button
+					onClick={handleAddProduct}
+					className="bg-red-600 hover:bg-red-700 cursor-pointer"
+				>
+					<Plus className="w-4 h-4 mr-2" />
+					Add Product
 				</Button>
 			</div>
 
