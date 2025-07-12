@@ -12,7 +12,6 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\ValidationException;
 
 class BrandAdminController extends ApiController
 {
@@ -105,12 +104,6 @@ class BrandAdminController extends ApiController
                 'success' => true,
                 'data' => BrandResource::collection($brands)
             ]);
-        } catch (ValidationException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation error',
-                'errors' => $e->errors()
-            ], 422);
         } catch (QueryException $e) {
             if ($e->getCode() == 23000) {
                 return response()->json([
@@ -156,13 +149,6 @@ class BrandAdminController extends ApiController
             ], 500);
 
         } catch (\Exception $e) {
-            if($e instanceof ModelNotFoundException)
-                return response()->json([
-                        'success' => false,
-                        'message' => 'Brand is not found by id: ' . $id,
-                        'error' => $e->getMessage(),
-                    ],404);
-
             return response()->json([
                     'success' => false,
                     'message' => 'Internal error',

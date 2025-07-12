@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\v1\AuthController;
 use App\Http\Controllers\v1\brands\BrandAdminController;
+use App\Http\Controllers\v1\brands\BrandController;
 use App\Http\Controllers\v1\categories\CategoryAdminController;
+use App\Http\Controllers\v1\categories\CategoryController;
 use App\Http\Controllers\v1\images\ImageController;
 use App\Http\Controllers\v1\products\ProductAdminController;
 use App\Http\Controllers\v1\products\ProductController;
@@ -23,6 +25,12 @@ Route::prefix('/v1')->group(function () {
     // Products
     Route::get('/products', [ProductController::class, 'index']);
     Route::get('/products/{id}', [ProductController::class, 'show']);
+    // Brands
+    Route::get('/brands', [BrandController::class, 'index']);
+    Route::get('/brands/{id}', [BrandController::class, 'show']);
+    // Categories
+    Route::get('/categories', [CategoryController::class, 'index']);
+    Route::get('/categories/{id}', [CategoryController::class, 'show']);
     // Images
     
     Route::middleware(['auth:sanctum'])->group(function () {

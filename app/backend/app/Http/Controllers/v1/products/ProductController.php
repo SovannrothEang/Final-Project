@@ -232,13 +232,6 @@ class ProductController extends ApiController
                     'filters' => $validated
                 ]
             ]);
-        } catch (ValidationException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation error',
-                'errors' => $e->errors()
-            ], 422);
-
         } catch (QueryException $e) {
             if ($e->getCode() == 23000) {
                 return response()->json([
