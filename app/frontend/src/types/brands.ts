@@ -22,9 +22,19 @@ export interface Brand {
 }
 
 export interface BrandStripItem {
-  id: number;
-  name: string;
-  logo: string;
+	id: number;
+	name: string;
+	description: string | null;
+	country: string;
+	website_url: string;
+	logo: string | null;
+	is_active: boolean;
+	user_id: number;
+	//   image: string
+	//   slug?: string
+	products_count: number;
+	created_at: string;
+	updated_at: string;
 }
 
 export interface CreateBrandData {

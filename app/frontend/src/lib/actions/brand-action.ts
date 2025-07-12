@@ -1,5 +1,5 @@
 import { createBrandSchema, FormState } from "@/lib/difinitions";
-import { createBrand } from "./operations";
+import { createBrand } from "@/utils/brands-operations";
 
 export async function createBrandAction(state: FormState, formData: FormData) {
 	if (!(formData instanceof FormData)) {

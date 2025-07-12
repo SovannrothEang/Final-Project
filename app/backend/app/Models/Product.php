@@ -25,6 +25,7 @@ class Product extends Model
         'discount',
         'stock',
         'is_top',
+        'is_active',
         'rating',
         'reviews',
         'images_id',
@@ -40,6 +41,10 @@ class Product extends Model
 
     public function user() {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function brand() {
+        return $this->belongsTo(Brand::class, 'brand_id');
     }
 
     public function category() {

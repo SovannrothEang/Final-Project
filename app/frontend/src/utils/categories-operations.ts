@@ -1,15 +1,14 @@
-import { Brand } from "@/types/brands";
 import { getToken } from "@/lib/session";
-import api from "../api";
+import { Category } from "@/types/category";
+import api from "./api";
 
-export async function createBrand(productData: Partial<Brand>) {
+export async function createCategory(categoryData: Partial<Category>) {
 	const token = await getToken();
-	console.log("[Brand] " + productData.name);
-	console.log("[Brand] " + productData.country);
+	console.log("[Category] " + categoryData);
 	if (!token) throw new Error("No token was found");
 	try {
 		await api
-			.post("/admin/brands", productData, {
+			.post("/admin/categories", categoryData, {
 				headers: {
 					Authorization: `Bearer ${token}`,
 				},

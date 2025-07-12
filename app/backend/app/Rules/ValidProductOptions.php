@@ -14,17 +14,17 @@ class ValidProductOptions implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        // 1. Check if value is an array
+        // 1. Check if array is not empty
+        if (empty($value)) {
+            // $fail('At least one option is required.');
+            return;
+        }
+        // 2. Check if value is an array
         if (!is_array($value)) {
             $fail('Options must be an array.');
             return;
         }
 
-        // 2. Check if array is not empty
-        if (empty($value)) {
-            $fail('At least one option is required.');
-            return;
-        }
 
         // 3. Define allowed keys
         $allowedKeys = ['color', 'size'];
