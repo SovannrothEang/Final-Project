@@ -93,16 +93,31 @@ export interface CreateProductData {
 
 // export interface UpdateProductData extends Partial<CreateProductData> {}
 
+// export interface ProductFilters {
+// 	search?: string;
+// 	category_id?: string;
+// 	brand_id?: string;
+// 	status?: "active" | "inactive";
+// 	min_price?: number;
+// 	max_price?: number;
+// 	in_stock?: boolean;
+// 	page?: number;
+// 	per_page?: number;
+// }
+
 export interface ProductFilters {
-	search?: string;
-	category_id?: string;
-	brand_id?: string;
-	status?: "active" | "inactive";
-	min_price?: number;
-	max_price?: number;
-	in_stock?: boolean;
-	page?: number;
-	per_page?: number;
+  search?: string;
+  category_id?: string | number;
+  brand_id?: string | number;
+  status?: string;
+  'price_range[min]'?: number;
+  'price_range[max]'?: number;
+  'date_range[start]'?: string; // YYYY-MM-DD
+  'date_range[end]'?: string;   // YYYY-MM-DD
+  sort_by?: string;
+  sort_direction?: 'asc' | 'desc';
+  per_page?: number;
+  page?: number;
 }
 
 export interface ProductResponse {
