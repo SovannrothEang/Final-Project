@@ -10,45 +10,25 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from "@/components/ui/table";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-	Plus,
-	Search,
-	MoreHorizontal,
-	Edit,
-	Trash2,
-	Eye,
-	Package,
-	AlertTriangle,
-} from "lucide-react";
-import Image from "next/image";
+import { Plus, Search, Package, AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import { Product } from "@/types/product";
 import useFetch from "@/utils/data-fetching";
 import { ApiResponse } from "@/types/api";
+import TableProduct from "@/components/products/TableProduct";
+import { ProductModal } from "@/components/products/admin/ProductModal";
+import { mutate } from "swr";
 
 export default function ProductsPage() {
-	const { data, error, isLoading } =
+	const { data, error, isLoading, mutate } =
 		useFetch<ApiResponse<Product[]>>("/admin/products");
-	const [productList, setProductList] = useState<Product[]>([]);
+	const [products, setProducts] = useState<Product[]>([]);
 	const [searchTerm, setSearchTerm] = useState("");
+	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [selectedProduct, setSelectedProduct] = useState<Product | undefined>();
 
 	useEffect(() => {
-		if (data && data.data) setProductList(data.data);
+		if (data && data.data) setProducts(data.data);
 	}, [data]);
 
 	if (error) {
@@ -58,49 +38,36 @@ export default function ProductsPage() {
 		return <div>Loading products ...</div>;
 	}
 
-	// const filteredProducts = productList.filter(
+	// const filteredProducts = products.filter(
 	// 	(product) =>
 	// 		product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
 	// 		product.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
 	// 		product.brand.toLowerCase().includes(searchTerm.toLowerCase())
 	// );
 
-	const getStatusBadge = (active: boolean, stock: number) => {
-		if (stock === 0) {
-			return <Badge variant="destructive">Out of Stock</Badge>;
-		}
-		if (stock < 10) {
-			return <Badge variant="secondary">Low Stock</Badge>;
-		}
-		if (!active) {
-			return <Badge variant="outline">Inactive</Badge>;
-		}
-		return <Badge className="bg-green-500 hover:bg-green-600">In Stock</Badge>;
+	const handleAddProduct = () => {
+		setSelectedProduct(undefined);
+		setIsModalOpen(true);
 	};
 
-	// const handleAddProduct = () => {
-	// 	window.location.href = "/admin/products/new";
-	// };
+	const handleEdit = (product: Product) => {
+		setSelectedProduct(product);
+		setIsModalOpen(true);
+	};
 
-	// const handleEditProduct = (product: Product) => {
-	// 	window.location.href = `/admin/products/${product.id}/edit`;
-	// };
-
-	const handleDeleteProduct = (productId: string) => {
-		if (confirm("Are you sure you want to delete this product?")) {
-			setProductList(productList.filter((p) => p.id !== productId));
+	const handleDelete = (brandId: number) => {
+		if (confirm("Are you sure you want to delete this brand?")) {
+			setProducts(products.filter((p) => p.id !== brandId));
 		}
 	};
 
-	// const totalValue = productList.reduce(
+	// const totalValue = products.reduce(
 	// 	(sum, product) => sum + product.price * product.stock,
 	// 	0
 	// );
-	const activeProducts = productList.filter((p) => p.is_active).length;
-	const outOfStock = productList.filter((p) => p.stock === 0).length;
-	const lowStock = productList.filter(
-		(p) => p.stock > 0 && p.stock < 10
-	).length;
+	const activeProducts = products.filter((p) => p.is_active).length;
+	const outOfStock = products.filter((p) => p.stock === 0).length;
+	const lowStock = products.filter((p) => p.stock > 0 && p.stock < 10).length;
 
 	return (
 		<div className="space-y-6">
@@ -113,10 +80,10 @@ export default function ProductsPage() {
 					</p>
 				</div>
 				<Button className="bg-red-600 hover:bg-red-700" asChild>
-					<Link href="/admin/products/new">
+					<Button onClick={handleAddProduct}>
 						<Plus className="w-4 h-4 mr-2" />
 						Add Product
-					</Link>
+					</Button>
 				</Button>
 			</div>
 
@@ -130,7 +97,7 @@ export default function ProductsPage() {
 						<Package className="h-4 w-4 text-muted-foreground" />
 					</CardHeader>
 					<CardContent>
-						<div className="text-2xl font-bold">{productList.length}</div>
+						<div className="text-2xl font-bold">{products.length}</div>
 						<p className="text-xs text-muted-foreground">+2 from last week</p>
 					</CardContent>
 				</Card>
@@ -194,87 +161,25 @@ export default function ProductsPage() {
 
 					{/* Products Table */}
 					<div className="rounded-md border">
-						<Table>
-							<TableHeader>
-								<TableRow>
-									<TableHead>Product</TableHead>
-									<TableHead>Category</TableHead>
-									<TableHead>Brand</TableHead>
-									<TableHead>Price</TableHead>
-									<TableHead>Stock</TableHead>
-									<TableHead>Status</TableHead>
-									<TableHead>Created</TableHead>
-									<TableHead className="text-right">Actions</TableHead>
-								</TableRow>
-							</TableHeader>
-							<TableBody>
-								{productList &&
-									productList.map((product) => (
-										<TableRow key={product.id}>
-											<TableCell className="font-medium">
-												<div className="flex items-center space-x-3">
-													<Image
-														src={product.image || "/placeholder.svg"}
-														alt={product.name}
-														width={40}
-														height={40}
-														className="rounded-md object-cover"
-													/>
-													<div>
-														<div className="font-medium">{product.name}</div>
-														<div className="text-sm text-gray-500 truncate max-w-[200px]">
-															{product.description}
-														</div>
-													</div>
-												</div>
-											</TableCell>
-											<TableCell>{product.category.name}</TableCell>
-											<TableCell>{product.brand.name}</TableCell>
-											<TableCell>${product.price.toFixed(2)}</TableCell>
-											<TableCell>{product.stock}</TableCell>
-											<TableCell>
-												{getStatusBadge(product.is_active, product.stock)}
-											</TableCell>
-											<TableCell>
-												{new Date(product.created_at).toLocaleDateString()}
-											</TableCell>
-											<TableCell className="text-right">
-												<DropdownMenu>
-													<DropdownMenuTrigger asChild>
-														<Button variant="ghost" className="h-8 w-8 p-0">
-															<MoreHorizontal className="h-4 w-4" />
-														</Button>
-													</DropdownMenuTrigger>
-													<DropdownMenuContent align="end">
-														<DropdownMenuItem asChild>
-															<Link href={`/products/${product.id}`}>
-																<Eye className="mr-2 h-4 w-4" />
-																View
-															</Link>
-														</DropdownMenuItem>
-														<DropdownMenuItem asChild>
-															<Link href={`/admin/products/${product.id}/edit`}>
-																<Edit className="mr-2 h-4 w-4" />
-																Edit
-															</Link>
-														</DropdownMenuItem>
-														<DropdownMenuItem
-															className="text-red-600"
-															onClick={() => handleDeleteProduct(product.id)}
-														>
-															<Trash2 className="mr-2 h-4 w-4" />
-															Delete
-														</DropdownMenuItem>
-													</DropdownMenuContent>
-												</DropdownMenu>
-											</TableCell>
-										</TableRow>
-									))}
-							</TableBody>
-						</Table>
+						<TableProduct
+							products={products}
+							handleEdit={handleEdit}
+							handleDelete={handleDelete}
+						/>
 					</div>
 				</CardContent>
 			</Card>
+
+			<ProductModal
+				isOpen={isModalOpen}
+				onClose={() => setIsModalOpen(false)}
+				product={selectedProduct}
+				brands={}
+				onProductCreated={() => {
+					mutate();
+					setIsModalOpen(false);
+				}}
+			/>
 		</div>
 	);
 }

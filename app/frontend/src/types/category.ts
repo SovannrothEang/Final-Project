@@ -10,10 +10,10 @@
 export interface Category {
 	id: string;
 	name: string;
-	description?: string;
+	description: string | null;
 	products_count: number;
 	is_active: boolean;
-	logo?: string;
+	logo: string | null;
 	created_at: string;
 	updated_at: string;
 }

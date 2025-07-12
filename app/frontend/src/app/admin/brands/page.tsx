@@ -54,29 +54,6 @@ export default function BrandsPage() {
 		setIsModalOpen(true);
 	};
 
-	// const handleSaveBrand = (brandData: Brand) => {
-	// 	if (modalMode === "add") {
-	// 		const newBrand = {
-	// 			...brandData,
-	// 			id: Math.max(...brands.map((b) => b.id)) + 1,
-	// 			productCount: 0,
-	// 			createdAt: new Date().toISOString().split("T")[0],
-	// 		};
-	// 		setBrands([...brands, newBrand]);
-	// 	} else {
-	// 		setBrands(
-	// 			brands.map((b) =>
-	// 				b.id === selectedBrand?.id ? { ...b, ...brandData } : b
-	// 			)
-	// 		);
-	// 	}
-	// };
-	// const handleSaveBrand = (brandData: Partial<Brand>) => {
-	// 	console.log("Saving brand:", brandData);
-	// 	// setIsFormOpen(false);
-	// 	setSelectedBrand(undefined);
-	// };
-
 	const handleDeleteBrand = (brandId: number) => {
 		if (confirm("Are you sure you want to delete this brand?")) {
 			setBrands(brands.filter((b) => b.id !== brandId));

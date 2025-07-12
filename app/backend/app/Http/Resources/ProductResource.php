@@ -154,7 +154,7 @@ class ProductResource extends JsonResource
             'is_top' => $this->is_top,
             'is_new' => $this->isNew(),
             'is_active' => $this->is_active,
-            'status' => $this->status, 
+            'status' => $this->status, // remove the status
             'rating' => $this->rating,
             'reviews' => $this->reviews, 
             'created_at' => $this->created_at->toDateTimeString(), 

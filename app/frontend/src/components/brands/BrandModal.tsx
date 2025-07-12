@@ -25,27 +25,8 @@ import { Upload, X } from "lucide-react";
 import { Brand } from "@/types/brands";
 import Image from "next/image";
 import { Checkbox } from "../ui/checkbox";
-import { createBrandAction } from "@/utils/brands/action";
+import { createBrandAction } from "@/lib/actions/brand-action";
 import { initialState } from "@/lib/difinitions";
-
-// const countries = [
-// 	"USA",
-// 	"Canada",
-// 	"United Kingdom",
-// 	"Germany",
-// 	"France",
-// 	"Italy",
-// 	"Spain",
-// 	"Netherlands",
-// 	"Japan",
-// 	"South Korea",
-// 	"China",
-// 	"India",
-// 	"Australia",
-// 	"Brazil",
-// 	"Mexico",
-// 	"Other",
-// ];
 
 export function BrandModal({
 	isOpen,

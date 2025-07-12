@@ -13,7 +13,7 @@ export interface Brand {
 	description: string | null;
 	country: string;
 	website_url: string;
-	logo?: string | null;
+	logo: string | null;
 	is_active: boolean;
 	user_id: number;
 	//   image: string
