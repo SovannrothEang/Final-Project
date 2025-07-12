@@ -25,7 +25,7 @@ export interface CreateCategoryData {
 	//   image?: string
 }
 
-// export interface UpdateCategoryData extends Partial<CreateCategoryData> {}
+export type UpdateCategoryData = Partial<CreateCategoryData>;
 
 export interface CategoryFilters {
 	search?: string;
