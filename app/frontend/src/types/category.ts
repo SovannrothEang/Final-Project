@@ -8,12 +8,12 @@
 // export type CategoryList = Category[];
 
 export interface Category {
-	id: number;
+	id: string;
 	name: string;
-	description: string | null;
+	description?: string;
 	products_count: number;
 	is_active: boolean;
-	logo: string | null;
+	logo?: string;
 	created_at: string;
 	updated_at: string;
 }
