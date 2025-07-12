@@ -7,9 +7,11 @@ import { NewArrival } from "@/components/products/NewArrival";
 import TopSellingSection from "@/components/products/TopSelling";
 import { ClawBanner } from "@/components/products/ClawBanner";
 import products from "@/data/products";
+import categories from "@/data/categories";
 
 // Sample data
 const allProducts = products;
+const allCategories = categories;
 
 export default function HomePage() {
 	return (
@@ -29,7 +31,7 @@ export default function HomePage() {
 					</div>
 
 					<div className="animate-slide-in-up">
-						<AllProduct title="All Products" products={allProducts} />
+						<AllProduct title="All Products" products={allProducts} categories={allCategories} />
 					</div>
 					<div className="animate-slide-in-up">
 						<ClawBanner />

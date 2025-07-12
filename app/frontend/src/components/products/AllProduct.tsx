@@ -2,10 +2,13 @@ import { Product } from "@/types/product";
 import { ProductCard } from "./ProductCard";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { Category } from "@/types/category";
+import { useState } from "react";
 
 interface AllProductProps {
 	title: string;
 	products: Product[];
+	categories: Category[];
 	showViewAll?: boolean;
 	showNavigation?: boolean;
 }
@@ -13,8 +16,12 @@ interface AllProductProps {
 export function AllProduct({
 	title,
 	products,
+	categories,
 	showViewAll = true,
 }: AllProductProps) {
+
+	const [activeCategory, setActiveCategory] = useState(categories[0]);
+
 	return (
 		<section className="w-full mb-12">
 			<div className="mb-8">
@@ -26,7 +33,19 @@ export function AllProduct({
 
 			{/* Category Buttons */}
 			<div className="flex gap-3 justify-start mb-10 w-full overflow-hidden overflow-x-scroll">
-				{[
+				{categories.map((category) => (
+					<Button
+						key={category.name}
+						variant={category === activeCategory ? "default" : "outline"}
+						className={`text-lg font-semibold px-6 py-5 rounded-xl ${
+						category === activeCategory ? "bg-black hover:bg-gray-700" : ""
+						}`}
+						onClick={() => setActiveCategory(category)}
+					>
+						{category.name}
+					</Button>
+				))}
+				{/* {[
 					"Laptops",
 					"Desktops",
 					"PC Components",
@@ -44,7 +63,7 @@ export function AllProduct({
 					>
 						{category}
 					</Button>
-				))}
+				))} */}
 			</div>
 
 			{/* Product Grid */}
