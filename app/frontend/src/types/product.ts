@@ -54,6 +54,7 @@ export interface ProductFilters {
 }
 
 export interface ProductResponse {
+	success: boolean;
 	data: Product[];
 	meta: {
 		current_page: number;
@@ -62,5 +63,26 @@ export interface ProductResponse {
 		total: number;
 		from: number;
 		to: number;
+		sort: {
+			by: string;
+			direction: string;
+		};
+		filters: {
+			search: string | null;
+			category_id: string | null;
+			brand_id: string | null;
+			status: string | null;
+			price_range: {
+				min: number | null;
+				max: number | null;
+			};
+			date_range: {
+				start: string | null;
+				end: string | null;
+			};
+			sort_by: string | null;
+			sort_direction: string | null;
+			per_page: number | null;
+		};
 	};
 }
