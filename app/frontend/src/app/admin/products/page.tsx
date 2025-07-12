@@ -11,18 +11,21 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { Plus, Search, Package, AlertTriangle } from "lucide-react";
-import Link from "next/link";
 import { Product } from "@/types/product";
 import useFetch from "@/utils/data-fetching";
 import { ApiResponse } from "@/types/api";
 import TableProduct from "@/components/products/TableProduct";
 import { ProductModal } from "@/components/products/admin/ProductModal";
-import { mutate } from "swr";
+import { Brand } from "@/types/brands";
+import { Category } from "@/types/category";
+import useClientFetch from "@/utils/client-fetching";
 
 export default function ProductsPage() {
 	const { data, error, isLoading, mutate } =
 		useFetch<ApiResponse<Product[]>>("/admin/products");
 	const [products, setProducts] = useState<Product[]>([]);
+	const [brands, setBrands] = useState<Brand[]>([]);
+	const [categories, setCategories] = useState<Category[]>([]);
 	const [searchTerm, setSearchTerm] = useState("");
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [selectedProduct, setSelectedProduct] = useState<Product | undefined>();
@@ -30,6 +33,19 @@ export default function ProductsPage() {
 	useEffect(() => {
 		if (data && data.data) setProducts(data.data);
 	}, [data]);
+
+	//Get all Brands
+	const { data: brandsData } = useClientFetch<ApiResponse<Brand[]>>("/brands");
+	useEffect(() => {
+		if (brandsData && brandsData.data) setBrands(brandsData.data);
+	}, [brandsData]);
+	//Get all categories
+	const { data: categoriesData } =
+		useClientFetch<ApiResponse<Category[]>>("/categories");
+	useEffect(() => {
+		if (categoriesData && categoriesData.data)
+			setCategories(categoriesData.data);
+	}, [categoriesData]);
 
 	if (error) {
 		return <div>Error fetching products</div>;
@@ -174,7 +190,8 @@ export default function ProductsPage() {
 				isOpen={isModalOpen}
 				onClose={() => setIsModalOpen(false)}
 				product={selectedProduct}
-				brands={}
+				brands={brands}
+				categories={categories}
 				onProductCreated={() => {
 					mutate();
 					setIsModalOpen(false);

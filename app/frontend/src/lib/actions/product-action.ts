@@ -1,33 +1,13 @@
-import { createProductSchema, FormState } from "@/lib/difinitions";
-import { createProduct } from "@/utils/products-operations";
+import { productSchema, FormState } from "@/lib/difinitions";
+import { createProduct, updateProduct } from "@/utils/products-operations";
 
-export async function createProductAction(
-	state: FormState,
-	formData: FormData
-) {
+export async function productAction(state: FormState, formData: FormData) {
 	if (!(formData instanceof FormData)) {
 		return {
 			success: false,
 			errors: { error: ["Invalid Form Data"] },
 		};
 	}
-	console.log("FormData received in createBrandAction:", {
-		name: formData.get("name"),
-		brand_id: formData.get("brand_id"),
-		category_id: formData.get("category_id"),
-		price: formData.get("price"),
-		description: formData.get("description"),
-		short_description: formData.get("short_description"),
-		options: formData.get("options"),
-		discount: formData.get("discount"),
-		stock: formData.get("stock"),
-		is_top: formData.get("is_top"),
-		image: formData.get("image"),
-		is_active: formData.get("is_active"),
-		rating: formData.get("rating"),
-		reviews: formData.get("reviews"),
-	});
-
 	let parsedOptions: Record<string, string[]> = {};
 	const optionsString = formData.get("options");
 	if (typeof optionsString === "string" && optionsString) {
@@ -40,22 +20,35 @@ export async function createProductAction(
 			};
 		}
 	}
+	// Get ID
+	const productId = formData.get("id");
+	// Parse values
+	const price = Number(formData.get("price"));
+	const discount = Number(formData.get("discount"));
+	const stock = Number(formData.get("stock"));
+	const brand_id = Number(formData.get("brand_id"));
+	const category_id = Number(formData.get("category_id"));
+	const rating = Number(formData.get("rating")); // Assuming rating is also from form data
+	const reviews = Number(formData.get("reviews")); // Assuming reviews is also from form data
 
-	const validatedResult = createProductSchema.safeParse({
+	const is_top = formData.get("is_top") === "on";
+	const is_active = formData.get("is_active") === "on";
+
+	const validatedResult = productSchema.safeParse({
 		name: formData.get("name"),
-		brand_id: formData.get("brand_id"),
-		category_id: formData.get("category_id"),
-		price: formData.get("price"),
+		brand_id: brand_id,
+		category_id: category_id,
+		price: price,
 		description: formData.get("description"),
 		short_description: formData.get("short_description"),
 		options: parsedOptions,
-		discount: formData.get("discount"),
-		stock: formData.get("stock"),
-		is_top: formData.get("is_top"),
+		discount: discount,
+		stock: stock,
 		image: formData.get("image"),
-		is_active: formData.get("is_active"),
-		rating: formData.get("rating"),
-		reviews: formData.get("reviews"),
+		is_top: is_top,
+		is_active: is_active,
+		rating: rating,
+		reviews: reviews,
 	});
 	if (!validatedResult.success) {
 		const errors = validatedResult.error.flatten().fieldErrors;
@@ -74,8 +67,13 @@ export async function createProductAction(
 		};
 	}
 	try {
-		await createProduct({ ...validatedResult.data });
-		console.log("[Create Brand Action] success");
+		if (productId) {
+			await updateProduct(parseInt(productId.toString()), validatedResult.data);
+			console.log("[Update Product Action] success");
+		} else {
+			await createProduct({ ...validatedResult.data });
+			console.log("[Create Product] success");
+		}
 		return {
 			success: true,
 		};

@@ -8,7 +8,7 @@
 // export type CategoryList = Category[];
 
 export interface Category {
-	id: string;
+	id: number;
 	name: string;
 	description: string | null;
 	products_count: number;

@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useState, useEffect, useActionState } from "react";
+import { useState, useEffect, useActionState, startTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,10 +25,10 @@ import {
 	SelectValue,
 	SelectContent,
 	SelectItem,
-} from "@radix-ui/react-select";
+} from "../../ui/select";
 import { Brand } from "@/types/brands";
 import { Category } from "@/types/category";
-import { createProductAction } from "@/lib/actions/product-action";
+import { productAction } from "@/lib/actions/product-action";
 import { Badge } from "@/components/ui/badge";
 
 export function ProductModal({
@@ -47,13 +47,14 @@ export function ProductModal({
 	onProductCreated: () => void;
 }) {
 	const [state, formAction, pending] = useActionState(
-		createProductAction,
+		productAction,
 		initialState
 	);
 	const [formData, setFormData] = useState<Partial<Product>>({
+		id: 0,
 		name: "",
-		brand: { id: 0, name: "" },
-		category: { id: 0, name: "" },
+		brand: undefined,
+		category: undefined,
 		description: "",
 		short_description: "",
 		price: 0,
@@ -77,13 +78,21 @@ export function ProductModal({
 		data.append("price", formData.price?.toString() || "0");
 		data.append("stock", formData.stock?.toString() || "0");
 		data.append("discount", formData.discount?.toString() || "0");
-		data.append("is_active", formData.is_active?.toString() || "false");
+		data.append(
+			"is_active",
+			formData.is_active?.toString() === "checked" ? "true" : "false"
+		);
 		data.append("is_new", formData.is_new?.toString() || "false");
 		data.append("is_top", formData.is_top?.toString() || "false");
 		data.append("options", JSON.stringify(formData.options));
 		data.append("image", formData.image || "");
 
-		formAction(data);
+		if (product && product.id) {
+			data.append("id", product.id.toString());
+		}
+		startTransition(() => {
+			formAction(data); // Not working with the async
+		});
 	};
 	const [logoPreview, setLogoPreview] = useState<string>("");
 	const [newOptionKey, setNewOptionKey] = useState("");
@@ -93,6 +102,7 @@ export function ProductModal({
 		if (isOpen) {
 			if (product) {
 				setFormData({
+					id: product.id,
 					name: product.name,
 					brand: product.brand,
 					category: product.category,
@@ -110,9 +120,10 @@ export function ProductModal({
 			}
 		} else {
 			setFormData({
+				id: 0,
 				name: "",
-				brand: { id: 0, name: "" },
-				category: { id: 0, name: "" },
+				brand: undefined,
+				category: undefined,
 				description: "",
 				short_description: "",
 				price: 0,
@@ -125,16 +136,16 @@ export function ProductModal({
 				image: "",
 			});
 			setLogoPreview("");
-			state.errors = {};
-			state.success = false;
 		}
-	}, [isOpen, product, state]);
+	}, [isOpen, product]);
 
 	useEffect(() => {
 		if (state.success) {
 			onProductCreated();
+		} else if (state.errors && Object.keys(state.errors).length > 0) {
+			console.log("ProductModal: Server action reported errors:", state.errors);
 		}
-	}, [state.success, onProductCreated]);
+	}, [state.success, state.errors, onProductCreated]);
 
 	// const isValidUrl = (url: string) => {
 	// 	try {
@@ -188,7 +199,7 @@ export function ProductModal({
 
 	return (
 		<Dialog open={isOpen} onOpenChange={onClose}>
-			<DialogContent className="sm:max-w-[500px]">
+			<DialogContent className="sm:max-w-[500px] md:max-w-[700px] max-h-lx">
 				<DialogHeader>
 					<DialogTitle>
 						{product ? "Edit Product" : "Add New Product"}
@@ -205,6 +216,8 @@ export function ProductModal({
 					</span>
 				)}
 				<form onSubmit={action} className="space-y-4">
+					{/* For ID */}
+					<input type="hidden" name="id" value={product?.id || ""} />
 					{/* Name */}
 					<div className="grid grid-cols-2 gap-4">
 						<div className="space-y-2">
@@ -224,6 +237,7 @@ export function ProductModal({
 								</p>
 							)}
 						</div>
+
 						{/* Brief description */}
 						<div className="space-y-2">
 							<Label htmlFor="short_description">Short Description</Label>
@@ -252,46 +266,55 @@ export function ProductModal({
 
 					{/* Brand and Category */}
 					<div className="grid grid-cols-2 gap-4">
-						<div className="space-y-2">
+						<div className="flex items-center gap-2">
 							<Label htmlFor="brand">Brand</Label>
 							<Select
 								value={formData.brand?.id.toString()}
-								onValueChange={(value) =>
+								onValueChange={(value) => {
+									const selectedBrand = brands.find(
+										(b) => b.id.toString() === value
+									);
 									setFormData({
 										...formData,
-										brand: { id: parseInt(value), name: "" },
-									})
-								}
+										brand: selectedBrand,
+									});
+								}}
 							>
 								<SelectTrigger>
 									<SelectValue placeholder="Select brand" />
 								</SelectTrigger>
 								<SelectContent>
 									{brands.map((brand) => (
-										<SelectItem key={brand.id.toString()} value={brand.name}>
+										<SelectItem key={brand.id} value={brand.id.toString()}>
 											{brand.name}
 										</SelectItem>
 									))}
 								</SelectContent>
 							</Select>
 						</div>
-						<div className="space-y-2">
+						<div className="flex items-center gap-2">
 							<Label htmlFor="category">Category</Label>
 							<Select
 								value={formData.category?.id.toString()}
-								onValueChange={(value) =>
+								onValueChange={(value) => {
+									const selectedCategory = categories.find(
+										(c) => c.id.toString() === value
+									);
 									setFormData({
 										...formData,
-										category: { id: parseInt(value), name: "" },
-									})
-								}
+										category: selectedCategory,
+									});
+								}}
 							>
 								<SelectTrigger>
 									<SelectValue placeholder="Select category" />
 								</SelectTrigger>
 								<SelectContent>
 									{categories.map((category) => (
-										<SelectItem key={category.id} value={category.id}>
+										<SelectItem
+											key={category.id}
+											value={category.id.toString()}
+										>
 											{category.name}
 										</SelectItem>
 									))}
@@ -310,7 +333,7 @@ export function ProductModal({
 								setFormData({ ...formData, description: e.target.value })
 							}
 							placeholder="Enter detailed product description"
-							className="min-h-[100px]"
+							className="min-h-[70px]"
 							rows={1}
 						/>
 						{state.errors &&
@@ -399,12 +422,12 @@ export function ProductModal({
 					{/* Product Options */}
 					<div className="space-y-4">
 						<Label>Product Options</Label>
-						<div className="space-y-3">
+						<div className="space-y-2">
 							{formData.options &&
 								Object.entries(formData.options).map(([key, values]) => (
 									<div
 										key={key}
-										className="flex items-center gap-2 p-3 border rounded-lg bg-gray-50"
+										className="flex items-center gap-2 px-3 py-1.5 border rounded-lg bg-gray-50"
 									>
 										<span className="font-medium text-sm">{key}:</span>
 										<div className="flex gap-1 flex-wrap">
@@ -444,6 +467,11 @@ export function ProductModal({
 								<Plus className="h-4 w-4" />
 							</Button>
 						</div>
+						<input
+							type="hidden"
+							name="options"
+							value={JSON.stringify(formData.options)}
+						/>
 						{state.errors && "stock" in state.errors && state.errors.stock && (
 							<p className="text-sm text-red-500">
 								{state.errors?.stock.join(", ")}
@@ -510,6 +538,7 @@ export function ProductModal({
 						<Button
 							type="button"
 							variant="outline"
+							className="cursor-pointer"
 							onClick={onClose}
 							disabled={pending}
 						>
@@ -517,7 +546,7 @@ export function ProductModal({
 						</Button>
 						<Button
 							type="submit"
-							className="bg-red-600 hover:bg-red-700"
+							className="bg-red-600 hover:bg-red-700 cursor-pointer"
 							disabled={pending}
 						>
 							{pending

@@ -3,8 +3,8 @@ import {
 	DropdownMenuTrigger,
 	DropdownMenuContent,
 	DropdownMenuItem,
-} from "@radix-ui/react-dropdown-menu";
-import { MoreHorizontal, Link, Eye, Edit, Trash2 } from "lucide-react";
+} from "../ui/dropdown-menu";
+import { MoreHorizontal, Edit, Trash2 } from "lucide-react";
 import { Button } from "../ui/button";
 import {
 	Table,
@@ -93,17 +93,9 @@ export default function TableProduct({
 										</Button>
 									</DropdownMenuTrigger>
 									<DropdownMenuContent align="end">
-										<DropdownMenuItem asChild>
-											<Link href={`/products/${product.id}`}>
-												<Eye className="mr-2 h-4 w-4" />
-												View
-											</Link>
-										</DropdownMenuItem>
-										<DropdownMenuItem asChild>
-											<Button onClick={() => handleEdit(product)}>
-												<Edit className="mr-2 h-4 w-4" />
-												Edit
-											</Button>
+										<DropdownMenuItem onClick={() => handleEdit(product)}>
+											<Edit className="mr-2 h-4 w-4" />
+											Edit
 										</DropdownMenuItem>
 										<DropdownMenuItem
 											className="text-red-600"

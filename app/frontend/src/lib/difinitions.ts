@@ -12,7 +12,7 @@ export const initialState: FormState = {
 	errors: {},
 };
 
-export const createProductSchema = z.object({
+export const productSchema = z.object({
 	name: z
 		.string()
 		.trim()
