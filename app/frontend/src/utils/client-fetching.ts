@@ -86,7 +86,7 @@ const fetcher = async (url: string) => {
   const res = await fetch(url, {
     headers: {
       "Content-Type": "application/json",
-      Authorization: "", // Add auth token when needed
+      Authorization: "",
     },
   });
 
@@ -95,7 +95,7 @@ const fetcher = async (url: string) => {
     error.status = res.status;
     try {
       error.data = await res.json();
-    } catch (err) {  // Changed variable name from 'error' to 'err' to avoid shadowing
+    } catch (err) { 
       error.data = { message: await res.text() };
 	  console.log(err);
     }

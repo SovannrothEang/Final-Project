@@ -8,6 +8,20 @@
 // export type BrandList = Brand[];
 
 export interface Brand {
+  id: number;
+  name: string;
+  description: string | null;
+  country: string;
+  website_url: string;
+  logo?: string | null;
+  is_active: number;
+  user_id: number;
+  products_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface BrandStripItem {
 	id: number;
 	name: string;
 	description: string | null;
@@ -36,20 +50,18 @@ export interface CreateBrandData {
 
 // export interface UpdateBrandData extends Partial<CreateBrandData> {}
 
-// export interface BrandFilters {
-//   search?: string
-//   status?: "Active" | "Inactive"
-//   country?: string
-//   page?: number
-//   per_page?: number
-// }
+export interface BrandFilters {
+  search?: string;
+  country?: string;
+  sort_direction?: "asc" | "desc";
+}
 
 export interface BrandResponse {
-	data: Brand[];
-	//   meta: {
-	//     current_page: number
-	//     last_page: number
-	//     per_page: number
-	//     total: number
-	//   }
+  success: boolean;
+  data: Brand[];
+}
+
+export interface BrandResponseStrip {
+  success: boolean;
+  data: BrandStripItem[];
 }
