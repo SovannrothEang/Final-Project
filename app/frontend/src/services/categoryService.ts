@@ -1,8 +1,8 @@
-// import useFetch from "@/utils/client-fetching";
+// import useClientFetch from "@/utils/client-fetching";
 // import { CategoryResponse } from "@/types/category";
 
 // export function useCategories() {
-//   const { data, error, isLoading } = useFetch<CategoryResponse>("/categories", {
+//   const { data, error, isLoading } = useClientFetch<CategoryResponse>("/categories", {
 //     sort_direction: "asc"
 //   });
 
@@ -16,11 +16,11 @@
 //   };
 // }
 
-import useFetch from "@/utils/client-fetching";
+import useClientFetch from "@/utils/client-fetching";
 import { CategoryResponse } from "@/types/category";
 
 export function useCategories() {
-  const { data, error, isLoading } = useFetch<CategoryResponse>("/categories", {
+  const { data, error, isLoading } = useClientFetch<CategoryResponse>("/categories", {
     sort_direction: "asc"
   });
 

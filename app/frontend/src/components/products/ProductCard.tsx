@@ -195,11 +195,17 @@ export function ProductCard({ product }: ProductCardProps) {
         <CardContent className="p-0">
           {/* Product Image */}
           <div className="relative bg-gray-100 aspect-[4/3] overflow-hidden">
-            {product.discount && product.discount > 0 && (
+            {/* {product.discount && product.discount > 0 && (
               <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 text-xs rounded z-10">
-                -{product.discount}%
+                - {product.discount}%
               </div>
-            )}
+            )} */}
+
+			{product.discount > 0 && (
+				<div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 text-xs rounded z-10">
+					- {product.discount}%
+				</div>
+			)}
             {product.is_new && (
               <div className="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 text-xs rounded z-10">
                 NEW
@@ -207,7 +213,8 @@ export function ProductCard({ product }: ProductCardProps) {
             )}
             <Image
               src={product.image || "/placeholder.svg"}
-              alt={product.name}
+            //   alt={product.name}
+              alt=''
               fill
               className="object-contain group-hover:scale-105 transition-transform duration-300"
             />
@@ -223,10 +230,10 @@ export function ProductCard({ product }: ProductCardProps) {
             <div className="flex items-center gap-2 mb-2">
               {product.price && (
                 <>
-                  <span className="text-red-500 font-semibold">${product.price}</span>
-                  {product.discount && product.discount > 0 && (
+                  <span className="text-red-500 font-semibold">${(product.price * (1 - product.discount/100)).toFixed(2)}</span>
+                  {(product.discount > 0) && (
                     <span className="text-gray-500 line-through text-sm">
-                      ${(product.price / (1 - product.discount/100)).toFixed(2)}
+                      ${product.price}
                     </span>
                   )}
                 </>

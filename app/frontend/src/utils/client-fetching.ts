@@ -39,7 +39,7 @@
 //   return response;
 // };
 
-// export default function useFetch<T>(url: string, params?: Record<string, any>) {
+// export default function useClientFetch<T>(url: string, params?: Record<string, any>) {
 //   const queryString = params
 //     ? `?${new URLSearchParams(
 //         Object.entries(params)
@@ -112,7 +112,7 @@ const fetcher = async (url: string) => {
   return response;
 };
 
-export default function useFetch<T>(
+export default function useClientFetch<T>(
   url: string,
   params?: Record<string, string | number | boolean | null | undefined>
 ) {
