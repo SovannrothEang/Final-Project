@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/dialog";
 import { Plus, Upload, X } from "lucide-react";
 import Image from "next/image";
-import { Checkbox } from "../../ui/checkbox";
 import { initialState } from "@/lib/difinitions";
 import { Product } from "@/types/product";
 import {
@@ -47,10 +46,6 @@ export function ProductModal({
 	categories: Category[];
 	onProductCreated: () => void;
 }) {
-	// const [state, formAction, pending] = useActionState(
-	// 	productAction,
-	// 	initialState
-	// );
 	const [formData, setFormData] = useState<Partial<Product>>({
 		name: "",
 		brand: undefined,
@@ -70,66 +65,82 @@ export function ProductModal({
 	const [transitionState, startTransition] = useTransition();
 	const [actionState, setActionState] = useState(initialState);
 
-	// const action = async (e: React.FormEvent<HTMLFormElement>) => {
-	// 	e.preventDefault();
-	// 	const data = new FormData();
-	// 	data.append("name", formData.name || "");
-	// 	data.append("brand_id", formData.brand?.id.toString() || "");
-	// 	data.append("category_id", formData.category?.id.toString() || "");
-	// 	data.append("description", formData.description || "");
-	// 	data.append("short_description", formData.short_description || "");
-	// 	data.append("price", formData.price?.toString() || "0");
-	// 	data.append("stock", formData.stock?.toString() || "0");
-	// 	data.append("discount", formData.discount?.toString() || "0");
-	// 	data.append(
-	// 		"is_active",
-	// 		formData.is_active?.toString() === "checked" ? "true" : "false"
-	// 	);
-	// 	data.append("is_new", formData.is_new?.toString() || "false");
-	// 	data.append("is_top", formData.is_top?.toString() || "false");
-	// 	data.append("options", JSON.stringify(formData.options));
-	// 	data.append("image", formData.image || "");
-
-	// 	if (product && product.id) {
-	// 		data.append("id", product.id.toString());
-	// 	}
-	// 	startTransition(() => {
-	// 		formAction(data); // Not working with the async
-	// 	});
-	// };
-	const [logoPreview, setLogoPreview] = useState<string>("");
 	const [newOptionKey, setNewOptionKey] = useState("");
 	const [newOptionValue, setNewOptionValue] = useState("");
+
+	const [imagePreview, setImagePreview] = useState<string | null>(null);
+	const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+	const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		if (event.target.files && event.target.files[0]) {
+			const file = event.target.files[0];
+			setSelectedFile(file);
+
+			const previewUrl = URL.createObjectURL(file);
+			setImagePreview(previewUrl);
+		}
+	};
 
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		setIsSubmitting(true);
 
-		const dataToSend = {
-			...formData,
-			brand_id: formData.brand?.id,
-			category_id: formData.category?.id,
-			// ID if update
-			id: product?.id,
-		};
+		try {
+			if (selectedFile) {
+				const imageFormData = new FormData();
+				imageFormData.append("file", selectedFile);
+				imageFormData.append("name", formData.name || "untitled");
+				imageFormData.append("productId", product?.id?.toString() || "new");
+				imageFormData.append("imageId", Date.now().toString());
 
-		delete dataToSend.brand;
-		delete dataToSend.category;
+				const uploadResponse = await fetch("/api/upload", {
+					method: "POST",
+					body: imageFormData,
+				});
 
-		startTransition(async () => {
-			const formDataObj = new FormData();
-			Object.entries(dataToSend).forEach(([key, value]) => {
-				if (value !== undefined && value !== null) {
-					formDataObj.append(
-						key,
-						typeof value === "object" ? JSON.stringify(value) : value.toString()
-					);
+				if (!uploadResponse.ok) {
+					throw new Error("Failed to upload image");
 				}
+
+				const imageData = await uploadResponse.json();
+				setFormData((prev) => ({ ...prev, image: imageData.url }));
+			}
+
+			const dataToSend = {
+				...formData,
+				brand_id: formData.brand?.id,
+				category_id: formData.category?.id,
+				id: product?.id,
+			};
+
+			delete dataToSend.brand;
+			delete dataToSend.category;
+
+			startTransition(async () => {
+				const formDataObj = new FormData();
+				Object.entries(dataToSend).forEach(([key, value]) => {
+					if (value !== undefined && value !== null) {
+						if (key === "image") {
+							formDataObj.append("image", value ? value.toString() : "");
+						} else {
+							formDataObj.append(
+								key,
+								typeof value === "object"
+									? JSON.stringify(value)
+									: value.toString()
+							);
+						}
+					}
+				});
+				const result = await productAction(actionState, formDataObj);
+				setActionState(result);
+				setIsSubmitting(false);
+				setSelectedFile(null);
 			});
-			const result = await productAction(actionState, formDataObj);
-			setActionState(result);
+		} catch (error) {
+			console.error("Error during submission:", error);
 			setIsSubmitting(false);
-		});
+		}
 	};
 
 	useEffect(() => {
@@ -167,7 +178,6 @@ export function ProductModal({
 				options: {} as Record<string, string[]>,
 				image: "",
 			});
-			setLogoPreview("");
 			setActionState(initialState);
 		}
 	}, [isOpen, product]);
@@ -185,32 +195,13 @@ export function ProductModal({
 			);
 		}
 	}, [actionState.success, actionState.errors, onProductCreated]);
-
-	// const isValidUrl = (url: string) => {
-	// 	try {
-	// 		new URL(url.startsWith("http") ? url : `https://${url}`);
-	// 		return true;
-	// 	} catch {
-	// 		return false;
-	// 	}
-	// };
-
-	const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const file = e.target.files?.[0];
-		if (file) {
-			const reader = new FileReader();
-			reader.onloadend = () => {
-				setLogoPreview(reader.result as string);
-				setFormData((prev) => ({ ...prev, logo: reader.result as string }));
-			};
-			reader.readAsDataURL(file);
-		}
-	};
-
-	const removeLogo = () => {
-		setLogoPreview("");
-		setFormData((prev) => ({ ...prev, logo: "" }));
-	};
+	useEffect(() => {
+		return () => {
+			if (imagePreview) {
+				URL.revokeObjectURL(imagePreview);
+			}
+		};
+	}, [imagePreview]);
 
 	const addOption = () => {
 		if (newOptionKey && newOptionValue) {
@@ -229,11 +220,15 @@ export function ProductModal({
 			setNewOptionValue("");
 		}
 	};
-
 	const removeOption = (key: string) => {
 		const newOptions = { ...formData.options };
 		delete newOptions[key];
 		setFormData({ ...formData, options: newOptions });
+	};
+	const removeImage = () => {
+		setSelectedFile(null);
+		setImagePreview(null);
+		setFormData((prev) => ({ ...prev, image: "" }));
 	};
 
 	return (
@@ -558,20 +553,22 @@ export function ProductModal({
 						<Label htmlFor="is_active">Active</Label>
 					</div>
 
-					{/* Logo Upload */}
+					{/* Image Upload */}
 					<div className="space-y-2">
-						<Label htmlFor="logo">Brand Logo</Label>
+						<Label htmlFor="logo">Image</Label>
 						<div className="flex items-center space-x-4">
-							{logoPreview ? (
+							{imagePreview || formData.image ? (
 								<div className="relative">
 									<Image
-										src={logoPreview || "/placeholder.svg"}
-										alt="Brand logo preview"
+										src={imagePreview || "/placeholder.svg"}
+										alt="Image preview"
+										width={20}
+										height={20}
 										className="w-20 h-20 object-cover rounded-md border"
 									/>
 									<button
 										type="button"
-										onClick={removeLogo}
+										onClick={removeImage}
 										className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
 									>
 										<X className="w-3 h-3" />
@@ -587,11 +584,13 @@ export function ProductModal({
 									id="logo"
 									type="file"
 									accept="image/*"
-									onChange={handleLogoUpload}
+									onChange={handleFileChange}
 									className="cursor-pointer"
 								/>
 								<p className="text-xs text-gray-500 mt-1">
-									Upload a logo for this brand (optional)
+									{isSubmitting && selectedFile
+										? "Uploading image..."
+										: "Upload a product image less than 5MB"}
 								</p>
 							</div>
 						</div>
@@ -612,8 +611,10 @@ export function ProductModal({
 							className="bg-red-600 hover:bg-red-700 cursor-pointer"
 							disabled={isSubmitting || transitionState}
 						>
-							{isSubmitting || transitionState
-								? "Saving..."
+							{isSubmitting
+								? selectedFile
+									? "Uploading Image..."
+									: "Saving..."
 								: product
 								? "Update Product"
 								: "Add Product"}

@@ -61,7 +61,9 @@ export default function TableProduct({
 							<TableCell className="font-medium">
 								<div className="flex items-center space-x-3">
 									<Image
-										src={product.image || "/placeholder.svg"}
+										src={
+											product.image ? `/${product.image}` : "/placeholder.svg"
+										}
 										alt={product.name}
 										width={40}
 										height={40}

@@ -231,7 +231,7 @@ class ProductAdminController extends ApiController
             $product = Product::with(['category', 'brand'])->lockForUpdate()->findOrFail($id);
             // DB::table('tbl_products')->where('id', $id)->lockForUpdate()->get();
             $validated = $request->validated();
-            $product ->update($validated);
+            $product->update($validated);
             // if ($request->has('category_id')) { // maybe will lead to an error if since the input is string
             //     $categoryId = (int)$request->input('category_id');
             //     $product->category()->sync([$categoryId]);

@@ -33,7 +33,7 @@ export async function productAction(state: FormState, formData: FormData) {
 
 	const is_top = formData.get("is_top") === "on";
 	const is_active = formData.get("is_active") === "true";
-
+	console.log("[Image] " + formData.get("image"));
 	const validatedResult = productSchema.safeParse({
 		name: formData.get("name"),
 		brand_id: brand_id,
@@ -44,11 +44,11 @@ export async function productAction(state: FormState, formData: FormData) {
 		options: parsedOptions,
 		discount: discount,
 		stock: stock,
-		image: formData.get("image"),
+		image: formData.get("image") || "",
 		is_top: is_top,
 		is_active: is_active,
-		rating: rating,
-		reviews: reviews,
+		rating: rating || 0,
+		reviews: reviews || 0,
 	});
 	if (!validatedResult.success) {
 		const errors = validatedResult.error.flatten().fieldErrors;
@@ -67,11 +67,15 @@ export async function productAction(state: FormState, formData: FormData) {
 		};
 	}
 	try {
+		const productData = {
+			...validatedResult.data,
+			image: validatedResult.data.image || "",
+		};
 		if (productId) {
-			await updateProduct(parseInt(productId.toString()), validatedResult.data);
+			await updateProduct(parseInt(productId.toString()), productData);
 			console.log("[Update Product Action] success");
 		} else {
-			await createProduct({ ...validatedResult.data });
+			await createProduct(productData);
 			console.log("[Create Product] success");
 		}
 		return {

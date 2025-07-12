@@ -30,7 +30,7 @@ export const productSchema = z.object({
 	discount: z.number().int().min(0).default(0),
 	stock: z.number().int().min(0),
 	is_top: z.boolean().default(false),
-	image: z.string().nullable(),
+	image: z.string().optional().default(""),
 	is_active: z.boolean().default(true),
 	rating: z.number().int().min(0).max(5).default(0),
 	reviews: z.number().int().min(0).default(0),

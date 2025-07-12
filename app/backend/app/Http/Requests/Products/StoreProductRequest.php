@@ -61,6 +61,7 @@ class StoreProductRequest extends FormRequest
             'discount' => 'nullable|integer',
             'is_top' => 'nullable|boolean',
             'is_active' => 'nullable|boolean',
+            'image' => 'nullable|string',
             'status' => 'nullable|string',
             'rating' => 'nullable|integer',
             'reviews' => 'nullable|integer',
