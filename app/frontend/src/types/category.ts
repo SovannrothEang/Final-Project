@@ -8,12 +8,12 @@
 // export type CategoryList = Category[];
 
 export interface Category {
-	id: number;
+	id: string;
 	name: string;
-	description: string | null;
+	description?: string;
 	products_count: number;
 	is_active: boolean;
-	logo: string | null;
+	logo?: string;
 	created_at: string;
 	updated_at: string;
 }
@@ -37,10 +37,4 @@ export interface CategoryFilters {
 
 export interface CategoryResponse {
 	data: Category[];
-	//   meta: {
-	//     current_page: number
-	//     last_page: number
-	//     per_page: number
-	//     total: number
-	//   }
 }
