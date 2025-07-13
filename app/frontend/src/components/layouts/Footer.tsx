@@ -29,7 +29,7 @@ export function Footer() {
 										Privacy Policy
 									</a>
 								</p>
-								<p>
+								{/* <p>
 									<a href="#" className="hover:text-white">
 										Terms Of Use
 									</a>
@@ -38,10 +38,15 @@ export function Footer() {
 									<a href="#" className="hover:text-white">
 										FAQ
 									</a>
+								</p> */}
+								<p>
+									<a href="/contact" className="hover:text-white">
+										Contact
+									</a>
 								</p>
 								<p>
-									<a href="#" className="hover:text-white">
-										Contact
+									<a href="/about" className="hover:text-white">
+										About
 									</a>
 								</p>
 							</div>
