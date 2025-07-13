@@ -76,6 +76,7 @@ export function BrandModal({
 			});
 			setLogoPreview(null);
 			setSelectedFile(null);
+			setActionState(initialState);
 		}
 	}, [isOpen, brand]);
 

@@ -30,6 +30,7 @@ class BrandResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $brand = Brand::withCount('products')->find($this->id);
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -37,7 +38,7 @@ class BrandResource extends JsonResource
             'country' => $this->country,
             'website_url' => $this->website_url,
             'logo' => $this->logo,
-            "products_count" => $this->products_count,
+            "products_count" => $brand->products_count,
             'is_active' => $this->is_active,
             'user_id' => $this->user_id,
             'created_at' => $this->created_at->toDateTimeString(),

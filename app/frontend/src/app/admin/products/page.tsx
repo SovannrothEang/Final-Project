@@ -55,12 +55,12 @@ export default function ProductsPage() {
 		return <div>Loading products ...</div>;
 	}
 
-	// const filteredProducts = products.filter(
-	// 	(product) =>
-	// 		product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-	// 		product.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-	// 		product.brand.toLowerCase().includes(searchTerm.toLowerCase())
-	// );
+	const filteredProducts = products.filter(
+		(product) =>
+			product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+			product.category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+			product.brand.name.toLowerCase().includes(searchTerm.toLowerCase())
+	);
 
 	const handleAddProduct = () => {
 		setSelectedProduct(undefined);
@@ -186,7 +186,7 @@ export default function ProductsPage() {
 					{/* Products Table */}
 					<div className="rounded-md border">
 						<TableProduct
-							products={products}
+							products={filteredProducts}
 							handleEdit={handleEdit}
 							handleDelete={handleDelete}
 						/>

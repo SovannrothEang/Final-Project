@@ -12,8 +12,8 @@ import {
 } from "@/components/ui/card";
 import { Plus, Search } from "lucide-react";
 import { BrandModal } from "@/components/brands/BrandModal";
-import type { Brand, CreateBrandData } from "@/types/brands";
-import { createBrand, updateBrand, deleteBrand } from "@/app/api/brands/brands";
+import type { Brand } from "@/types/brands";
+import { deleteBrand } from "@/app/api/brands/brands";
 import useFetch from "@/utils/data-fetching";
 import type { ApiResponse } from "@/types/api";
 import TableBrand from "@/components/brands/TableBrand";
@@ -48,34 +48,6 @@ export default function BrandsPage() {
 	const handleEditBrand = (brand: Brand) => {
 		setSelectedBrand(brand);
 		setIsModalOpen(true);
-	};
-
-	const handleSaveBrand = async (brandData: CreateBrandData) => {
-		try {
-			console.log("Saving brand:", {
-				mode: selectedBrand ? "edit" : "add",
-				brandData,
-				selectedBrand,
-			}); // Debug log
-
-			if (selectedBrand) {
-				// Update existing brand
-				const updated = await updateBrand(selectedBrand.id, brandData);
-				setBrands((prev) =>
-					prev.map((b) => (b.id === selectedBrand.id ? updated : b))
-				);
-			} else {
-				// Create new brand
-				const newBrand = await createBrand(brandData);
-				setBrands((prev) => [...prev, newBrand]);
-			}
-
-			// Refresh the data from server
-			await mutate();
-		} catch (error) {
-			console.error("Save failed:", error);
-			throw error; // Re-throw to let modal handle the error
-		}
 	};
 
 	const handleDeleteBrand = async (brandId: number) => {
@@ -175,7 +147,6 @@ export default function BrandsPage() {
 				isOpen={isModalOpen}
 				onClose={() => setIsModalOpen(false)}
 				brand={selectedBrand}
-				onSave={handleSaveBrand}
 				onBrandCreated={() => {
 					mutate(); // Re-fetch data after successful creation/update
 					setIsModalOpen(false); // Close the modal
