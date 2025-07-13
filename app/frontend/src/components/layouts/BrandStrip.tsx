@@ -129,7 +129,7 @@ export function BrandStrip() {
               {scrollingBrands.map((brand, idx) => (
                 <div
                   key={`${brand.id}-${idx}`}
-                  className="flex items-center justify-center p-2 rounded-lg w-[180px] h-[80px] bg-gray-900"
+                  className="flex items-center justify-center p-2 rounded-lg w-[180px] h-[80px] bg-gray-300"
                 >
                   <Image
                     src={brand.logo}
