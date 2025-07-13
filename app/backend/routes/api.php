@@ -7,6 +7,7 @@ use App\Http\Controllers\v1\categories\CategoryAdminController;
 use App\Http\Controllers\v1\categories\CategoryController;
 use App\Http\Controllers\v1\ContactController;
 use App\Http\Controllers\v1\images\ImageController;
+use App\Http\Controllers\v1\AboutPageController;
 use App\Http\Controllers\v1\products\ProductAdminController;
 use App\Http\Controllers\v1\products\ProductController;
 use Illuminate\Support\Facades\Route;
@@ -71,6 +72,13 @@ Route::prefix('/v1')->group(function () {
                 Route::post('/', [ContactController::class, 'store']);
                 Route::put('/{id}', [ContactController::class, 'update']);
                 Route::delete('/{id}', [ContactController::class, 'destroy']);
+            });
+            Route::prefix('/about-page')->group(function () {
+                Route::get('/', [AboutPageController::class, 'index']);
+                Route::get('/{id}', [AboutPageController::class, 'show']);
+                Route::post('/', [AboutPageController::class, 'store']);
+                Route::put('/{id}', [AboutPageController::class, 'update']);
+                Route::delete('/{id}', [AboutPageController::class, 'destroy']);
             });
         });
     });

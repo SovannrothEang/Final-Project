@@ -36,6 +36,7 @@ class ContactController extends Controller
                 'email' => 'nullable|email|max:255',
                 'phone' => 'nullable|string|max:20',
                 'description' => 'nullable|string|max:255',
+                'user_id' => 'required|integer|exists:tbl_users,id',
             ]);
             // Set default values for null fields
             $data = array_merge([
