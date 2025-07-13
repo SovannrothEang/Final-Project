@@ -65,7 +65,7 @@ class Product extends Model
         // return $recentProducts->contains('id', $this->id);
         return $this->created_at->gte(now()->subDays(7));
     }
-    public function getRatingAttribute(): float
+    public function getTotalRated(): float
     {
         if ($this->reviews > 0) {
             return ($this->rating / $this->reviews);

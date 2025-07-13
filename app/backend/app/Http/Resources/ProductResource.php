@@ -155,7 +155,7 @@ class ProductResource extends JsonResource
             'is_new' => $this->isNew(),
             'is_active' => $this->is_active,
             'status' => $this->status,
-            'rating' => $this->getRatingAttribute(),
+            'rating' => $this->getTotalRated(),
             'reviews' => $this->reviews,
             'created_at' => $this->created_at->toDateTimeString(), 
             'updated_at' => $this->updated_at->toDateTimeString(), 
