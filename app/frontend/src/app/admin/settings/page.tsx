@@ -48,17 +48,17 @@ export default function AdminSettingsPage() {
 	});
 
 	// Email Settings State
-	// const [emailSettings, setEmailSettings] = useState({
-	// 	smtpHost: "smtp.gmail.com",
-	// 	smtpPort: "587",
-	// 	smtpUsername: "admin@exclusive.com",
-	// 	smtpPassword: "",
-	// 	fromEmail: "noreply@exclusive.com",
-	// 	fromName: "Exclusive Store",
-	// 	orderConfirmation: true,
-	// 	shipmentNotification: true,
-	// 	promotionalEmails: true,
-	// });
+	const [emailSettings, setEmailSettings] = useState({
+		smtpHost: "smtp.gmail.com",
+		smtpPort: "587",
+		smtpUsername: "admin@exclusive.com",
+		smtpPassword: "",
+		fromEmail: "noreply@exclusive.com",
+		fromName: "Exclusive Store",
+		orderConfirmation: true,
+		shipmentNotification: true,
+		promotionalEmails: true,
+	});
 
 	// Payment Settings State
 	const [paymentSettings, setPaymentSettings] = useState({
@@ -369,7 +369,7 @@ export default function AdminSettingsPage() {
 				</TabsContent>
 
 				{/* Email Settings */}
-				{/* <TabsContent value="email" className="space-y-6">
+				<TabsContent value="email" className="space-y-6">
 					<Card>
 						<CardHeader>
 							<CardTitle className="flex items-center gap-2">
@@ -490,7 +490,7 @@ export default function AdminSettingsPage() {
 							</Button>
 						</CardContent>
 					</Card>
-				</TabsContent> */}
+				</TabsContent>
 
 				{/* Payment Settings */}
 				<TabsContent value="payment" className="space-y-6">

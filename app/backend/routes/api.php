@@ -5,6 +5,7 @@ use App\Http\Controllers\v1\brands\BrandAdminController;
 use App\Http\Controllers\v1\brands\BrandController;
 use App\Http\Controllers\v1\categories\CategoryAdminController;
 use App\Http\Controllers\v1\categories\CategoryController;
+use App\Http\Controllers\v1\ContactController;
 use App\Http\Controllers\v1\images\ImageController;
 use App\Http\Controllers\v1\products\ProductAdminController;
 use App\Http\Controllers\v1\products\ProductController;
@@ -63,6 +64,13 @@ Route::prefix('/v1')->group(function () {
                 Route::post('/', [CategoryAdminController::class, 'store']);
                 Route::put('/{id}', [CategoryAdminController::class, 'update']);
                 Route::delete('/{id}', [CategoryAdminController::class, 'destroy']);
+            });
+            Route::prefix('/contacts')->group(function () {
+                Route::get('/', [ContactController::class, 'index']);
+                Route::get('/{id}', [ContactController::class, 'show']);
+                Route::post('/', [ContactController::class, 'store']);
+                Route::put('/{id}', [ContactController::class, 'update']);
+                Route::delete('/{id}', [ContactController::class, 'destroy']);
             });
         });
     });
