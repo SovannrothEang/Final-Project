@@ -23,6 +23,8 @@ Route::prefix('/auth')->group(function () {
 });
 
 Route::prefix('/v1')->group(function () {
+    // Contacts
+    Route::get('/contacts', [ContactController::class, 'index']);
     // Products
     Route::get('/products', [ProductController::class, 'index']);
     Route::get('/products/{id}', [ProductController::class, 'show']);
