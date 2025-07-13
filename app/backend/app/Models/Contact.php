@@ -14,7 +14,11 @@ class Contact extends Model
         'description',
         'email',
         'phone',
+        'social_medias',
         'user_id'
+    ];
+    protected $casts = [
+        'social_medias' => 'array'
     ];
 
     public function user() {

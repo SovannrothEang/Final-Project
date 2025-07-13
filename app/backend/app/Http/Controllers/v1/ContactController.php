@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\v1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreContactRequest;
+use App\Http\Requests\UpdateContactRequest;
 use App\Http\Resources\ContactResource;
 use App\Models\Contact;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class ContactController extends Controller
 {
@@ -27,28 +27,21 @@ class ContactController extends Controller
         }
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreContactRequest $request): JsonResponse
     {
         try {
-            $validated = $request->validate([
-                'store_name' => 'nullable|string|max:255',
-                'address' => 'nullable|string|max:255',
-                'email' => 'nullable|email|max:255',
-                'phone' => 'nullable|string|max:20',
-                'description' => 'nullable|string|max:255',
-                'user_id' => 'required|integer|exists:tbl_users,id',
-            ]);
+            $validated = $request->validated();
             // Set default values for null fields
-            $data = array_merge([
-                'store_name' => 'Exclusive Store',
-                'address' => 'No Address',
-                'email' => 'lumor@email.com',
-                'phone' => '+855-12-345-5678',
-                'description' => 'No Description'
-            ], array_filter($validated));
+            // $data = array_merge([
+            //     'store_name' => 'Exclusive Store',
+            //     'address' => 'No Address',
+            //     'email' => 'lumor@email.com',
+            //     'phone' => '+855-12-345-5678',
+            //     'description' => 'No Description'
+            // ], array_filter($validated));
 
-            $data['user_id'] = Auth::user()->id;
-            $contact = Contact::create($data);
+            $validated['store_name'] = 'Exclusive Store';
+            $contact = Contact::create($validated);
             return response()->json([
                 'message' => 'Contact created successfully',
                 'data' => new ContactResource($contact)
@@ -77,18 +70,12 @@ class ContactController extends Controller
         }
     }
 
-    public function update(Request $request, int $id): JsonResponse
+    public function update(UpdateContactRequest $request, int $id): JsonResponse
     {
         try {
             $contact = Contact::findOrFail($id);
             
-            $validated = $request->validate([
-                'store_name' => 'nullable|string|max:255',
-                'address' => 'nullable|string|max:255',
-                'email' => 'nullable|email|max:255',
-                'phone' => 'nullable|string|max:20',
-                'description' => 'nullable|string|max:255'
-            ]);
+            $validated = $request->validated();
             $contact->update(array_filter($validated));
 
             return response()->json([

@@ -11,133 +11,15 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\ValidationException;
 
-/**
- *  @OA\Schema(
- *     schema="productPagination",
- *     type="object",
- *     @OA\Property(property="current_page", type="integer", example=1),
- *     @OA\Property(property="data", type="array",
- *         @OA\Items(ref="#/components/schemas/product")
- *     ),
- *     @OA\Property(property="first_page_url", type="string", example="http://api.example.com/api/v1/products?page=1"),
- *     @OA\Property(property="from", type="integer", example=1),
- *     @OA\Property(property="last_page", type="integer", example=10),
- *     @OA\Property(property="last_page_url", type="string", example="http://api.example.com/api/v1/products?page=10"),
- *     @OA\Property(property="links", type="array",
- *         @OA\Items(
- *             @OA\Property(property="url", type="string", nullable=true),
- *             @OA\Property(property="label", type="string"),
- *             @OA\Property(property="active", type="boolean")
- *         )
- *     ),
- *     @OA\Property(property="next_page_url", type="string", nullable=true, example="http://api.example.com/api/v1/products?page=2"),
- *     @OA\Property(property="path", type="string", example="http://api.example.com/api/v1/products"),
- *     @OA\Property(property="per_page", type="integer", example=15),
- *     @OA\Property(property="prev_page_url", type="string", nullable=true),
- *     @OA\Property(property="to", type="integer", example=15),
- *     @OA\Property(property="total", type="integer", example=150)
- * )
- */
 class ProductController extends ApiController
 {
     use AuthorizesRequests;
     /**
      * Display a listing of the resource.
-     */
-    /**
-     *  @OA\Get(
-     *     path="/api/v1/products",
-     *     summary="Display a listing of products",
-     *     tags={"Products"},
-     *     @OA\Parameter(
-     *         name="name",
-     *         in="query",
-     *         description="Filter by product name (partial match)",
-     *         required=false,
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         name="category_id",
-     *         in="query",
-     *         description="Filter by category ID",
-     *         required=false,
-     *         @OA\Schema(type="integer", format="int64")
-     *     ),
-     *     @OA\Parameter(
-     *         name="min_price",
-     *         in="query",
-     *         description="Minimum price filter",
-     *         required=false,
-     *         @OA\Schema(type="number", format="float")
-     *     ),
-     *     @OA\Parameter(
-     *         name="max_price",
-     *         in="query",
-     *         description="Maximum price filter",
-     *         required=false,
-     *         @OA\Schema(type="number", format="float")
-     *     ),
-     *     @OA\Parameter(
-     *         name="brand_id",
-     *         in="query",
-     *         description="Filter by brand ID",
-     *         required=false,
-     *         @OA\Schema(type="integer", format="int64")
-     *     ),
-     *     @OA\Parameter(
-     *         name="status",
-     *         in="query",
-     *         description="Filter by product status (partial match)",
-     *         required=false,
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         name="created_at_start",
-     *         in="query",
-     *         description="Filter by creation date start (YYYY-MM-DD)",
-     *         required=false,
-     *         @OA\Schema(type="string", format="date")
-     *     ),
-     *     @OA\Parameter(
-     *         name="created_at_end",
-     *         in="query",
-     *         description="Filter by creation date end (YYYY-MM-DD)",
-     *         required=false,
-     *         @OA\Schema(type="string", format="date")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Successful operation",
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", ref="#/components/schemas/productPagination")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="No products found",
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="success", type="boolean", example=false),
-     *             @OA\Property(property="message", type="string", example="No products found")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=500,
-     *         description="Internal server error",
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="success", type="boolean", example=false),
-     *             @OA\Property(property="message", type="string", example="Internal server error"),
-     *             @OA\Property(property="error", type="string")
-     *         )
-     *     )
-     * )
      */
     public function index(): JsonResponse
     {
@@ -286,11 +168,18 @@ class ProductController extends ApiController
         }
     }
 
-    public function vote(int $id) : JsonResponse
+    public function vote(int $id, Request $request) : JsonResponse
     {
         try {
-            DB::transaction(function () use ($id) {
-                Product::where('is_active', true)->findOrFail($id)->increment('reviews');
+            DB::transaction(function () use ($id, $request) {
+                $validated = $request->validate([
+                    'stars' => 'required|integer|min:1|max:5'
+                ]);
+                // rating rating_count reviews
+                $product = Product::where('is_active', true)->findOrFail($id);
+                $product->increment('rating', $validated['stars']);
+                $product->increment('reviews');
+                $product->save();
             });
             return response()->json([
                 'success' => true,

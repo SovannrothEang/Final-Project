@@ -151,12 +151,12 @@ class ProductResource extends JsonResource
             'discount' => $this->discount,
             'image' => $this->image,
             'in_stock' => $this->inStock(),
-            'is_top' => $this->is_top,
+            'is_top' => $this->isTop(),
             'is_new' => $this->isNew(),
             'is_active' => $this->is_active,
-            'status' => $this->status, // remove the status
-            'rating' => $this->rating,
-            'reviews' => $this->reviews, 
+            'status' => $this->status,
+            'rating' => $this->getRatingAttribute(),
+            'reviews' => $this->reviews,
             'created_at' => $this->created_at->toDateTimeString(), 
             'updated_at' => $this->updated_at->toDateTimeString(), 
         ];

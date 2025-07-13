@@ -24,8 +24,6 @@ Route::prefix('/auth')->group(function () {
 });
 
 Route::prefix('/v1')->group(function () {
-    // Contacts
-    Route::get('/contacts', [ContactController::class, 'index']);
     // Products
     Route::get('/products', [ProductController::class, 'index']);
     Route::get('/products/{id}', [ProductController::class, 'show']);
@@ -39,7 +37,6 @@ Route::prefix('/v1')->group(function () {
     // Contacts
     Route::get('/contacts', [ContactController::class, 'index']);
     Route::get('/contacts/{id}', [ContactController::class, 'show']);
-
     // About page
     Route::get('/about-page', [AboutPageController::class, 'index']);
     Route::get('/about-page/{id}', [AboutPageController::class, 'show']);
