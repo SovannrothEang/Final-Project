@@ -14,6 +14,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class ProductController extends ApiController
 {
@@ -177,31 +178,40 @@ class ProductController extends ApiController
                 ]);
                 // rating rating_count reviews
                 $product = Product::where('is_active', true)->findOrFail($id);
-                $product->increment('rating', $validated['stars']);
-                $product->increment('reviews');
+
+                $newTotalRating = $product->rating + $validated['stars'];
+                $newReviewCount = $product->reviews + 1;
+
+                // Update product with new average rating and review count
+                $product->reviews = $newReviewCount;
+                $product->rating = $newTotalRating;
                 $product->save();
             });
             return response()->json([
                 'success' => true,
-                'message' => 'update review'
+                'message' => 'Vote submitted successfully!'
             ]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
         } catch (ModelNotFoundException $e) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Product not found',
-            'error' => 'No product found with ID: ' . $id
-        ], 404);
-
+            return response()->json([
+                'success' => false,
+                'message' => 'Product not found',
+                'error' => 'No product found with ID: ' . $id
+            ], 404);
         } catch (QueryException $e) {
-            Log::error('Product fetch error: ' . $e->getMessage());
+            Log::error('Product vote error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Database error occurred',
                 'error' => 'Please try again later'
             ], 500);
-
         } catch (\Exception $e) {
-            Log::error('Product fetch error: ' . $e->getMessage());
+            Log::error('Product vote error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Internal error',
