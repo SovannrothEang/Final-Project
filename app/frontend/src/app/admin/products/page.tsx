@@ -19,6 +19,7 @@ import { ProductModal } from "@/components/products/admin/ProductModal";
 import { Brand } from "@/types/brands";
 import { Category } from "@/types/category";
 import useClientFetch from "@/utils/client-fetching";
+import { deleteProduct } from "@/utils/products-operations";
 
 export default function ProductsPage() {
 	const { data, error, isLoading, mutate } =
@@ -71,10 +72,16 @@ export default function ProductsPage() {
 		setIsModalOpen(true);
 	};
 
-	const handleDelete = (brandId: number) => {
-		if (confirm("Are you sure you want to delete this brand?")) {
-			setProducts(products.filter((p) => p.id !== brandId));
+	const handleDelete = async (productId: number) => {
+		if (!confirm("Are you sure you want to delete this brand?")) return;
+
+		try {
+			await deleteProduct(productId);
+		} catch (error) {
+			alert("Fail to delete product: " + error);
 		}
+		setProducts(products.filter((p) => p.id !== productId));
+		mutate();
 	};
 
 	// const totalValue = products.reduce(

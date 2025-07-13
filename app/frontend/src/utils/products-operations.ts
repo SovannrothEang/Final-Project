@@ -64,3 +64,33 @@ export async function updateProduct(id: number, productData: Partial<Product>) {
 		throw error;
 	}
 }
+export async function deleteProduct(id: number) {
+	const token = await getToken();
+	if (!token) throw new Error("No token was found");
+	try {
+		await api
+			.delete(`/admin/products/${id}`, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			})
+			.catch(function (error) {
+				if (
+					error.response &&
+					error.response.data &&
+					error.response.data.errors
+				) {
+					const errorMessages: string[] = [];
+					for (const key in error.response.data.errors) {
+						if (Array.isArray(error.response.data.errors[key])) {
+							errorMessages.push(...error.response.data.errors[key]);
+						}
+					}
+					throw errorMessages;
+				}
+				throw error;
+			});
+	} catch (error) {
+		throw error;
+	}
+}
