@@ -36,7 +36,13 @@ Route::prefix('/v1')->group(function () {
     // Categories
     Route::get('/categories', [CategoryController::class, 'index']);
     Route::get('/categories/{id}', [CategoryController::class, 'show']);
-    // Images
+    // Contacts
+    Route::get('/contacts', [ContactController::class, 'index']);
+    Route::get('/contacts/{id}', [ContactController::class, 'show']);
+
+    // About page
+    Route::get('/about-page', [AboutPageController::class, 'index']);
+    Route::get('/about-page/{id}', [AboutPageController::class, 'show']);
     
     Route::middleware(['auth:sanctum'])->group(function () {
         Route::prefix('/admin')->group(function () {
@@ -76,8 +82,6 @@ Route::prefix('/v1')->group(function () {
                 Route::delete('/{id}', [ContactController::class, 'destroy']);
             });
             Route::prefix('/about-page')->group(function () {
-                Route::get('/', [AboutPageController::class, 'index']);
-                Route::get('/{id}', [AboutPageController::class, 'show']);
                 Route::post('/', [AboutPageController::class, 'store']);
                 Route::put('/{id}', [AboutPageController::class, 'update']);
                 Route::delete('/{id}', [AboutPageController::class, 'destroy']);
