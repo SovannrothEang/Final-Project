@@ -120,7 +120,7 @@ class CategoryAdminController extends ApiController
             $category = DB::transaction(function () use ($request, $id) {
                 $category = Category::where('id', $id)
                 ->lockForUpdate()
-                ->findOrFail();
+                ->findOrFail($id);
                 $category->update($request->validated());
                 return $category->fresh();
             });

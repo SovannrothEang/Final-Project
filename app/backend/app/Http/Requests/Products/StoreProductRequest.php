@@ -59,7 +59,6 @@ class StoreProductRequest extends FormRequest
             'stock' => 'required|integer|min:0',
             'options' => new ValidProductOptions(),
             'discount' => 'nullable|integer',
-            'is_top' => 'nullable|boolean',
             'is_active' => 'nullable|boolean',
             'image' => 'nullable|string|max:2048',
             'rating' => 'nullable|integer',
@@ -96,8 +95,6 @@ class StoreProductRequest extends FormRequest
         'stock.min' => 'Stock must be at least 1',
         
         'discount.integer' => 'Discount must be an integer',
-        
-        'is_top.integer' => 'Top product flag must be an integer',
         
         'status.string' => 'Status must be a string',
         

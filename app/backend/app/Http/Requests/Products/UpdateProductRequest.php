@@ -86,7 +86,6 @@ class UpdateProductRequest extends FormRequest
                 new ValidProductOptions(),
             ],
             'discount' => 'sometimes|nullable|integer',
-            'is_top' => 'sometimes|nullable|boolean',
             'is_active' => 'sometimes|sometimes|boolean',
             'image' => 'nullable|string|max:2048',
             'status' => 'sometimes|nullable|string',
