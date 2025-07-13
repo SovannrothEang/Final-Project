@@ -30,7 +30,6 @@ import { Category } from "@/types/category";
 import { productAction } from "@/lib/actions/product-action";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { cn } from "@/lib/utils";
 
 export function ProductModal({
 	isOpen,
@@ -434,7 +433,7 @@ export function ProductModal({
 					<div className="grid grid-cols-2 gap-2">
 						{/* Image Upload */}
 						<div className="space-y-4">
-							<Label htmlFor="logo">Image</Label>
+							<Label htmlFor="image">Image</Label>
 							<div
 								className="relative flex h-32 w-32 cursor-pointer items-center
 							justify-center rounded-lg border-2 border-dashed border-gray-300 transition-colors hover:border-gray-400"
@@ -465,7 +464,7 @@ export function ProductModal({
 									</div>
 								)}
 								<Input
-									id="logo"
+									id="image"
 									type="file"
 									accept="image/*"
 									onChange={handleFileChange}

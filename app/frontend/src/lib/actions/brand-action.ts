@@ -1,29 +1,21 @@
+import { createBrand, updateBrand } from "@/app/api/brands/brands";
 import { createBrandSchema, FormState } from "@/lib/difinitions";
-import { createBrand } from "@/utils/brands-operations";
 
-export async function createBrandAction(state: FormState, formData: FormData) {
+export async function brandAction(state: FormState, formData: FormData) {
 	if (!(formData instanceof FormData)) {
 		return {
 			success: false,
 			errors: { error: ["Invalid Form Data"] },
 		};
 	}
-	console.log("FormData received in createBrandAction:", {
-		name: formData.get("name"),
-		description: formData.get("description"),
-		country: formData.get("country"),
-		website_url: formData.get("website_url"),
-		logo: formData.get("logo"),
-		is_active: formData.get("is_active") === "true",
-	});
+	const brandId = formData.get("id");
 	const validatedResult = createBrandSchema.safeParse({
 		name: formData.get("name"),
 		description: formData.get("description"),
-		// assuming that the url is corrected
 		website_url: formData.get("website_url"),
 		country: formData.get("country"),
-		logo: formData.get("logo"),
-		is_active: formData.get("is_active") !== null,
+		logo: formData.get("logo") || "",
+		is_active: formData.get("is_active") === "1",
 	});
 	if (!validatedResult.success) {
 		const errors = validatedResult.error.flatten().fieldErrors;
@@ -42,7 +34,16 @@ export async function createBrandAction(state: FormState, formData: FormData) {
 		};
 	}
 	try {
-		await createBrand({ ...validatedResult.data });
+		const brandData = {
+			...validatedResult.data,
+			logo: validatedResult.data.logo || "",
+			is_active: validatedResult.data.is_active,
+		};
+		if (brandId) {
+			await updateBrand(parseInt(brandId.toString()), brandData);
+		} else {
+			await createBrand(brandData);
+		}
 		console.log("[Create Brand Action] success");
 		return {
 			success: true,

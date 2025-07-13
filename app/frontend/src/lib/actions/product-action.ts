@@ -33,7 +33,6 @@ export async function productAction(state: FormState, formData: FormData) {
 
 	const is_top = formData.get("is_top") === "on" ? 1 : 0;
 	const is_active = formData.get("is_active");
-	console.log("[Image] " + formData.get("image"));
 	const validatedResult = productSchema.safeParse({
 		name: formData.get("name"),
 		brand_id: brand_id,

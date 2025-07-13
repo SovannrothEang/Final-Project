@@ -127,7 +127,7 @@ class BrandAdminController extends ApiController
 
     public function show(int $id) {
         try {
-            $brand = Brand::findOrFail($id);
+            $brand = Brand::withCount('products')->findOrFail($id);
             return response()->json([
                     'success' => true,
                     'message' => 'Get brand by ID successfully',
@@ -162,6 +162,7 @@ class BrandAdminController extends ApiController
         try {
             $brand = DB::transaction(function () use ($request) {
                 $brand = Brand::create($request->validated());
+                $brand->loadCount('products'); // Load products_count after creation
                 DB::commit();
                 return $brand->fresh();
             });
@@ -198,9 +199,12 @@ class BrandAdminController extends ApiController
             $brand = DB::transaction(function () use ($request, $id) {
                 $brand = Brand::where('id', $id)->lockForUpdate()->firstOrFail();
                 $brand->update($request->validated());
-                return $brand->fresh();
+                $brand->loadCount('products'); // Load products_count after update
+                return $brand->refresh();
             });
-
+            Log::info("Product", [
+                "logo" => $brand->logo
+            ]);
             return response()->json([
                 'success' => true,
                 'message' => 'Brand updated successfully.',

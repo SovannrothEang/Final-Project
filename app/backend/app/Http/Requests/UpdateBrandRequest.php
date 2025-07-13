@@ -43,6 +43,7 @@ class UpdateBrandRequest extends FormRequest
             'description' => 'nullable|string|max:500',
             'country' => 'nullable|string|max:100',
             'website_url' => 'nullable|url|max:255',
+            'logo' => 'nullable|string|max:255',
             'is_active' => 'nullable|boolean',
             'user_id' => 'sometimes|integer|exists:tbl_users,id',
         ];
