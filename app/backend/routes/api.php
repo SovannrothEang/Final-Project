@@ -25,6 +25,7 @@ Route::prefix('/v1')->group(function () {
     // Products
     Route::get('/products', [ProductController::class, 'index']);
     Route::get('/products/{id}', [ProductController::class, 'show']);
+    Route::post('/products/{id}/vote', [ProductController::class, 'vote']);
     // Brands
     Route::get('/brands', [BrandController::class, 'index']);
     Route::get('/brands/{id}', [BrandController::class, 'show']);

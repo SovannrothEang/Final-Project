@@ -170,34 +170,22 @@ class ProductAdminController extends ApiController
      */
     public function store(StoreProductRequest $request) : JsonResponse
     {
-        DB::beginTransaction();
         try {
-            $validated = $request->validated();
-            $product = Product::create($validated);
-
-            // if ($request->has('category_id')) {
-            //     $product->category()->sync($request->input('categort_id'));
-            // }
-
-            DB::commit();
+            $product = DB::transaction(function () use ($request) {
+                $validated = $request->validated();
+                return Product::create($validated);
+                // if ($request->has('category_id')) {
+                    //     $product->category()->sync($request->input('categort_id'));
+                // }
+            });
             Log::info('Product created successfully', ['product_id' => $product->id]);
             return response()->json([
                 'success' => true,
                 'message' => 'Create product successfully!',
                 'data' => $product,
             ], 201);
-        } catch (ValidationException $e) {
-            DB::rollBack();
-            Log::warning('Product creation validation failed', ['errors' => $e->errors()]);
-            
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation error',
-                'errors' => $e->errors()
-            ], 422);
 
         } catch (QueryException $e) {
-            DB::rollBack();
             Log::error('Product creation database error', [
                 'error' => $e->getMessage(),
                 'code' => $e->getCode()
@@ -209,7 +197,6 @@ class ProductAdminController extends ApiController
             ], 500);
 
         } catch (QueryException $e) {
-            DB::rollBack();
             Log::error('Product creation failed', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()

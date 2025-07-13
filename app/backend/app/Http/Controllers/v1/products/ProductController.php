@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
@@ -266,6 +267,41 @@ class ProductController extends ApiController
                 'message' => 'Product not found',
                 'error' => 'No product found with ID: ' . $id
             ], 404);
+
+        } catch (QueryException $e) {
+            Log::error('Product fetch error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Database error occurred',
+                'error' => 'Please try again later'
+            ], 500);
+
+        } catch (\Exception $e) {
+            Log::error('Product fetch error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Internal error',
+                'error' => $e->getMessage(),
+            ],500);
+        }
+    }
+
+    public function vote(int $id) : JsonResponse
+    {
+        try {
+            DB::transaction(function () use ($id) {
+                Product::where('is_active', true)->findOrFail($id)->increment('reviews');
+            });
+            return response()->json([
+                'success' => true,
+                'message' => 'update review'
+            ]);
+        } catch (ModelNotFoundException $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Product not found',
+            'error' => 'No product found with ID: ' . $id
+        ], 404);
 
         } catch (QueryException $e) {
             Log::error('Product fetch error: ' . $e->getMessage());
