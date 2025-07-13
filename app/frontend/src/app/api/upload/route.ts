@@ -103,3 +103,41 @@ export async function POST(req: NextRequest) {
 		);
 	}
 }
+
+export async function DELETE(req: NextRequest) {
+	try {
+		const { imagePath } = await req.json();
+
+		if (!imagePath) {
+			return NextResponse.json(
+				{ error: "Image path is required" },
+				{ status: 400 }
+			);
+		}
+
+		const relativePath = imagePath.startsWith("/uploads/")
+			? imagePath
+			: `/uploads/${imagePath}`;
+		const filePath = path.join(process.cwd(), "public", relativePath);
+
+		try {
+			await fs.access(filePath);
+		} catch {
+			return NextResponse.json({ error: "File not found" }, { status: 404 });
+		}
+
+		await fs.unlink(filePath);
+		console.log(`Deleted image: ${filePath}`);
+
+		return NextResponse.json(
+			{ message: "Image deleted successfully" },
+			{ status: 200 }
+		);
+	} catch (error) {
+		console.error("Error deleting image:", error);
+		return NextResponse.json(
+			{ error: "Error deleting image" },
+			{ status: 500 }
+		);
+	}
+}

@@ -14,7 +14,7 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
-import { Plus, Upload, X } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import Image from "next/image";
 import { initialState } from "@/lib/difinitions";
 import { Product } from "@/types/product";
@@ -30,6 +30,7 @@ import { Category } from "@/types/category";
 import { productAction } from "@/lib/actions/product-action";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
+import { cn } from "@/lib/utils";
 
 export function ProductModal({
 	isOpen,
@@ -55,9 +56,9 @@ export function ProductModal({
 		price: 0,
 		stock: 0,
 		discount: 0,
-		is_active: true,
+		is_active: 1,
 		is_new: false,
-		is_top: false,
+		is_top: 1,
 		options: {} as Record<string, string[]>,
 		image: "",
 	});
@@ -84,7 +85,7 @@ export function ProductModal({
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		setIsSubmitting(true);
-
+		let newImageUrl;
 		try {
 			if (selectedFile) {
 				const imageFormData = new FormData();
@@ -103,7 +104,8 @@ export function ProductModal({
 				}
 
 				const imageData = await uploadResponse.json();
-				setFormData((prev) => ({ ...prev, image: imageData.url }));
+				// setFormData((prev) => ({ ...prev, image: imageData.url }));
+				newImageUrl = imageData.url;
 			}
 
 			const dataToSend = {
@@ -111,6 +113,7 @@ export function ProductModal({
 				brand_id: formData.brand?.id,
 				category_id: formData.category?.id,
 				id: product?.id,
+				image: newImageUrl,
 			};
 
 			delete dataToSend.brand;
@@ -172,19 +175,23 @@ export function ProductModal({
 				price: 0,
 				stock: 0,
 				discount: 0,
-				is_active: true,
+				is_active: 1,
 				is_new: false,
-				is_top: false,
+				is_top: 0,
 				options: {} as Record<string, string[]>,
 				image: "",
 			});
 			setActionState(initialState);
+			setSelectedFile(null);
+			setImagePreview(null);
 		}
 	}, [isOpen, product]);
 	useEffect(() => {
 		if (actionState.success) {
 			onProductCreated();
 			setActionState(initialState);
+			setSelectedFile(null);
+			setImagePreview(null);
 		} else if (
 			actionState.errors &&
 			Object.keys(actionState.errors).length > 0
@@ -225,7 +232,25 @@ export function ProductModal({
 		delete newOptions[key];
 		setFormData({ ...formData, options: newOptions });
 	};
-	const removeImage = () => {
+	const removeImage = async () => {
+		if (formData.image) {
+			const imagePath = formData.image;
+			try {
+				const response = await fetch("/api/upload", {
+					method: "DELETE",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({ imagePath }),
+				});
+
+				if (!response.ok) {
+					throw new Error("Failed to delete image from server");
+				}
+			} catch (error) {
+				console.error("Error deleting image:", error);
+			}
+		}
 		setSelectedFile(null);
 		setImagePreview(null);
 		setFormData((prev) => ({ ...prev, image: "" }));
@@ -350,7 +375,12 @@ export function ProductModal({
 										);
 										setFormData({
 											...formData,
-											category: selectedCategory,
+											category: selectedCategory
+												? {
+														id: Number(selectedCategory.id),
+														name: selectedCategory.name,
+												  }
+												: undefined,
 										});
 									}}
 								>
@@ -401,43 +431,90 @@ export function ProductModal({
 							)}
 					</div>
 
-					{/* Pricing and Stock */}
-					<div className="grid grid-cols-3 gap-4">
-						<div className="space-y-2">
-							<Label htmlFor="price">Price ($) *</Label>
-							<Input
-								id="price"
-								name="price"
-								type="number"
-								step="0.01"
-								// value={formData.price}
-								value={formData.price === 0 ? "" : formData.price}
-								// onChange={(e) =>
-								// 	setFormData({
-								// 		...formData,
-								// 		price: parseFloat(e.target.value),
-								// 	})
-								// }
-								onChange={(e) => {
-									const val = e.target.value;
-									setFormData({
-										...formData,
-										price: val === "" ? 0 : parseFloat(val),
-									});
-								}}
-								placeholder="0.00"
-							/>
-							{actionState.errors &&
-								"price" in actionState.errors &&
-								actionState.errors.price && (
-									<p className="text-sm text-red-500">
-										{actionState.errors?.price.join(", ")}
-									</p>
+					<div className="grid grid-cols-2 gap-2">
+						{/* Image Upload */}
+						<div className="space-y-4">
+							<Label htmlFor="logo">Image</Label>
+							<div
+								className="relative flex h-32 w-32 cursor-pointer items-center
+							justify-center rounded-lg border-2 border-dashed border-gray-300 transition-colors hover:border-gray-400"
+							>
+								{imagePreview || formData.image ? (
+									<>
+										<Image
+											src={imagePreview || formData.image || "/placeholder.svg"}
+											alt="Image preview"
+											fill
+											sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+											className="rounded-lg object-cover"
+											// width={128}
+											// height={128}
+										/>
+										<button
+											type="button"
+											onClick={removeImage}
+											className="z-10 cursor-pointer absolute -right-2 -top-2 rounded-full bg-red-500 p-1 text-white hover:bg-red-600"
+										>
+											<X className="h-3 w-3" />
+										</button>
+									</>
+								) : (
+									<div className="flex flex-col items-center justify-center text-gray-500">
+										<Plus className="h-8 w-8" />
+										<span className="mt-1 text-sm">Add Image</span>
+									</div>
 								)}
+								<Input
+									id="logo"
+									type="file"
+									accept="image/*"
+									onChange={handleFileChange}
+									className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+								/>
+							</div>
+							<p className="text-xs text-gray-500 mt-1">
+								{isSubmitting && selectedFile
+									? "Uploading image..."
+									: "Upload a product image less than 5MB"}
+							</p>
 						</div>
-						<div className="space-y-2">
-							<Label htmlFor="discount">Discount (%)</Label>
-							{/* <Input
+						{/* Pricing and Stock */}
+						<div className="grid grid-rows-3 gap-4">
+							<div className="space-y-2">
+								<Label htmlFor="price">Price ($) *</Label>
+								<Input
+									id="price"
+									name="price"
+									type="number"
+									step="0.01"
+									// value={formData.price}
+									value={formData.price === 0 ? "" : formData.price}
+									// onChange={(e) =>
+									// 	setFormData({
+									// 		...formData,
+									// 		price: parseFloat(e.target.value),
+									// 	})
+									// }
+									onChange={(e) => {
+										const val = e.target.value;
+										setFormData({
+											...formData,
+											price: val === "" ? 0 : parseFloat(val),
+										});
+									}}
+									placeholder="0.00"
+								/>
+								{actionState.errors &&
+									"price" in actionState.errors &&
+									actionState.errors.price && (
+										<p className="text-sm text-red-500">
+											{actionState.errors?.price.join(", ")}
+										</p>
+									)}
+							</div>
+							<div className="space-y-2">
+								<Label htmlFor="discount">Discount (%)</Label>
+								{/* <Input
 								id="discount"
 								name="discount"
 								type="number"
@@ -452,50 +529,54 @@ export function ProductModal({
 								}
 								placeholder="0 %"
 							/> */}
-							<Input
-								id="discount"
-								name="discount"
-								type="number"
-								min="0"
-								max="100"
-								value={formData.discount === 0 ? "" : formData.discount}
-								onChange={(e) => {
-									const val = e.target.value;
-									setFormData({
-									...formData,
-									discount: val === "" ? 0 : parseInt(val),
-									});
-								}}
-								placeholder="0 %"
-							/>
-							{actionState.errors &&
-								"discount" in actionState.errors &&
-								actionState.errors.discount && (
-									<p className="text-sm text-red-500">
-										{actionState.errors?.discount.join(", ")}
-									</p>
-								)}
-						</div>
-						<div className="space-y-2">
-							<Label htmlFor="stock">Stock Quantity *</Label>
-							<Input
-								id="stock"
-								name="stock"
-								type="number"
-								min="0"
-								value={formData.stock}
-								onChange={(e) =>
-									setFormData({ ...formData, stock: parseInt(e.target.value) })
-								}
-								placeholder="0"
-							/>
-							{actionState.errors &&
-								"stock" in actionState.errors &&
-								actionState.errors.stock && (
-									<p className="text-sm text-red-500">
-										{actionState.errors?.stock.join(", ")}
-									</p>
-								)}
+								<Input
+									id="discount"
+									name="discount"
+									type="number"
+									min="0"
+									max="100"
+									value={formData.discount === 0 ? "" : formData.discount}
+									onChange={(e) => {
+										const val = e.target.value;
+										setFormData({
+											...formData,
+											discount: val === "" ? 0 : parseInt(val),
+										});
+									}}
+									placeholder="0 %"
+								/>
+								{actionState.errors &&
+									"discount" in actionState.errors &&
+									actionState.errors.discount && (
+										<p className="text-sm text-red-500">
+											{actionState.errors?.discount.join(", ")}
+										</p>
+									)}
+							</div>
+							<div className="space-y-2">
+								<Label htmlFor="stock">Stock Quantity *</Label>
+								<Input
+									id="stock"
+									name="stock"
+									type="number"
+									min="0"
+									value={formData.stock}
+									onChange={(e) =>
+										setFormData({
+											...formData,
+											stock: parseInt(e.target.value),
+										})
+									}
+									placeholder="0"
+								/>
+								{actionState.errors &&
+									"stock" in actionState.errors &&
+									actionState.errors.stock && (
+										<p className="text-sm text-red-500">
+											{actionState.errors?.stock.join(", ")}
+										</p>
+									)}
+							</div>
 						</div>
 					</div>
 
@@ -566,58 +647,15 @@ export function ProductModal({
 						<Switch
 							id="is_active"
 							name="is_active"
-							checked={formData.is_active || false}
+							checked={formData.is_active === 1 ? true : false}
 							onCheckedChange={(checked: boolean) =>
 								setFormData((prev) => ({
 									...prev,
-									is_active: checked,
+									is_active: checked ? 1 : 0,
 								}))
 							}
 						/>
 						<Label htmlFor="is_active">Active</Label>
-					</div>
-
-					{/* Image Upload */}
-					<div className="space-y-2">
-						<Label htmlFor="logo">Image</Label>
-						<div className="flex items-center space-x-4">
-							{imagePreview || formData.image ? (
-								<div className="relative">
-									<Image
-										src={imagePreview || "/placeholder.svg"}
-										alt="Image preview"
-										width={20}
-										height={20}
-										className="w-20 h-20 object-cover rounded-md border"
-									/>
-									<button
-										type="button"
-										onClick={removeImage}
-										className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
-									>
-										<X className="w-3 h-3" />
-									</button>
-								</div>
-							) : (
-								<div className="w-20 h-20 border-2 border-dashed border-gray-300 rounded-md flex items-center justify-center">
-									<Upload className="w-6 h-6 text-gray-400" />
-								</div>
-							)}
-							<div className="flex-1">
-								<Input
-									id="logo"
-									type="file"
-									accept="image/*"
-									onChange={handleFileChange}
-									className="cursor-pointer"
-								/>
-								<p className="text-xs text-gray-500 mt-1">
-									{isSubmitting && selectedFile
-										? "Uploading image..."
-										: "Upload a product image less than 5MB"}
-								</p>
-							</div>
-						</div>
 					</div>
 
 					<DialogFooter>

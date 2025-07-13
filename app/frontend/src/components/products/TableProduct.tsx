@@ -44,7 +44,9 @@ export default function TableProduct({
 		<Table>
 			<TableHeader>
 				<TableRow>
+					<TableHead>ID</TableHead>
 					<TableHead>Product</TableHead>
+					<TableHead>Description</TableHead>
 					<TableHead>Category</TableHead>
 					<TableHead>Brand</TableHead>
 					<TableHead>Price</TableHead>
@@ -58,23 +60,26 @@ export default function TableProduct({
 				{products &&
 					products.map((product) => (
 						<TableRow key={product.id}>
+							<TableCell className="font-medium">{product.id}</TableCell>
 							<TableCell className="font-medium">
-								<div className="flex items-center space-x-3">
-									<Image
-										src={
-											product.image ? `/${product.image}` : "/placeholder.svg"
-										}
-										alt={product.name}
-										width={40}
-										height={40}
-										className="rounded-md object-cover"
-									/>
+								<div className="relative flex items-center space-x-4">
+									<div className="relative w-[60px] h-[60px] overflow-hidden rounded-md">
+										<Image
+											src={product.image ? product.image : "/placeholder.svg"}
+											alt={product.name}
+											fill
+											sizes="60px"
+											className="object-contain"
+										/>
+									</div>
 									<div>
 										<div className="font-medium">{product.name}</div>
-										<div className="text-sm text-gray-500 truncate max-w-[200px]">
-											{product.description}
-										</div>
 									</div>
+								</div>
+							</TableCell>
+							<TableCell>
+								<div className="text-sm text-gray-500 truncate">
+									{product.short_description}
 								</div>
 							</TableCell>
 							<TableCell>{product.category.name}</TableCell>
@@ -82,7 +87,10 @@ export default function TableProduct({
 							<TableCell>${product.price.toFixed(2)}</TableCell>
 							<TableCell>{product.stock}</TableCell>
 							<TableCell>
-								{getStatusBadge(product.is_active, product.stock)}
+								{getStatusBadge(
+									product.is_active === 1 ? true : false,
+									product.stock
+								)}
 							</TableCell>
 							<TableCell>
 								{new Date(product.created_at).toLocaleDateString()}

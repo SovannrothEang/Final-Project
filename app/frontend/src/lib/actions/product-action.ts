@@ -31,8 +31,8 @@ export async function productAction(state: FormState, formData: FormData) {
 	const rating = Number(formData.get("rating")); // Assuming rating is also from form data
 	const reviews = Number(formData.get("reviews")); // Assuming reviews is also from form data
 
-	const is_top = formData.get("is_top") === "on";
-	const is_active = formData.get("is_active") === "true";
+	const is_top = formData.get("is_top") === "on" ? 1 : 0;
+	const is_active = formData.get("is_active");
 	console.log("[Image] " + formData.get("image"));
 	const validatedResult = productSchema.safeParse({
 		name: formData.get("name"),
@@ -45,8 +45,8 @@ export async function productAction(state: FormState, formData: FormData) {
 		discount: discount,
 		stock: stock,
 		image: formData.get("image") || "",
-		is_top: is_top,
-		is_active: is_active,
+		is_top: Number(is_top),
+		is_active: Number(is_active),
 		rating: rating || 0,
 		reviews: reviews || 0,
 	});

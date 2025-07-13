@@ -88,7 +88,7 @@ class UpdateProductRequest extends FormRequest
             'discount' => 'sometimes|nullable|integer',
             'is_top' => 'sometimes|nullable|boolean',
             'is_active' => 'sometimes|sometimes|boolean',
-            'image' => 'nullable|string',
+            'image' => 'nullable|string|max:2048',
             'status' => 'sometimes|nullable|string',
             'rating' => 'sometimes|nullable|integer',
             'reviews' => 'sometimes|nullable|integer',

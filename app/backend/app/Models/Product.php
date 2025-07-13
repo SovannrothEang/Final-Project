@@ -28,7 +28,7 @@ class Product extends Model
         'is_active',
         'rating',
         'reviews',
-        'images_id',
+        'image',
         'user_id',
     ];
 
@@ -51,9 +51,9 @@ class Product extends Model
         return $this->belongsTo(Category::class, 'category_id');
     }
 
-    public function images() {
-        return $this->hasMany(Image::class, 'product_id');
-    }
+    // public function images() {
+    //     return $this->hasMany(Image::class, 'product_id');
+    // }
 
     public function inStock(): bool
     {
