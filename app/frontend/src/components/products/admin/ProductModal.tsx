@@ -410,13 +410,21 @@ export function ProductModal({
 								name="price"
 								type="number"
 								step="0.01"
-								value={formData.price}
-								onChange={(e) =>
+								// value={formData.price}
+								value={formData.price === 0 ? "" : formData.price}
+								// onChange={(e) =>
+								// 	setFormData({
+								// 		...formData,
+								// 		price: parseFloat(e.target.value),
+								// 	})
+								// }
+								onChange={(e) => {
+									const val = e.target.value;
 									setFormData({
 										...formData,
-										price: parseFloat(e.target.value),
-									})
-								}
+										price: val === "" ? 0 : parseFloat(val),
+									});
+								}}
 								placeholder="0.00"
 							/>
 							{actionState.errors &&
@@ -429,7 +437,7 @@ export function ProductModal({
 						</div>
 						<div className="space-y-2">
 							<Label htmlFor="discount">Discount (%)</Label>
-							<Input
+							{/* <Input
 								id="discount"
 								name="discount"
 								type="number"
@@ -442,6 +450,22 @@ export function ProductModal({
 										discount: parseInt(e.target.value),
 									})
 								}
+								placeholder="0 %"
+							/> */}
+							<Input
+								id="discount"
+								name="discount"
+								type="number"
+								min="0"
+								max="100"
+								value={formData.discount === 0 ? "" : formData.discount}
+								onChange={(e) => {
+									const val = e.target.value;
+									setFormData({
+									...formData,
+									discount: val === "" ? 0 : parseInt(val),
+									});
+								}}
 								placeholder="0 %"
 							/>
 							{actionState.errors &&

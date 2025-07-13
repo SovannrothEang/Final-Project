@@ -234,6 +234,8 @@
 
 "use client"
 
+import type React from "react"
+
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -248,13 +250,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-
 import type { Category, CreateCategoryData } from "@/types/category"
 
 interface CategoryModalProps {
   isOpen: boolean
   onClose: () => void
-  onSave: (data: CreateCategoryData, id?: string) => void
+  onSave: (data: CreateCategoryData) => Promise<void>
   category?: Category | null
   mode: "add" | "edit"
 }
@@ -263,9 +264,8 @@ export function CategoryModal({ isOpen, onClose, onSave, category, mode }: Categ
   const [formData, setFormData] = useState<CreateCategoryData>({
     name: "",
     description: "",
-    status: "Active",
+    is_active: true,
   })
-
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isLoading, setIsLoading] = useState(false)
 
@@ -274,13 +274,13 @@ export function CategoryModal({ isOpen, onClose, onSave, category, mode }: Categ
       setFormData({
         name: category.name,
         description: category.description,
-        status: category.status,
+        is_active: category.is_active,
       })
     } else {
       setFormData({
         name: "",
         description: "",
-        status: "Active",
+        is_active: true,
       })
     }
     setErrors({})
@@ -303,17 +303,32 @@ export function CategoryModal({ isOpen, onClose, onSave, category, mode }: Categ
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
     if (!validateForm()) return
 
     setIsLoading(true)
     try {
-      onSave(formData, category?.id) // include ID only in edit
+      await onSave(formData)
       onClose()
     } catch (error) {
       console.error("Failed to save category", error)
+
+      // Show more detailed error to user
+      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred"
+      alert(`Failed to save category: ${errorMessage}`)
+
+      // You might want to set an error state here instead of alert
+      // setErrors({ submit: errorMessage })
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const handleStatusChange = (value: string) => {
+    setFormData({
+      ...formData,
+      is_active: value === "true",
+    })
   }
 
   return (
@@ -349,22 +364,20 @@ export function CategoryModal({ isOpen, onClose, onSave, category, mode }: Categ
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               className={errors.description ? "border-red-500" : ""}
               placeholder="Enter category description"
+              rows={3}
             />
             {errors.description && <p className="text-sm text-red-500">{errors.description}</p>}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="status">Status</Label>
-            <Select
-              value={formData.status}
-              onValueChange={(value) => setFormData({ ...formData, status: value as "Active" | "Inactive" })}
-            >
+            <Select value={formData.is_active ? "true" : "false"} onValueChange={handleStatusChange}>
               <SelectTrigger>
                 <SelectValue placeholder="Select status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Active">Active</SelectItem>
-                <SelectItem value="Inactive">Inactive</SelectItem>
+                <SelectItem value="true">Active</SelectItem>
+                <SelectItem value="false">Inactive</SelectItem>
               </SelectContent>
             </Select>
           </div>
