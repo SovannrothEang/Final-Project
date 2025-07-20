@@ -52,7 +52,24 @@ export default function BrandsPage() {
 
 	const handleDeleteBrand = async (brandId: number) => {
 		if (!confirm("Are you sure you want to delete this brand?")) return;
+		const imagePath = brands.find((b) => b.id === brandId)?.logo;
+		if (imagePath) {
+			try {
+				const response = await fetch("/api/brand-upload", {
+					method: "DELETE",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({ imagePath }),
+				});
 
+				if (!response.ok) {
+					throw new Error("Failed to delete image from server");
+				}
+			} catch (error) {
+				console.error("Error deleting image:", error);
+			}
+		}
 		try {
 			await deleteBrand(brandId);
 			setBrands((prev) => prev.filter((b) => b.id !== brandId));

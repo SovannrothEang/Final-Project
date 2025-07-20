@@ -74,7 +74,23 @@ export default function ProductsPage() {
 
 	const handleDelete = async (productId: number) => {
 		if (!confirm("Are you sure you want to delete this brand?")) return;
-
+		const imagePath = products.find((b) => b.id === productId)?.image;
+		if (imagePath) {
+			try {
+				const response = await fetch("/api/upload", {
+					method: "DELETE",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({ imagePath }),
+				});
+				if (!response.ok) {
+					throw new Error("Failed to delete image from server");
+				}
+			} catch (error) {
+				console.error("Error deleting image:", error);
+			}
+		}
 		try {
 			await deleteProduct(productId);
 		} catch (error) {

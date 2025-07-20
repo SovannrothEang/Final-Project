@@ -65,7 +65,9 @@ export async function createBrand(payload: CreateBrandData): Promise<Brand> {
 		try {
 			const errorData = JSON.parse(errorText);
 			console.error("Validation errors:", errorData);
-			throw new Error(`Failed to create brand: ${JSON.stringify(errorData)}`);
+			throw new Error(
+				`Failed to create brand: ${JSON.stringify(errorData)}`
+			);
 		} catch {
 			throw new Error(
 				`Failed to create brand: ${res.status} ${res.statusText} - ${errorText}`
@@ -104,7 +106,9 @@ export async function updateBrand(
 		try {
 			const errorData = JSON.parse(errorText);
 			console.error("Validation errors:", errorData);
-			throw new Error(`Failed to update brand: ${JSON.stringify(errorData)}`);
+			throw new Error(
+				`Failed to update brand: ${JSON.stringify(errorData)}`
+			);
 		} catch {
 			throw new Error(
 				`Failed to update brand: ${res.status} ${res.statusText} - ${errorText}`

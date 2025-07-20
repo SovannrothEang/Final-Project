@@ -13,7 +13,7 @@ const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 
 export async function POST(req: NextRequest) {
-	const uploadDir = path.join(process.cwd(), "public", "uploads");
+	const uploadDir = path.join(process.cwd(), "public", "uploads", "products");
 	try {
 		await fs.access(uploadDir);
 	} catch {
@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
 
 		const processedMetadata = await sharp(filePath).metadata();
 
-		const publicUrl = `/uploads/${filename}`;
+		const publicUrl = `/uploads/products/${filename}`;
 
 		return NextResponse.json({
 			url: publicUrl,
