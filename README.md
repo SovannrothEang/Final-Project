@@ -57,6 +57,10 @@ npm run start:frontend
     npm run dev # or yarn dev
     ```
 
+<b>Don't forget to copy the .env.example and change its name to .env</b>
+
+---
+
 ### 2. Installation for backend
 
 #### From root directory

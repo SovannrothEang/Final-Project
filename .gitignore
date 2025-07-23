@@ -1,5 +1,4 @@
 node_modules
-/.idea
-/.idea/*
-/.vs
-/.vscode
+.idea
+.vscode
+.vs
